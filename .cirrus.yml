@@ -4,7 +4,7 @@ check_android_task:
     API_LEVEL: 29
     TARGET: default
     ARCH: x86
-    CC_TEST_REPORTER_ID: ENCRYPTED[93015fc6b1d6dde29328ff510e5b71ba90b8d18c102a6b5658ca4795e90f118a068e1adabe0b298508180d241d3f651a]
+    CC_TEST_REPORTER_ID: ENCRYPTED[483623932eccb8527e3bcd5192ddb65b4625037ddf2376a8151016db09c55f75f790781b1a1dc7190e04b83321f2f937]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
