@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Wnder.iml" filepath="$PROJECT_DIR$/.idea/modules/Wnder.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Wnder.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Wnder.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wnder.iml" filepath="$PROJECT_DIR$/.idea/modules/wnder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/wnder.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/wnder.app.iml" />
     </modules>
   </component>
 </project>
