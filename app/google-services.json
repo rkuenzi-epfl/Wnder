@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "101589747332",
+    "project_id": "wnder-4b4b4",
+    "storage_bucket": "wnder-4b4b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101589747332:android:92427b579d26f936c9a4d1",
+        "android_client_info": {
+          "package_name": "com.github.wnder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "101589747332-djshh8n3erk14lfksddbm4p3kotprm0v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.wnder",
+            "certificate_hash": "723a60add127c6a2bd798040c81698c88526596a"
+          }
+        },
+        {
+          "client_id": "101589747332-b30cgob060veformruvvtckd79shs7qv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2MiDCh4Wm3xMYvvggOcWrramKd6JtM6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "101589747332-b30cgob060veformruvvtckd79shs7qv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
