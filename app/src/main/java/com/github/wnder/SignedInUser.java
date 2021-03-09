@@ -9,38 +9,20 @@ public class SignedInUser implements User{
 
     //private GoogleSignInAccount account;
     private String name;
-    private String givenName;
-    private String familyName;
-    private String email;
     private Uri profilPicture;
     // These are guesses on future fields for a user
     //private int GlobalScore;
     //private History history;
 
-    public SignedInUser(GoogleSignInAccount account){
+    public SignedInUser(String name, Uri profilePicture){
         //this.account = account;
-        name = account.getDisplayName();
-        givenName = account.getGivenName();
-        familyName = account.getFamilyName();
-        email = account.getEmail();
-        profilPicture = account.getPhotoUrl();
+        this.name = name;
+        this.profilPicture = profilePicture;
 
     }
 
     public String getName(){
         return name;
-    }
-
-    public String getGivenName(){
-        return givenName;
-    }
-
-    public String getFamilyName(){
-        return familyName;
-    }
-
-    public String getEmail(){
-        return email;
     }
 
     public Uri getProfilePicture(){
