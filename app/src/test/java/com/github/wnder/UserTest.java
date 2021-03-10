@@ -2,6 +2,7 @@ package com.github.wnder;
 
 import android.net.Uri;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -13,7 +14,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class UserTest {
 
-    private static Uri uri = mock(Uri.class);
+    @BeforeClass
+    public static void mockUri(){
+        mockStatic(Uri.class);
+    }
 
     @Test
     public void guestUserReturnGuestName(){
@@ -23,19 +27,19 @@ public class UserTest {
     @Test
     public void guestUserReturnDefaultProfilePicturePath(){
         User u = new GuestUser();
-        assertThat(u.getProfilePicture(), is(uri.parse("android.resource://raw/ladiag.jpg")));
+        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://raw/ladiag.jpg")));
     }
 
     @Test
     public void signedInUserReturnCorrectName(){
         // Reusing default Profile Picture for testing
-        User u = new SignedInUser("TestUser", uri.parse("android.resource://raw/ladiag.jpg"));
+        User u = new SignedInUser("TestUser", Uri.parse("android.resource://raw/ladiag.jpg"));
         assertThat(u.getName(), is("TestUser"));
     }
     @Test
     public void signedInUserReturnCorrectProfilePictureUri(){
         // Reusing default Profile Picture for testing
-        User u = new SignedInUser("TestUser", uri.parse("android.resource://raw/ladiag.jpg"));
-        assertThat(u.getProfilePicture(), is(uri.parse("android.resource://raw/ladiag.jpg")));
+        User u = new SignedInUser("TestUser", Uri.parse("android.resource://raw/ladiag.jpg"));
+        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://raw/ladiag.jpg")));
     }
 }
