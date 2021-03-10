@@ -9,7 +9,7 @@ public class SignedInUser implements User{
 
     //private GoogleSignInAccount account;
     private String name;
-    private Uri profilPicture;
+    private Uri profilePicture;
     // These are guesses on future fields for a user
     //private int GlobalScore;
     //private History history;
@@ -17,7 +17,7 @@ public class SignedInUser implements User{
     public SignedInUser(String name, Uri profilePicture){
         //this.account = account;
         this.name = name;
-        this.profilPicture = profilePicture;
+        this.profilePicture = profilePicture;
 
     }
 
@@ -26,7 +26,7 @@ public class SignedInUser implements User{
     }
 
     public Uri getProfilePicture(){
-        return profilPicture;
+        return profilePicture;
     }
 
 }

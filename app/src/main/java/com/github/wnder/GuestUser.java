@@ -9,6 +9,6 @@ public class GuestUser implements User{
     }
 
     public Uri getProfilePicture(){
-        return Uri.parse("android.resource://raw/LaDiag.jpg");
+        return Uri.parse("android.resource://raw/ladiag.jpg");
     }
 }
