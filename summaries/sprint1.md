@@ -25,6 +25,11 @@ For next time, I should spend more time testing my functions and doing it step b
 
 ## Pablo
 
+I added the UI elements for the username and the profile picture to the main screen.
+
+But I lost some time learning the very basics of Android GUI.
+
+Next time I will try to start working on my task earlier in the week to get it reviewed before the end of the sprint.
 
 ## Romain
 
