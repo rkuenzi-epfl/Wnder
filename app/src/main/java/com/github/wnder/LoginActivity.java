@@ -48,6 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         updateUI(account);
+
     }
 
 
