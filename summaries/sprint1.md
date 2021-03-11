@@ -28,6 +28,12 @@ For next time, I should spend more time testing my functions and doing it step b
 
 ## Romain
 
+I implemented (with Nicolas) a basic backend to store information about the user (which might be guest or signed in) which should be globally accessible in the app.
+
+However, the global accessiblity was not tested and not linked with the user interface.
+
+Next time, I should try to merge my work with the rest of the team sooner to make sure of their compatibility.
+
 
 ## Overall team
 
