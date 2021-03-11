@@ -13,7 +13,7 @@ public class SignedInUser implements User{
     // These are guesses on future fields for a user
     //private int GlobalScore;
     //private History history;
-
+    
     public SignedInUser(String name, Uri profilePicture){
         //this.account = account;
         this.name = name;
