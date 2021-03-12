@@ -52,3 +52,8 @@ Next time, I should try to merge my work with the rest of the team sooner to mak
 
 ## Overall team
 
+We implemented almost all the issues that were assigned during the sprint.
+
+However, we weren't able to merge our work correctly, so we weren't able to test the app in its entirety, because we didn't keep enough time to do it, plus not all of us were able to do complete tests on their respective sides.
+
+Next time, we will make sure that we keep enough time to put our works together and that everything will be thouroughly tested beforehand.
