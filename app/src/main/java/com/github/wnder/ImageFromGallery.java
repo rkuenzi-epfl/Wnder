@@ -11,17 +11,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class ImageFromGallery extends AppCompatActivity {
     Button findImage;
     Uri imageUri;
     TextView imageRef;
     ImageView imageSelected;
     private static final int SELECT_IMAGE = 0;
 
-    //@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.gallery_from_image);
         findImage = findViewById(R.id.getGalleryImage);
         imageRef = findViewById(R.id.textView);
         imageSelected = findViewById(R.id.imageSelected);
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //@Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent openGalleryIntent){
         super.onActivityResult(requestCode, resultCode, openGalleryIntent);
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE){
