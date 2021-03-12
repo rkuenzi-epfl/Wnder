@@ -46,27 +46,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onStart(){
         super.onStart();
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
-    }
-
-
-    //Décide si un utilisateur s'est déjà connecté et agit en conséquence
-    private void updateUI(GoogleSignInAccount account){
-
-        if(account == null){
-            System.out.println("account pas ok");
-            //affichage du bouton google
+        GoogleSignInAccount account = null;//GoogleSignIn.getLastSignedInAccount(this);
+        if(account != null){
+            System.out.println("Account already registered");
+            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
+            updateUI();
+        } else {
+            System.out.println("No account yet");
             signInButton.setVisibility(View.VISIBLE);
             textLogin.setText("Please sign in.");
-
-        }
-        else{
-            System.out.println("account ok");
-            //Le compte existe déjà, pas besoin du bouton google
-            textLogin.setText("Welcome " + account.getDisplayName());
         }
 
+    }
+
+    private void updateUI(){
+        signInButton.setVisibility(View.INVISIBLE);
+        textLogin.setText("Welcome " + GlobalUser.getUser().getName());
     }
 
     @Override
@@ -75,7 +70,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.sign_in_button:
                 signIn();
                 break;
-            // d'autres boutons peuvent être gérés par ce switch
+            // Other buttons can be setup in this switch
         }
     }
 
@@ -102,12 +97,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
+            updateUI();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            updateUI(null);
+            updateUI();
         }
     }
 
