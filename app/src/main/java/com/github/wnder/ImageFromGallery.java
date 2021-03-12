@@ -11,12 +11,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
+
 public class ImageFromGallery extends AppCompatActivity {
-    Button findImage;
-    Uri imageUri;
-    TextView imageRef;
-    ImageView imageSelected;
+    private Button findImage;
+    private Uri imageUri;
+    private TextView imageRef;
+    private ImageView imageSelected;
     private static final int SELECT_IMAGE = 0;
+    private Storage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,7 @@ public class ImageFromGallery extends AppCompatActivity {
         findImage = findViewById(R.id.getGalleryImage);
         imageRef = findViewById(R.id.textView);
         imageSelected = findViewById(R.id.imageSelected);
+        storage = new Storage();
         findImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,6 +51,9 @@ public class ImageFromGallery extends AppCompatActivity {
             imageRef.setText(imageUri.toString());
             imageSelected.setImageURI(imageUri);
         }
-    }
+        String dbPath = "test/image1";
+        storage.uploadToCloudStorage(imageUri, dbPath);
+        File file = storage.downloadFromCloudStorage(dbPath);
+    };
 
 }

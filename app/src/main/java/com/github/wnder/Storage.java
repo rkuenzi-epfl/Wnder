@@ -35,18 +35,16 @@ public class Storage {
         this.storage = FirebaseStorage.getInstance();
         this.storageRef = storage.getReference();
 
-        uploadToFirestore();
-        downloadFromFirestore();
+        //uploadToFirestore();
+        //downloadFromFirestore();
     }
 
-    private void uploadToCloudStorage(String filepath){
-        Uri file = Uri.fromFile(new File(filepath));
-
+    public void uploadToCloudStorage(Uri uri, String databaseFilePath){
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setContentType("image/jpeg")
                 .build();
 
-        UploadTask uploadTask = storageRef.child(filepath).putFile(file, metadata);
+        UploadTask uploadTask = storageRef.child(databaseFilePath).putFile(uri, metadata);
 
         uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -72,37 +70,36 @@ public class Storage {
         });
     }
 
-    private void downloadFromCloudStorage(String filepath) throws IOException {
+    public File downloadFromCloudStorage(String filepath) {
         StorageReference ref = storageRef.child(filepath);
+        File localFile = null;
+        try {
+            localFile = File.createTempFile("images", "jpg");
 
-        File localFile =  File.createTempFile("images", "jpg");
+            ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    System.out.println("Download succeeded");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    System.out.println("Download Failed");
+                }
+            });
+        } catch (IOException e){
+            System.out.println("Could not create local file");
+        }
+        return localFile;
 
-        ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                System.out.println("Download succeeded");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                System.out.println("Download Failed");
-            }
-        });
     }
 
-    private void uploadToFirestore(){
-        Map<String, String> testMap = new HashMap<>();
-        testMap.put("Jeremy", "Jus d'orange");
-        testMap.put("Léonard", "Lasagne");
-        testMap.put("Romain", "Pizza du jeudi soir");
-        testMap.put("Nico", "Cookies");
-        testMap.put("Alois", "merci MV");
-
-
-        db.collection("test").document("doc").set(testMap);
+    public void uploadToFirestore(Map<String, Object> map){
+        db.collection("test").document("doc").set(map);
     }
 
-    private void downloadFromFirestore(){
+    public Map<String, Object> downloadFromFirestore(){
+        Map<String, Object> toReturn;
         db.collection("test")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -110,12 +107,13 @@ public class Storage {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                System.out.println(document.getId() + " => " + document.getData());
+                                //toReturn = document.getData();
                             }
                         } else {
                             Log.w("Error", "Error getting documents.", task.getException());
                         }
                     }
                 });
+        return null;
     }
 }
