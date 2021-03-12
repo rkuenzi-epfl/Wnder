@@ -99,7 +99,6 @@ public class Storage {
     }
 
     public Map<String, Object> downloadFromFirestore(){
-        Map<String, Object> toReturn;
         db.collection("test")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -107,7 +106,7 @@ public class Storage {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                //toReturn = document.getData();
+                                yes(document.getData());
                             }
                         } else {
                             Log.w("Error", "Error getting documents.", task.getException());
@@ -115,5 +114,10 @@ public class Storage {
                     }
                 });
         return null;
+    }
+
+    public Map<String, Object> map;
+    private void yes(Map map){
+        this.map = map;
     }
 }

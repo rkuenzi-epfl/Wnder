@@ -51,9 +51,11 @@ public class ImageFromGallery extends AppCompatActivity {
             imageRef.setText(imageUri.toString());
             imageSelected.setImageURI(imageUri);
         }
-        String dbPath = "test/image1";
-        storage.uploadToCloudStorage(imageUri, dbPath);
-        File file = storage.downloadFromCloudStorage(dbPath);
     };
 
+    protected File uploadAndDownloadToCloudStorage(){
+        String dbPath = "test/image1";
+        storage.uploadToCloudStorage(imageUri, dbPath);
+        return storage.downloadFromCloudStorage(dbPath);
+    }
 }
