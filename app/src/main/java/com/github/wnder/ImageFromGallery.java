@@ -28,10 +28,14 @@ public class ImageFromGallery extends AppCompatActivity {
         findImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent openGalleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                startActivityForResult(openGalleryIntent, SELECT_IMAGE);
+                openGallery();
             }
         });
+    }
+
+    protected void openGallery() {
+        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(openGalleryIntent, SELECT_IMAGE);
     }
 
     @Override
