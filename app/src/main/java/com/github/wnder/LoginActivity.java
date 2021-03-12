@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onStart(){
         super.onStart();
 
-        GoogleSignInAccount account = null;//GoogleSignIn.getLastSignedInAccount(this);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if(account != null){
             System.out.println("Account already registered");
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
