@@ -27,6 +27,11 @@ For next time, I should spend more time testing my functions and doing it step b
 
 ## Nicolas
 
+I set up firebase and I implemented (with Romain) a first user backend differentiating signed in users and guests.
+
+However, the backend wasn't put in relation with the work of my teammates, so it hasn't been tested at a global scale.
+
+Next time, I will try to work more closely with my teammates so that I can understand their needs better and merge my work with theirs sooner.
 
 ## Pablo
 
