@@ -3,6 +3,11 @@
 
 ## Aloïs
 
+I implemented the search of images through the Gallery but didn't managed to provide good test with it. 
+
+It took me more time that expected to learn how Android GUI works which made me actually start implement my task only after our stand up meetings.
+
+Next time, I will try to plan my work better so that the stand up meetings will be more beneficial for both my team and I. 
 
 ## Jeremy (Scrum Master)
 
