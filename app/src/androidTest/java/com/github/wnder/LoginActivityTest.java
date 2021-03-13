@@ -1,54 +1,47 @@
 package com.github.wnder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class LoginActivityTest {
 
-    private LoginActivity testActivity;
-
-    private Button mockButton = mock(Button.class);
-
     @Before
-    private void setup(){
-
-        testActivity = Mockito.spy(LoginActivity.class);
-        doReturn(mockButton).when(testActivity).findViewById(anyInt());
-
+    public void setup(){
     }
 
     @Test
-    public void testLogin(){
-
-        ArgumentCaptor<View.OnClickListener> captor = ArgumentCaptor.forClass(View.OnClickListener.class);
-        Mockito.doNothing().when(mockButton).setOnClickListener(captor.capture());
-
-        testActivity.onCreate(mock(Bundle.class));
-        testActivity.onStart();
-
-        Mockito.doNothing().when(testActivity).startActivity((Intent) any());
-        Mockito.doNothing().when(testActivity).finish();  // We should also test this to be called in a new test.
-        captor.getValue().onClick(mockButton);
-        Mockito.verify(testActivity).startActivity((Intent) any());
+    public void testNoLogin(){
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), LoginActivity.class);
+        ActivityScenario scenario = ActivityScenario.launch(intent);
+        onView(withId(R.id.textLogin)).check(matches(withText("Please sign in.")));
+        scenario.close();
     }
 }
