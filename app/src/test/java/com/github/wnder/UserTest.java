@@ -41,7 +41,6 @@ public class UserTest {
 
     @Test
     public void globalUserReturnGuestUserByDefault(){
-
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://raw/ladiag.jpg")));

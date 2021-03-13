@@ -17,7 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
-    //Open the activity as a test because there is nothing in the activity yet
+    // Open the activity as a test because there is nothing in the activity yet
     @Test
     public void testEmptyMain(){
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);

@@ -4,7 +4,7 @@ public class GlobalUser{
 
     private static User user = new GuestUser();
 
-    //prevent instantiation
+    // Prevent instantiation
     private GlobalUser(){}
 
     public static User getUser(){

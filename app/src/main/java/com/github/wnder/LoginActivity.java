@@ -21,7 +21,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private View signInButton;
     private TextView textLogin;
     private GoogleSignInClient client;
-    private int RC_SIGN_IN = 10; //nombre arbitraire
+    private int RC_SIGN_IN = 10; // Arbitrary number
     private String TAG = "LoginActivity.java";
 
     @Override
@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         textLogin = findViewById(R.id.textLogin);
         signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setVisibility(View.INVISIBLE);  //cache le bouton
+        signInButton.setVisibility(View.INVISIBLE);  // Hide the button
         signInButton.setOnClickListener(this);
 
 
@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void updateUI(){
+    private void updateUI() {
         signInButton.setVisibility(View.INVISIBLE);
         textLogin.setText("Welcome " + GlobalUser.getUser().getName());
     }
