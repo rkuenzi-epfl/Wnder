@@ -1,9 +1,8 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.media.MediaScannerConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,9 +11,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class ImageFromGallery extends AppCompatActivity {
     private Button findImage;
@@ -43,7 +42,7 @@ public class ImageFromGallery extends AppCompatActivity {
 
         download_button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { download_image(); }
+            public void onClick(View v) { downloadImage(); }
         });
 
     }
@@ -58,25 +57,21 @@ public class ImageFromGallery extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, openGalleryIntent);
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE){
             imageUri = openGalleryIntent.getData();
+            System.out.println(imageUri);
             imageRef.setText(imageUri.toString());
             //imageSelected.setImageURI(imageUri);
-            System.out.println(imageUri);
             storage.uploadToCloudStorage(imageUri, "test/img1.jpg");
-
         }
     };
 
-    protected void download_image(){
-        Uri img_uri = storage.downloadFromCloudStorage("test/img1.jpg");
-        System.out.println(img_uri);
-        MediaScannerConnection.scanFile(this, new String[]{img_uri.toString()}, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-                        System.out.println(uri.getPath());
-                    }
-                });
-        imageSelected.setImageURI(img_uri);
+    protected void downloadImage(){
+        storage.downloadFromCloudStorage("test/img1.jpg").addOnSuccessListener(this, new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bmp = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
+                imageSelected.setImageBitmap(bmp);
+            }
+        });
     }
 
 
