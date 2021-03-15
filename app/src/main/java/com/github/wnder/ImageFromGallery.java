@@ -1,8 +1,6 @@
 package com.github.wnder;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 
 public class ImageFromGallery extends AppCompatActivity {
     private Button findImage;
@@ -63,10 +59,4 @@ public class ImageFromGallery extends AppCompatActivity {
             }
         }
     };
-
-
-
-    protected Uri getImageUri(){
-        return imageUri;
-    }
 }

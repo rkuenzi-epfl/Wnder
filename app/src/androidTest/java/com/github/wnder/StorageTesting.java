@@ -1,12 +1,8 @@
 package com.github.wnder;
 
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -20,8 +16,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-
 
 import java.util.HashMap;
 import java.util.Map;
