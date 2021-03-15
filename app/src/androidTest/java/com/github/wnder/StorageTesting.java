@@ -2,9 +2,11 @@ package com.github.wnder;
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -39,6 +41,7 @@ public class StorageTesting {
         testMap.put("Romain", "Pizza du jeudi soir");
         testMap.put("Nico", "Cookies");
         testMap.put("Alois", "merci MV");
+        testMap.put("Pablo", "Android");
 
         String collection = "test";
         storage.uploadToFirestore(testMap, collection);
@@ -54,7 +57,7 @@ public class StorageTesting {
                         assertThat(testMap, is(doc.getData()));
                     }
                 } else {
-                    Log.w("Error", "Error getting documents.", task.getException());
+                    assertThat(1, is(2));
                 }
             }
         });
@@ -66,12 +69,13 @@ public class StorageTesting {
         Storage storage = new Storage();
 
         String filepath = "test/img1.jpg";
-
+        System.out.println("aille");
         storage.uploadToCloudStorage(uri, filepath);
 
         storage.downloadFromCloudStorage(filepath).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
+                Bitmap bmp = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
                 assertThat(1, is(1));
             }
         }).addOnFailureListener(new OnFailureListener() {
