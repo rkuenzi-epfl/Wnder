@@ -1,10 +1,15 @@
 package com.github.wnder;
 
+import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,7 +27,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Storage {
@@ -34,9 +38,6 @@ public class Storage {
         this.db = FirebaseFirestore.getInstance();
         this.storage = FirebaseStorage.getInstance();
         this.storageRef = storage.getReference();
-
-        //uploadToFirestore();
-        //downloadFromFirestore();
     }
 
     public void uploadToCloudStorage(Uri uri, String databaseFilePath){
@@ -70,11 +71,11 @@ public class Storage {
         });
     }
 
-    public File downloadFromCloudStorage(String filepath) {
+    public Uri downloadFromCloudStorage(String filepath) {
         StorageReference ref = storageRef.child(filepath);
         File localFile = null;
         try {
-            localFile = File.createTempFile("images", "jpg");
+            localFile = File.createTempFile("images", ".jpg");
 
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
@@ -90,34 +91,38 @@ public class Storage {
         } catch (IOException e){
             System.out.println("Could not create local file");
         }
-        return localFile;
+        return Uri.fromFile(localFile);
 
     }
 
-    public void uploadToFirestore(Map<String, Object> map){
-        db.collection("test").document("doc").set(map);
+    public void uploadToFirestore(Map<String, Object> map, String collection){
+        db.collection(collection).document("doc").set(map);
     }
 
-    public Map<String, Object> downloadFromFirestore(){
-        db.collection("test")
+    public void downloadFromFirestore(String collection){
+        db.collection(collection)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                yes(document.getData());
+                                // I cannot return or modify anything from here so I must do this
+                                updateMap(document.getData());
                             }
                         } else {
                             Log.w("Error", "Error getting documents.", task.getException());
                         }
                     }
                 });
-        return null;
     }
 
-    public Map<String, Object> map;
-    private void yes(Map map){
-        this.map = map;
+    private Map<String, Object> returnMap;
+    private void updateMap(Map map){
+        this.returnMap = map;
+    }
+
+    public Map <String, Object> getMap(){
+        return returnMap;
     }
 }

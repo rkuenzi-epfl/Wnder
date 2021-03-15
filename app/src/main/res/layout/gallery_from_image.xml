@@ -12,17 +12,19 @@
         android:layout_height="wrap_content"
         android:text="Default Path"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.625" />
+        app:layout_constraintVertical_bias="0.573" />
 
     <Button
         android:id="@+id/getGalleryImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="508dp"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="452dp"
         android:text="find image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -31,8 +33,19 @@
         android:id="@+id/imageSelected"
         android:layout_width="309dp"
         android:layout_height="336dp"
-        tools:layout_editor_absoluteX="51dp"
-        tools:layout_editor_absoluteY="85dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="34dp"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/download_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="44dp"
+        android:text="Download"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/getGalleryImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
