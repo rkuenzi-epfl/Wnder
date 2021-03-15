@@ -20,7 +20,6 @@ public class ImageFromGallery extends AppCompatActivity {
     private Uri imageUri;
     private TextView imageRef;
     private ImageView imageSelected;
-    private Button download_button;
     private static final int SELECT_IMAGE = 0;
     Storage storage;
 
@@ -29,7 +28,6 @@ public class ImageFromGallery extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery_from_image);
         findImage = findViewById(R.id.getGalleryImage);
-        download_button = findViewById(R.id.download_button);
         imageRef = findViewById(R.id.textView);
         imageSelected = findViewById(R.id.imageSelected);
         storage = new Storage();
@@ -38,11 +36,6 @@ public class ImageFromGallery extends AppCompatActivity {
             public void onClick(View view) {
                 openGallery();
             }
-        });
-
-        download_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { downloadImage(); }
         });
 
     }
@@ -57,22 +50,11 @@ public class ImageFromGallery extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, openGalleryIntent);
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE){
             imageUri = openGalleryIntent.getData();
-            System.out.println(imageUri);
             imageRef.setText(imageUri.toString());
-            //imageSelected.setImageURI(imageUri);
-            storage.uploadToCloudStorage(imageUri, "test/img1.jpg");
+            imageSelected.setImageURI(imageUri);
         }
     };
 
-    protected void downloadImage(){
-        storage.downloadFromCloudStorage("test/img1.jpg").addOnSuccessListener(this, new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
-                imageSelected.setImageBitmap(bmp);
-            }
-        });
-    }
 
 
     protected Uri getImageUri(){

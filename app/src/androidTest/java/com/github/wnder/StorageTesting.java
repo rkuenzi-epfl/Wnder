@@ -1,11 +1,17 @@
 package com.github.wnder;
 
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -56,6 +62,23 @@ public class StorageTesting {
 
     @Test
     public void testUploadAndDownloadToCloudStorage(){
+        Uri uri = Uri.parse("android.resource://raw/ladiag.jpg");
+        Storage storage = new Storage();
 
+        String filepath = "test/img1.jpg";
+
+        storage.uploadToCloudStorage(uri, filepath);
+
+        storage.downloadFromCloudStorage(filepath).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                assertThat(1, is(1));
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                assertThat(1, is(2));
+            }
+        });
     }
 }

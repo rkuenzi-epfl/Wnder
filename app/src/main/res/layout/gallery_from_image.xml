@@ -38,14 +38,4 @@
         tools:layout_editor_absoluteY="34dp"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/download_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="44dp"
-        android:text="Download"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/getGalleryImage" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
