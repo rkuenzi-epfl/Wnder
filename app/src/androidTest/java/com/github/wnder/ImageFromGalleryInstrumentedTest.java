@@ -51,7 +51,7 @@ public class ImageFromGalleryInstrumentedTest  {
     }
 
     @Test
-    public void testRecieveFromGallery() {
+    public void testReceiveFromGallery() {
         Intent resultData = new Intent();
         resultData.putExtra("imageReturnedName", "imageReturnedData");
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
