@@ -21,8 +21,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private View signInButton;
     private TextView textLogin;
     private GoogleSignInClient client;
-    private int RC_SIGN_IN = 10; // Arbitrary number
-    private String TAG = "LoginActivity.java";
+    private final int RC_SIGN_IN = 10; // Arbitrary number
+    private final String TAG = "LoginActivity.java";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
