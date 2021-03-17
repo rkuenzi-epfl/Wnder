@@ -62,8 +62,7 @@ public class StorageTesting {
         Uri uri = Uri.parse("android.resource://raw/ladiag.jpg");
         Storage storage = new Storage();
 
-        String filepath = "test/img1.jpg";
-        System.out.println("aille");
+        String filepath = "test/ladiag.jpg";
         storage.uploadToCloudStorage(uri, filepath);
 
         storage.downloadFromCloudStorage(filepath).addOnSuccessListener(new OnSuccessListener<byte[]>() {
