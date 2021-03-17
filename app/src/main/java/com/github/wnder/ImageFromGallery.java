@@ -41,17 +41,30 @@ public class ImageFromGallery extends AppCompatActivity {
         startActivityForResult(openGalleryIntent, SELECT_IMAGE);
     }
 
+    private void changeTextWhenTheUriIsNull(Intent openGalleryIntent){
+        Bundle extras = openGalleryIntent.getExtras();
+        if (extras != null) {
+            imageRef.setText(extras.getString("imageReturnedName"));
+        } else {
+            imageRef.setText("imageUri == null AND extras == null");
+        }
+    }
+
+    private void changeText(Intent openGalleryIntent){
+        imageUri = openGalleryIntent.getData();
+        if (imageUri == null) { //For the tests only
+            changeTextWhenTheUriIsNull(openGalleryIntent);
+        } else {
+            imageRef.setText(imageUri.toString());
+            imageSelected.setImageURI(imageUri);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent openGalleryIntent){
         super.onActivityResult(requestCode, resultCode, openGalleryIntent);
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE){
-            imageUri = openGalleryIntent.getData();
-        }
-        if (imageUri == null) { //For the tests only
-            imageRef.setText("imageUri == null");
-        } else {
-            imageRef.setText(imageUri.toString());
-            imageSelected.setImageURI(imageUri);
+            changeText(openGalleryIntent);
         }
     };
 }
