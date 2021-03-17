@@ -34,7 +34,6 @@ public class Storage{
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setContentType("image/jpeg")
                 .build();
-
         UploadTask uploadTask = storageRef.child(databaseFilePath).putFile(uri, metadata);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {

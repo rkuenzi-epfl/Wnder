@@ -46,17 +46,17 @@ public class ImageFromGallery extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, openGalleryIntent);
         if (resultCode == RESULT_OK && requestCode == SELECT_IMAGE){
             imageUri = openGalleryIntent.getData();
-            if (imageUri == null) { //For the tests only
-                Bundle extras = openGalleryIntent.getExtras();
-                if (extras != null) {
-                    imageRef.setText(extras.getString("imageReturnedName"));
-                } else {
-                    imageRef.setText("imageUri == null AND extras == null");
-                }
+        }
+        if (imageUri == null) { //For the tests only
+            Bundle extras = openGalleryIntent.getExtras();
+            if (extras != null) {
+                imageRef.setText(extras.getString("imageReturnedName"));
             } else {
-                imageRef.setText(imageUri.toString());
-                imageSelected.setImageURI(imageUri);
+                imageRef.setText("imageUri == null AND extras == null");
             }
+        } else {
+            imageRef.setText(imageUri.toString());
+            imageSelected.setImageURI(imageUri);
         }
     };
 }
