@@ -11,13 +11,15 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ImageFromGallery extends AppCompatActivity {
+import java.util.HashMap;
+import java.util.Map;
+
+public class ImageFromGalleryActivity extends AppCompatActivity {
     private Button findImage;
     private Uri imageUri;
     private TextView imageRef;
     private ImageView imageSelected;
     private static final int SELECT_IMAGE = 0;
-    Storage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,6 @@ public class ImageFromGallery extends AppCompatActivity {
         findImage = findViewById(R.id.getGalleryImage);
         imageRef = findViewById(R.id.textView);
         imageSelected = findViewById(R.id.imageSelected);
-        storage = new Storage();
         findImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

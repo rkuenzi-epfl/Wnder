@@ -5,14 +5,17 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.UploadTask;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,32 +42,50 @@ public class StorageTesting {
 
         String collection = "test";
         String document = "doc";
-        storage.uploadToFirestore(testMap, collection, document);
-        storage.downloadFromFirestore(collection).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        storage.uploadToFirestore(testMap, collection, document).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot documents = task.getResult();
-                    if(documents.size() == 0){
+            public void onSuccess(Void aVoid) {
+                storage.downloadFromFirestore(collection, document).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //Should happen
+                        assertThat(documentSnapshot.getData(), is(testMap));
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Should not happen
                         assertThat(1, is(2));
                     }
-                    for (QueryDocumentSnapshot doc : documents) {
-                        assertThat(testMap, is(doc.getData()));
-                    }
-                } else {
-                    assertThat(1, is(2));
-                }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Should not happen
+                assertThat(1, is(2));
             }
         });
     }
 
     @Test
     public void testUploadAndDownloadToCloudStorage(){
+
         Uri uri = Uri.parse("android.resource://raw/ladiag.jpg");
         Storage storage = new Storage();
 
         String filepath = "test/ladiag.jpg";
-        storage.uploadToCloudStorage(uri, filepath);
+        storage.uploadToCloudStorage(uri, filepath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                storage.downloadFromCloudStorage(filepath).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                    @Override
+                    public void onComplete(@NonNull Task<byte[]> task) {
+                        assertThat(1, is(1));
+                    }
+                });
+            }
+        });
 
         storage.downloadFromCloudStorage(filepath).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override

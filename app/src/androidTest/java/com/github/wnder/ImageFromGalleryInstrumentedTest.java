@@ -26,7 +26,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class ImageFromGalleryInstrumentedTest  {
     @Rule //launches a given activity before the test starts and closes after the test
-    public ActivityScenarioRule<ImageFromGallery> activityRule = new ActivityScenarioRule(ImageFromGallery.class);
+    public ActivityScenarioRule<ImageFromGalleryActivity> activityRule = new ActivityScenarioRule(ImageFromGalleryActivity.class);
 
     //For activities that we did ourself otherwise need to use mockito
     @Before //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
