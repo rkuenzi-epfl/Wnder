@@ -48,12 +48,7 @@ public class ImageFromGallery extends AppCompatActivity {
             imageUri = openGalleryIntent.getData();
         }
         if (imageUri == null) { //For the tests only
-            Bundle extras = openGalleryIntent.getExtras();
-            if (extras != null) {
-                imageRef.setText(extras.getString("imageReturnedName"));
-            } else {
-                imageRef.setText("imageUri == null AND extras == null");
-            }
+            imageRef.setText("imageUri == null");
         } else {
             imageRef.setText(imageUri.toString());
             imageSelected.setImageURI(imageUri);
