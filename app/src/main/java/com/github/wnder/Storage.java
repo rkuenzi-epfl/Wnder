@@ -53,8 +53,8 @@ public class Storage{
         return storageRef.child(filepath).getBytes(Long.MAX_VALUE);
     }
 
-    public void uploadToFirestore(Map<String, Object> map, String collection){
-        db.collection(collection).document("doc").set(map);
+    public void uploadToFirestore(Map<String, Object> map, String collection, String document){
+        db.collection(collection).document(document).set(map);
     }
 
     public Task<QuerySnapshot> downloadFromFirestore(String collection){

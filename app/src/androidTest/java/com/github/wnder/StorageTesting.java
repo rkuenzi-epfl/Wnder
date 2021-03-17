@@ -38,7 +38,8 @@ public class StorageTesting {
         testMap.put("Pablo", "Android");
 
         String collection = "test";
-        storage.uploadToFirestore(testMap, collection);
+        String document = "doc";
+        storage.uploadToFirestore(testMap, collection, document);
         storage.downloadFromFirestore(collection).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
