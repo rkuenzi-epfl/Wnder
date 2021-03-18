@@ -5,6 +5,10 @@
 
 ## Jeremy
 
+I have managed to finish implementing the functionnality to download and upload data to the cloud.
+
+However, I did not have time to start the task I was assigned for this sprint.
+
 ## Léonard
 
 I added static functions to calculate a custom score and a distance with longitude and latitude given by google maps api type.
