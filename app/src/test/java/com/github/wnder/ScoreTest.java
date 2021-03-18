@@ -31,6 +31,6 @@ public class ScoreTest {
         double dist3 = 1000000000;
 
         assertEquals(0, Score.calculationScore(dist3), 1);
-        assertEquals(135, Score.calculationScore(100, 1000), 5);
+        assertEquals(135, Score.calculationScore(dist1, dist2), 5);
     }
 }
