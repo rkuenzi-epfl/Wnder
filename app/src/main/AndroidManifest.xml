@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Wnder">
         <activity android:name=".ImageFromGalleryActivity"></activity>
+        <activity android:name=".GuessPreviewActivity"></activity>
         <activity android:name=".LoginActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
