@@ -23,46 +23,46 @@ public class UserTest {
     @Test
     public void guestUserReturnDefaultProfilePicturePath(){
         User u = new GuestUser();
-        assertEquals(u.getProfilePicture(), Uri.parse("android.resource://raw/ladiag.jpg"));
+        assertEquals(u.getProfilePicture(), Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
     }
 
     @Test
     public void signedInUserReturnCorrectName(){
         // Reusing default Profile Picture for testing
-        User u = new SignedInUser("TestUser", Uri.parse("android.resource://raw/ladiag.jpg"));
+        User u = new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         assertEquals(u.getName(), "TestUser");
     }
     @Test
     public void signedInUserReturnCorrectProfilePictureUri(){
         // Reusing default Profile Picture for testing
-        User u = new SignedInUser("TestUser", Uri.parse("android.resource://raw/ladiag.jpg"));
-        assertEquals(u.getProfilePicture(), Uri.parse("android.resource://raw/ladiag.jpg"));
+        User u = new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        assertEquals(u.getProfilePicture(), Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
     }
 
     @Test
     public void globalUserReturnGuestUserByDefault(){
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
-        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://raw/ladiag.jpg")));
+        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         GlobalUser.resetUser();
     }
 
     @Test
     public void globalUserReturnCorrectUserAfterSet(){
-        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://raw/ladiag.jpg")));
+        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("SignedInUser"));
-        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://raw/ladiag.jpg")));
+        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         GlobalUser.resetUser();
     }
 
     @Test
     public void globalUserReturnCorrectUserAfterReset(){
-        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://raw/ladiag.jpg")));
+        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         GlobalUser.resetUser();
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
-        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://raw/ladiag.jpg")));
+        assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         GlobalUser.resetUser();
     }
 

@@ -32,6 +32,8 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
             case R.id.skipButton:
                 openPreviewActivity();
                 break;
+            default:
+                break;
                 // Other buttons can be setup in this switch
         }
     }

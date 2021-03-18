@@ -45,13 +45,15 @@
     </androidx.appcompat.widget.Toolbar>
 
     <Button
+        android:id="@+id/uploadPictureButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Open a picture" />
+        android:text="Upload a picture" />
 
     <Button
+        android:id="@+id/getPictureButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Download a picture" />
+        android:text="Guess a new picture" />
 
 </LinearLayout>

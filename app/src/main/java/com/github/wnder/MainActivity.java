@@ -3,14 +3,13 @@ package com.github.wnder;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     @Override
@@ -27,5 +26,31 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView imageView = toolbar.findViewById(R.id.profile_picture);
         imageView.setImageURI(user.getProfilePicture());
+
+        findViewById(R.id.getPictureButton).setOnClickListener(this);
+        findViewById(R.id.uploadPictureButton).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.uploadPictureButton:
+                openUploadActivity();
+                break;
+            case R.id.getPictureButton:
+                openPreviewActivity();
+                break;
+            // Other buttons can be setup in this switch
+        }
+    }
+
+    private void openUploadActivity() {
+        Intent intent = new Intent(this, ImageFromGalleryActivity.class);
+        startActivity(intent);
+    }
+
+    private void openPreviewActivity() {
+        Intent intent = new Intent(this, GuessPreviewActivity.class);
+        startActivity(intent);
     }
 }
