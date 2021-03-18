@@ -7,8 +7,8 @@ import java.util.Map;
 public interface Picture {
     public String getUniqueId();
     public Uri getUri();
-    public Double getLongitude();
-    public Double getLatitude();
-    public Map<String, Double> getScoreboard();
-    public Map<String, Map<String, Double>> getGuesses();
+    public Long getLongitude();
+    public Long getLatitude();
+    public Map<String, Object> getScoreboard();
+    public Map<String, Object> getGuesses();
 }

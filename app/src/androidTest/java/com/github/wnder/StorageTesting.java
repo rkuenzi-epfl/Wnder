@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,6 +18,7 @@ import com.google.firebase.storage.UploadTask;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(JUnit4.class)
 public class StorageTesting {
     @Test
     public void testUploadAndDownloadToFireStore(){
