@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wnder">
+        <activity android:name=".ImageFromGalleryActivity"></activity>
         <activity android:name=".LoginActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
