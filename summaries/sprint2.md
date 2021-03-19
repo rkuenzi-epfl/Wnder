@@ -3,6 +3,13 @@
 
 ## Aloïs
 
+I did complete and finish testing the activity about selecting an image in the gallery.
+
+Howerer, doing mock testing and doing my new task about the google map api is taking more time than anticipated
+
+Next time I should evaluate better the time the task takes so that my work can be more useful for the end of the week demo.
+
+
 ## Jeremy
 
 I have managed to finish implementing the functionnality to download and upload data to the cloud.
