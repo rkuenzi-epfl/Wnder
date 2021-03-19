@@ -34,6 +34,10 @@ Next time, I'll try to think a bit further about the estimated time, because I d
 
 ## Pablo
 
+I linked the main screen elements to the user backend and added buttons to go to other screens.
+
+However, I could definitively improve time management a lot.
+
 ## Romain (Scrum Master)
 
 I first merged some of last week tasks that weren't merged yet (Login activity and the user backend), then I implemented my task for this week which was an activity to preview a new image we should get from cloud storage. Finally I assembled every activity we made so far.
