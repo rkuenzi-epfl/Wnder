@@ -56,7 +56,8 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
         if (imageUri == null) { //For the tests only
             changeTextWhenTheUriIsNull(openGalleryIntent);
         } else {
-            imageRef.setText(imageUri.toString());
+            // Commented out for now: image URI don't look that great
+            //imageRef.setText(imageUri.toString());
             imageSelected.setImageURI(imageUri);
         }
     }

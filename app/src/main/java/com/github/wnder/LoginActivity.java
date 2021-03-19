@@ -48,20 +48,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if(account != null){
-            System.out.println("Account already registered");
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
-            updateUI();
+            goToMain();
         } else {
-            System.out.println("No account yet");
             signInButton.setVisibility(View.VISIBLE);
             textLogin.setText("Please sign in.");
         }
 
     }
 
-    private void updateUI() {
-        signInButton.setVisibility(View.INVISIBLE);
-        textLogin.setText("Welcome " + GlobalUser.getUser().getName());
+    private void goToMain() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -98,12 +96,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             // Signed in successfully, show authenticated UI.
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
-            updateUI();
+            goToMain();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            updateUI();
+            goToMain();
         }
     }
 
