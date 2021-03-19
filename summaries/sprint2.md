@@ -26,6 +26,12 @@ Next time I should either take a bigger task or help the ones that are in troubl
 
 ## Nicolas
 
+I completed two backend classes that take care of pictures: one to upload a picture to the database and one to retrieve a picture. I also put in place some conventions to organize the data in the database, between firestore and cloud storage.
+
+However, the part about cloud storage still misses one or two methods.
+
+Next time, I'll try to think a bit further about the estimated time, because I definitely got it wrong this week.
+
 ## Pablo
 
 ## Romain (Scrum Master)
