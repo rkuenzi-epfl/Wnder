@@ -36,5 +36,10 @@ Next time, I'll try to think a bit further about the estimated time, because I d
 
 ## Romain (Scrum Master)
 
+I first merged some of last week tasks that weren't merged yet (Login activity and the user backend), then I implemented my task for this week which was an activity to preview a new image we should get from cloud storage. Finally I assembled every activity we made so far.
+
+My own task took me less time than expected but I spent a lot of time merging everyone's work.
+
+Next time I should evaluate better the time task takes me and make sure that the other know that I'm available to help if my task did not take to much time.
 
 ## Overall team
