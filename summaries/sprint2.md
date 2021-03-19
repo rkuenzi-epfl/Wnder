@@ -40,6 +40,12 @@ I first merged some of last week tasks that weren't merged yet (Login activity a
 
 My own task took me less time than expected but I spent a lot of time merging everyone's work.
 
-Next time I should evaluate better the time task takes me and make sure that the other know that I'm available to help if my task did not take to much time.
+Next time I should evaluate better the time my task takes me and make sure that the other know that I'm available to help if my task did not take to much time.
 
 ## Overall team
+
+All the shorter task for this week were finished before the end of the sprint.
+
+However, as we had to complete some of the tasks for last week some of this week tasks were left untouched because they asked way to much time to be done with the time we had left.
+
+For next time we should try to have better time estimates in general.
