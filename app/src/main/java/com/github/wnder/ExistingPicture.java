@@ -2,25 +2,18 @@ package com.github.wnder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.android.gms.maps.model.LatLng;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.github.wnder.Score;
 
 public class ExistingPicture implements Picture{
     //Storage
@@ -99,7 +92,7 @@ public class ExistingPicture implements Picture{
         });
 
         //retrieve picture
-        Task<byte[]> pictureTask = storage.downloadFromCloudStorage("pictures/"+this.uniqueId+"/"+this.uniqueId);
+        Task<byte[]> pictureTask = storage.downloadFromCloudStorage("pictures/"+this.uniqueId+".jpg");
         pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {

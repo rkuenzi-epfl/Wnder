@@ -2,6 +2,8 @@ package com.github.wnder;
 
 import android.net.Uri;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -16,40 +18,37 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JUnit4.class)
 public class NewPictureTesting {
 
-    public NewPicture createPic() throws InterruptedException {
-        NewPicture pic = new NewPicture("testUser", 0, 0, Uri.parse("android.resource://raw/ladiag.jpg"));
+    private static NewPicture pic;
+
+    @BeforeClass
+    public static void createPic() throws InterruptedException {
+        pic = new NewPicture("testUser", 0, 0, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         sleep(3000);
-        return pic;
     }
 
     @Test
-    public void sendPictureToDbWorks() throws InterruptedException {
-        NewPicture pic = createPic();
+    public void sendPictureToDbWorks(){
         assertEquals(true, pic.sendPictureToDb());
     }
 
     @Test
-    public void uniqueIdHasGoodFormat() throws InterruptedException {
-        NewPicture pic = createPic();
+    public void uniqueIdHasGoodFormat(){
         assertTrue(pic.getUniqueId().matches("testUser\\d+"));
     }
 
     @Test
-    public void getUriWorks() throws InterruptedException {
-        NewPicture pic = createPic();
-        assertEquals(Uri.parse("android.resource://raw/ladiag.jpg"), pic.getUri());
+    public void getUriWorks(){
+        assertEquals(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), pic.getUri());
     }
 
     @Test
-    public void getLongitudeAndGetLatitudeWork() throws InterruptedException {
-        NewPicture pic = createPic();
+    public void getLongitudeAndGetLatitudeWork(){
         assertTrue(pic.getLongitude() == 0);
         assertTrue(pic.getLatitude() == 0);
     }
 
     @Test
-    public void scoreboardCorrectlyInitialized() throws InterruptedException {
-        NewPicture pic = createPic();
+    public void scoreboardCorrectlyInitialized(){
         Map<String, Object> scoreboard = pic.getScoreboard();
         assertTrue(scoreboard.size() == 1);
         assertTrue(scoreboard.containsKey("default"));
@@ -57,8 +56,7 @@ public class NewPictureTesting {
     }
 
     @Test
-    public void guessesCorrectlyInitialized() throws InterruptedException {
-        NewPicture pic = createPic();
+    public void guessesCorrectlyInitialized(){
         Map<String, Object> guesses = pic.getGuesses();
         assertTrue(guesses.size() == 1);
         assertTrue(guesses.containsKey("default"));

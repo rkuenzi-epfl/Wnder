@@ -46,11 +46,12 @@ public class ExistingPictureTesting {
         assertTrue(pic.getUniqueId().equals("picture1"));
     }
 
-    /*@Test
+    @Test
     public void getBmpReturnsBitmap() throws InterruptedException {
         ExistingPicture pic = getTestPic();
+        sleep(3000);
         assertTrue(pic.getBmp() instanceof Bitmap);
-    }*/
+    }
 
     @Test
     public void getLongitudeAndLatitudeWork() throws InterruptedException {

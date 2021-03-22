@@ -17,6 +17,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static com.google.android.gms.tasks.Tasks.await;
 
 public class NewPicture implements Picture{
     //Storage
@@ -90,7 +95,7 @@ public class NewPicture implements Picture{
         this.storage.uploadToFirestore(this.scoreboard, "pictures", "userData", this.uniqueId, "userScores");
 
         //Send picture to Cloud Storage
-        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId);
+        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId+".jpg");
 
         //upload specific user data
         Task<DocumentSnapshot> userUploaded = storage.downloadFromFirestore("users", user);
