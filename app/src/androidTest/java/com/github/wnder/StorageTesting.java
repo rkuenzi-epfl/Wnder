@@ -80,14 +80,11 @@ public class StorageTesting {
         testMap.put("Alois", "merci MV");
         testMap.put("Pablo", "Android");
 
-        String collection1 = "coll1";
-        String collection2 = "coll2";
-        String document1 = "doc1";
-        String document2 = "doc2";
-        storage.uploadToFirestore(testMap, collection1, collection2, document1, document2).addOnSuccessListener(new OnSuccessListener<Void>() {
+        String[] path = {"coll1", "doc1", "coll2", "doc2"};
+        storage.uploadToFirestore(testMap, path).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                storage.downloadFromFirestore(collection1, collection2, document1, document2).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                storage.downloadFromFirestore(path).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         //Should happen

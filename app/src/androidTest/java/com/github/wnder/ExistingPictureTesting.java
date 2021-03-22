@@ -36,8 +36,8 @@ public class ExistingPictureTesting {
         ExistingPicture pic = getTestPic();
         Double score = pic.computeScoreAndSendToDb("testUser", 10, 10);
         assertEquals(200, (Double)pic.getUserScore("testUser"), 10);
-        assertTrue(((ArrayList<Double>)pic.getUserGuess("testUser")).get(0) == 10.);
-        assertTrue(((ArrayList<Double>)pic.getUserGuess("testUser")).get(1) == 10.);
+        assertTrue(((ArrayList<Long>)pic.getUserGuess("testUser")).get(0) == 10.);
+        assertTrue(((ArrayList<Long>)pic.getUserGuess("testUser")).get(1) == 10.);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ExistingPictureTesting {
         sleep(5000);
         Map<String, Object> guesses = pic.getGuesses();
         Object guess = guesses.get("testUser");
-        assertTrue(((ArrayList<Double>) guess).get(0) == 10.);
-        assertTrue(((ArrayList<Double>) guess).get(1) == 10.);
+        assertTrue(((ArrayList<Long>) guess).get(0) == 10.);
+        assertTrue(((ArrayList<Long>) guess).get(1) == 10.);
     }
 }
