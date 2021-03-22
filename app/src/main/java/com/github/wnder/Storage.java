@@ -51,11 +51,22 @@ public class Storage{
         return db.collection(collection).document(document).get();
     }
 
-    public Task<Void> uploadToFirestore(Map<String, Object> map, String collection1, String collection2, String document1, String document2){
-        return db.collection(collection1).document(document1).collection(collection2).document(document2).set(map);
+    /**
+     * Uploads info to firestore
+     * @param map info to upload
+     * @param path path in the database(collection, document, collection, document)
+     * @return the task
+     */
+    public Task<Void> uploadToFirestore(Map<String, Object> map, String[] path){
+        return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).set(map);
     }
 
-    public Task<DocumentSnapshot> downloadFromFirestore(String collection1, String collection2, String document1, String document2){
-        return db.collection(collection1).document(document1).collection(collection2).document(document2).get();
+    /**
+     * Downloads info from Firestore
+     * @param path path in the database(collection, document, collection, document)
+     * @return the task
+     */
+    public Task<DocumentSnapshot> downloadFromFirestore(String[] path){
+        return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).get();
     }
 }

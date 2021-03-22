@@ -77,26 +77,7 @@ public class NewPicture implements Picture{
         this.uniqueId = this.user + Calendar.getInstance().getTimeInMillis();
     }
 
-    /**
-     * Send this picture to the database
-     * @return true if the tasks were successfully created
-     */
-    public Boolean sendPictureToDb(){
-        //coordinates
-        Map<String, Object> coordinates = new HashMap<>();
-        coordinates.put("longitude", this.longitude);
-        coordinates.put("latitude", this.latitude);
-        this.storage.uploadToFirestore(coordinates, "pictures", this.uniqueId);
-
-        //userGuesses
-        this.storage.uploadToFirestore(this.guesses, "pictures", "userData", this.uniqueId, "userGuesses");
-
-        //userScores
-        this.storage.uploadToFirestore(this.scoreboard, "pictures", "userData", this.uniqueId, "userScores");
-
-        //Send picture to Cloud Storage
-        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId+".jpg");
-
+    private void addPhotoToUploadedUserPhoto(){
         //upload specific user data
         Task<DocumentSnapshot> userUploaded = storage.downloadFromFirestore("users", user);
         userUploaded.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -119,6 +100,29 @@ public class NewPicture implements Picture{
                 storage.uploadToFirestore(toUpload, "users", user);
             }
         });
+    }
+
+    /**
+     * Send this picture to the database
+     * @return true if the tasks were successfully created
+     */
+    public Boolean sendPictureToDb(){
+        //coordinates
+        Map<String, Object> coordinates = new HashMap<>();
+        coordinates.put("longitude", this.longitude);
+        coordinates.put("latitude", this.latitude);
+        this.storage.uploadToFirestore(coordinates, "pictures", this.uniqueId);
+
+        //userGuesses
+        String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
+        this.storage.uploadToFirestore(this.guesses, path1);
+
+        //userScores
+        String[] path2 = {"pictures", this.uniqueId, "userData", "userGuesses"};
+        this.storage.uploadToFirestore(this.scoreboard, path2);
+
+        //Send picture to Cloud Storage
+        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId+".jpg");
 
         return true;
     }

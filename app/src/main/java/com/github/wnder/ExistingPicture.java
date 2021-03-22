@@ -62,7 +62,8 @@ public class ExistingPicture implements Picture{
         });
 
         //retrieve guesses
-        Task<DocumentSnapshot> guessTask = storage.downloadFromFirestore("pictures", "userData", this.uniqueId, "userGuesses");
+        String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
+        Task<DocumentSnapshot> guessTask = storage.downloadFromFirestore(path1);
         guessTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -77,7 +78,8 @@ public class ExistingPicture implements Picture{
         });
 
         //retrieve scores
-        Task<DocumentSnapshot> scoreTask = storage.downloadFromFirestore("pictures", "userData", this.uniqueId, "userScores");
+        String[] path2 = {"pictures", this.uniqueId, "userData", "userScores"};
+        Task<DocumentSnapshot> scoreTask = storage.downloadFromFirestore(path2);
         scoreTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -108,6 +110,67 @@ public class ExistingPicture implements Picture{
     }
 
     /**
+     * Send a user's guess to the database
+     * @param user the user
+     */
+    private void sendUserGuess(String user){
+        //userGuesses
+        ArrayList<Object> userCoor = new ArrayList<>();
+        userCoor.add(longitude);
+        userCoor.add(latitude);
+        this.guesses.put(user, userCoor);
+        String[] path = {"pictures", this.uniqueId, "userData", "userGuesses"};
+        storage.uploadToFirestore(this.guesses, path);
+    }
+
+    /**
+     * Send a user's score to the database
+     * @param user the user
+     * @param score the user's score
+     */
+    private void sendUserScore(String user, Double score){
+        //userScores
+        this.scoreboard.put(user, score);
+        String[] path = {"pictures", this.uniqueId, "userData", "userScores"};
+        storage.uploadToFirestore(this.scoreboard, path);
+    }
+
+    /**
+     * Add a picture to the guessed pictures of a user on the database
+     * @param user the user
+     */
+    private void addToUserGuessedPictures(String user){
+        //user guessed pictures
+        Task<DocumentSnapshot> userGuessed = storage.downloadFromFirestore("users", user);
+        userGuessed.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
+                List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
+                if (guessedPictures == null) {
+                    guessedPictures = new ArrayList<>();
+                }
+                if (uploadedPictures == null) {
+                    uploadedPictures = new ArrayList<>();
+                }
+                if (!guessedPictures.contains(uniqueId)){
+                    guessedPictures.add(uniqueId);
+                }
+                Map<String, Object> toUpload = new HashMap<>();
+                toUpload.put("guessedPics", guessedPictures);
+                toUpload.put("uploadedPics", uploadedPictures);
+                storage.uploadToFirestore(toUpload, "users", user);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //set to dummy values
+                scoreboard = new HashMap<>();
+            }
+        });
+}
+
+    /**
      * Send a user's guess and score to the database
      * @param user: user id
      * @param score: user score
@@ -116,45 +179,9 @@ public class ExistingPicture implements Picture{
      */
     private void sendUserData(String user, Double score, double longitude, double latitude) throws IllegalStateException{
         if(this.guesses != null && this.scoreboard != null) {
-            //userGuesses
-            ArrayList<Object> userCoor = new ArrayList<>();
-            userCoor.add(longitude);
-            userCoor.add(latitude);
-            this.guesses.put(user, userCoor);
-            storage.uploadToFirestore(this.guesses, "pictures", "userData", this.uniqueId, "userGuesses");
-
-            //userScores
-            this.scoreboard.put(user, score);
-            storage.uploadToFirestore(this.scoreboard, "pictures", "userData", this.uniqueId, "userScores");
-
-            //user guessed pictures
-            Task<DocumentSnapshot> userGuessed = storage.downloadFromFirestore("users", user);
-            userGuessed.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-                    List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-                    if (guessedPictures == null) {
-                        guessedPictures = new ArrayList<>();
-                    }
-                    if (uploadedPictures == null) {
-                        uploadedPictures = new ArrayList<>();
-                    }
-                    if (!guessedPictures.contains(uniqueId)){
-                        guessedPictures.add(uniqueId);
-                    }
-                    Map<String, Object> toUpload = new HashMap<>();
-                    toUpload.put("guessedPics", guessedPictures);
-                    toUpload.put("uploadedPics", uploadedPictures);
-                    storage.uploadToFirestore(toUpload, "users", user);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    //set to dummy values
-                    scoreboard = new HashMap<>();
-                }
-            });
+            sendUserGuess(user);
+            sendUserScore(user, score);
+            addToUserGuessedPictures(user);
         }
         else{
             throw new IllegalStateException("Image not correctly initialized");
