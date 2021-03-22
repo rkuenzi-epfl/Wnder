@@ -4,10 +4,12 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.storage.UploadTask;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -69,7 +71,7 @@ public class NewPicture implements Picture{
         this.storage.uploadToFirestore(this.scoreboard, "pictures", "userData", this.uniqueId, "userScores");
 
         //Send picture to Cloud Storage
-        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId);
+        this.storage.uploadToCloudStorage(this.uri, "pictures/");
 
         //upload specific user data
         Task<DocumentSnapshot> userUploaded = storage.downloadFromFirestore("users", user);

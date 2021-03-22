@@ -69,6 +69,48 @@ public class StorageTesting {
     }
 
     @Test
+    public void testUploadAndDownloadToFireStoreWithLongerPath(){
+        Storage storage = new Storage();
+
+        Map<String, Object> testMap = new HashMap<>();
+        testMap.put("Jeremy", "Jus d'orange");
+        testMap.put("Léonard", "Lasagne");
+        testMap.put("Romain", "Pizza du jeudi soir");
+        testMap.put("Nico", "Cookies");
+        testMap.put("Alois", "merci MV");
+        testMap.put("Pablo", "Android");
+
+        String collection1 = "coll1";
+        String collection2 = "coll2";
+        String document1 = "doc1";
+        String document2 = "doc2";
+        storage.uploadToFirestore(testMap, collection1, collection2, document1, document2).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                storage.downloadFromFirestore(collection1, collection2, document1, document2).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //Should happen
+                        assertThat(documentSnapshot.getData(), is(testMap));
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Should not happen
+                        assertThat(1, is(2));
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Should not happen
+                assertThat(1, is(2));
+            }
+        });
+    }
+
+    @Test
     public void testUploadAndDownloadToCloudStorage(){
 
         Uri uri = Uri.parse("android.resource://raw/ladiag.jpg");
