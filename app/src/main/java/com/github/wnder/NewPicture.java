@@ -69,7 +69,7 @@ public class NewPicture implements Picture{
         this.storage.uploadToFirestore(this.scoreboard, "pictures", "userData", this.uniqueId, "userScores");
 
         //Send picture to Cloud Storage
-        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId+"/"+this.uniqueId);
+        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId);
 
         //upload specific user data
         Task<DocumentSnapshot> userUploaded = storage.downloadFromFirestore("users", user);
