@@ -235,7 +235,7 @@ public class ExistingPicture implements Picture{
     }
 
     public LatLng getLatLng() throws IllegalStateException{
-        if(longitude == -1){
+        if(longitude == -1 || latitude == -1){
             throw new IllegalStateException("Image not correctly initialized");
         }
         LatLng latlng = new LatLng(latitude, longitude);
