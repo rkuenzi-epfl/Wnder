@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 public class NewPicture implements Picture{
+    //Storage
     private Storage storage;
 
+    //User id
     private String user;
 
     //Image unique ID
@@ -36,7 +38,15 @@ public class NewPicture implements Picture{
     //Map<[user ID], Map<[longitude/latitude], [value]>>
     private Map<String, Object> guesses;
 
+    /**
+     * Constructor for a new picture that doesn't exist in the db already
+     * @param user user's id
+     * @param longitude longitude of the image's location
+     * @param latitude latitude of the image's location
+     * @param uri uri of the image
+     */
     public NewPicture(String user, long longitude, long latitude, Uri uri){
+        //instantiate parameters
         this.storage = new Storage();
 
         this.user = user;
@@ -45,18 +55,27 @@ public class NewPicture implements Picture{
         this.latitude = latitude;
         this.uri = uri;
 
+        //default instantiation for the scoreboard
+        //necessary to have the correct documents created in firestore
         this.scoreboard = new HashMap<String, Object>();
         this.scoreboard.put("default", -1.);
 
+        //default instantiation for the guesses
+        //necessary to have the correct documents created in firestore
         this.guesses = new HashMap<>();
         ArrayList<Object> defaultCoordinates = new ArrayList<>();
         defaultCoordinates.add(-1);
         defaultCoordinates.add(-1);
         this.guesses.put("default", defaultCoordinates);
 
+        //Unique id of the picture, depends on the user + the time
         this.uniqueId = this.user + Calendar.getInstance().getTimeInMillis();
     }
 
+    /**
+     * Send this picture to the database
+     * @return true if the tasks were successfully created
+     */
     public Boolean sendPictureToDb(){
         //coordinates
         Map<String, Object> coordinates = new HashMap<>();
@@ -71,7 +90,7 @@ public class NewPicture implements Picture{
         this.storage.uploadToFirestore(this.scoreboard, "pictures", "userData", this.uniqueId, "userScores");
 
         //Send picture to Cloud Storage
-        this.storage.uploadToCloudStorage(this.uri, "pictures/");
+        this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId);
 
         //upload specific user data
         Task<DocumentSnapshot> userUploaded = storage.downloadFromFirestore("users", user);
@@ -103,6 +122,10 @@ public class NewPicture implements Picture{
         return uniqueId;
     }
 
+    /**
+     * Returns the uri of the image
+     * @return uri of the picture
+     */
     public Uri getUri(){
         return uri;
     }

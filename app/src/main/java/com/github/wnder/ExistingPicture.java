@@ -13,19 +13,22 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.github.wnder.Score;
 
 public class ExistingPicture implements Picture{
+    //Storage
     private Storage storage;
 
     //Image unique ID
     private String uniqueId;
-    private Uri uri;
+    private Bitmap bmp;
 
     //Image location
     private long longitude;
@@ -36,8 +39,12 @@ public class ExistingPicture implements Picture{
     //Map<[user ID], Map<[longitude/latitude], [value]>>
     private Map<String, Object> guesses;
 
-    //Constructor for the image
+    /**
+     * Constructor for a picture already existing on db
+     * @param uniqueId id of the image
+     */
     public ExistingPicture(String uniqueId){
+        //put dummy values in case the instantiation doesn't work
         this.longitude = -1;
         this.latitude = -1;
 
@@ -96,14 +103,13 @@ public class ExistingPicture implements Picture{
         pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                uri = Uri.parse("android.resource://raw/ladiag.jpg");
+                bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 //set to dummy values
-                uri = Uri.parse("android.resource://raw/ladiag.jpg");
+                bmp = null;
             }
         });
     }
@@ -169,7 +175,7 @@ public class ExistingPicture implements Picture{
      * @return: user score
      */
     public Double computeScoreAndSendToDb(String user, double guessedLongitude, double guessedLatitude) throws IllegalStateException{
-        double score = Math.max(100 - Math.abs(guessedLongitude - longitude) - Math.abs(guessedLatitude - latitude), 0);
+        double score = Score.computeScore(this.latitude, this.longitude, guessedLatitude, guessedLongitude);
         sendUserData(user, score, guessedLongitude, guessedLatitude);
         return score;
     }
@@ -178,6 +184,7 @@ public class ExistingPicture implements Picture{
      * Get a user's score
      * @param user: user ID
      * @return: user score if it exists, -1 else
+     * @throws IllegalStateException if the image is not correctly initialized
      */
     public Object getUserScore(String user) throws IllegalStateException{
         if(scoreboard == null){
@@ -195,8 +202,9 @@ public class ExistingPicture implements Picture{
      * Get a user's guess
      * @param user: user ID
      * @return: user guess if it exists, empty map else
+     * * @throws IllegalStateException if the image is not correctly initialized
      */
-    public Object getUserGuess(String user){
+    public Object getUserGuess(String user) throws IllegalStateException{
         if(guesses == null){
             throw new IllegalStateException("Image not correctly initialized");
         }
@@ -208,42 +216,42 @@ public class ExistingPicture implements Picture{
         }
     }
 
-    public String getUniqueId(){
+    public String getUniqueId() throws IllegalStateException{
         if(uniqueId == null){
             throw new IllegalStateException("Image not correctly initialized");
         }
         return uniqueId;
     }
 
-    public Uri getUri(){
-        if(uri == null){
+    public Bitmap getBmp() throws IllegalStateException{
+        if(bmp == null){
             throw new IllegalStateException("Image not correctly initialized");
         }
-        return uri;
+        return bmp;
     }
 
-    public Long getLongitude(){
+    public Long getLongitude() throws IllegalStateException{
         if(longitude == -1){
             throw new IllegalStateException("Image not correctly initialized");
         }
         return longitude;
     }
 
-    public Long getLatitude(){
+    public Long getLatitude() throws IllegalStateException{
         if(latitude == -1){
             throw new IllegalStateException("Image not correctly initialized");
         }
         return latitude;
     }
 
-    public Map<String, Object> getScoreboard(){
+    public Map<String, Object> getScoreboard() throws IllegalStateException{
         if(scoreboard == null){
             throw new IllegalStateException("Image not correctly initialized");
         }
         return scoreboard;
     }
 
-    public Map<String, Object> getGuesses(){
+    public Map<String, Object> getGuesses() throws IllegalStateException{
         if(guesses == null){
             throw new IllegalStateException("Image not correctly initialized");
         }

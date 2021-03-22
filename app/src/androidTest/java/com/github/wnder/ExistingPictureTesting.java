@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import org.junit.Test;
@@ -27,14 +28,14 @@ public class ExistingPictureTesting {
         ExistingPicture pic = getTestPic();
         Double score = pic.computeScoreAndSendToDb("testUser", 10, 10);
         sleep(1000);
-        assertTrue(score == 100);
+        assertEquals(200, score, 10);
     }
 
     @Test
     public void getUserScoreAndGuessWork() throws InterruptedException {
         ExistingPicture pic = getTestPic();
         Double score = pic.computeScoreAndSendToDb("testUser", 10, 10);
-        assertTrue((Double)pic.getUserScore("testUser") == 100.);
+        assertEquals(200, (Double)pic.getUserScore("testUser"), 10);
         assertTrue(((ArrayList<Double>)pic.getUserGuess("testUser")).get(0) == 10.);
         assertTrue(((ArrayList<Double>)pic.getUserGuess("testUser")).get(1) == 10.);
     }
@@ -45,11 +46,11 @@ public class ExistingPictureTesting {
         assertTrue(pic.getUniqueId().equals("picture1"));
     }
 
-    @Test
-    public void getUriWorks() throws InterruptedException {
+    /*@Test
+    public void getBmpReturnsBitmap() throws InterruptedException {
         ExistingPicture pic = getTestPic();
-        assertEquals(Uri.parse("android.resource://raw/ladiag.jpg"), pic.getUri());
-    }
+        assertTrue(pic.getBmp() instanceof Bitmap);
+    }*/
 
     @Test
     public void getLongitudeAndLatitudeWork() throws InterruptedException {
