@@ -3,6 +3,8 @@ package com.github.wnder;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -54,10 +56,11 @@ public class ExistingPictureTesting {
     }
 
     @Test
-    public void getLongitudeAndLatitudeWork() throws InterruptedException {
+    public void getLatLng() throws InterruptedException {
         ExistingPicture pic = getTestPic();
-        assertTrue(pic.getLongitude() == 10);
-        assertTrue(pic.getLatitude() == 10);
+        LatLng latlng = pic.getLatLng();
+        assertEquals(10, latlng.latitude, 0);
+        assertEquals(10, latlng.longitude, 0);
     }
 
     @Test

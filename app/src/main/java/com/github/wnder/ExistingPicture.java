@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,39 +111,32 @@ public class ExistingPicture implements Picture{
     }
 
     /**
-     * Send a user's guess to the database
+     * Send a user's score and guess to the database
      * @param user the user
+     * @param score the user's score
      */
-    private void sendUserGuess(String user){
+    private void sendUserGuess(String user, Double score){
         //userGuesses
         ArrayList<Object> userCoor = new ArrayList<>();
         userCoor.add(longitude);
         userCoor.add(latitude);
         this.guesses.put(user, userCoor);
-        String[] path = {"pictures", this.uniqueId, "userData", "userGuesses"};
-        storage.uploadToFirestore(this.guesses, path);
-    }
+        String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
+        storage.uploadToFirestore(this.guesses, path1);
 
-    /**
-     * Send a user's score to the database
-     * @param user the user
-     * @param score the user's score
-     */
-    private void sendUserScore(String user, Double score){
         //userScores
         this.scoreboard.put(user, score);
-        String[] path = {"pictures", this.uniqueId, "userData", "userScores"};
-        storage.uploadToFirestore(this.scoreboard, path);
+        String[] path2 = {"pictures", this.uniqueId, "userData", "userScores"};
+        storage.uploadToFirestore(this.scoreboard, path2);
     }
 
     /**
      * Add a picture to the guessed pictures of a user on the database
      * @param user the user
      */
-    private void addToUserGuessedPictures(String user){
+    private void addToUserGuessedPictures(String user) {
         //user guessed pictures
-        Task<DocumentSnapshot> userGuessed = storage.downloadFromFirestore("users", user);
-        userGuessed.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        storage.downloadFromFirestore("users", user).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
@@ -153,7 +147,7 @@ public class ExistingPicture implements Picture{
                 if (uploadedPictures == null) {
                     uploadedPictures = new ArrayList<>();
                 }
-                if (!guessedPictures.contains(uniqueId)){
+                if (!guessedPictures.contains(uniqueId)) {
                     guessedPictures.add(uniqueId);
                 }
                 Map<String, Object> toUpload = new HashMap<>();
@@ -168,24 +162,6 @@ public class ExistingPicture implements Picture{
                 scoreboard = new HashMap<>();
             }
         });
-}
-
-    /**
-     * Send a user's guess and score to the database
-     * @param user: user id
-     * @param score: user score
-     * @param longitude: user longitude guess
-     * @param latitude: user latitude guess
-     */
-    private void sendUserData(String user, Double score, double longitude, double latitude) throws IllegalStateException{
-        if(this.guesses != null && this.scoreboard != null) {
-            sendUserGuess(user);
-            sendUserScore(user, score);
-            addToUserGuessedPictures(user);
-        }
-        else{
-            throw new IllegalStateException("Image not correctly initialized");
-        }
     }
 
     /**
@@ -196,7 +172,15 @@ public class ExistingPicture implements Picture{
      */
     public Double computeScoreAndSendToDb(String user, double guessedLongitude, double guessedLatitude) throws IllegalStateException{
         double score = Score.computeScore(this.latitude, this.longitude, guessedLatitude, guessedLongitude);
-        sendUserData(user, score, guessedLongitude, guessedLatitude);
+
+        if(this.guesses != null && this.scoreboard != null) {
+            sendUserGuess(user, score);
+            addToUserGuessedPictures(user);
+        }
+        else{
+            throw new IllegalStateException("Image not correctly initialized");
+        }
+
         return score;
     }
 
@@ -250,18 +234,12 @@ public class ExistingPicture implements Picture{
         return bmp;
     }
 
-    public Long getLongitude() throws IllegalStateException{
+    public LatLng getLatLng() throws IllegalStateException{
         if(longitude == -1){
             throw new IllegalStateException("Image not correctly initialized");
         }
-        return longitude;
-    }
-
-    public Long getLatitude() throws IllegalStateException{
-        if(latitude == -1){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
-        return latitude;
+        LatLng latlng = new LatLng(latitude, longitude);
+        return latlng;
     }
 
     public Map<String, Object> getScoreboard() throws IllegalStateException{

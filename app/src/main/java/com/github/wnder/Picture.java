@@ -2,6 +2,8 @@ package com.github.wnder;
 
 import android.net.Uri;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Map;
 
 public interface Picture {
@@ -12,16 +14,10 @@ public interface Picture {
     public String getUniqueId();
 
     /**
-     * Returns the longitude of the location of the picture
-     * @return the longitude of the location of the picture
+     * Returns the longitude and latitude of the location of the picture
+     * @return the longitude and latitude of the location of the picture
      */
-    public Long getLongitude();
-
-    /**
-     * Returns the latitude of the location of the picture
-     * @return the latitude of the location of the picture
-     */
-    public Long getLatitude();
+    public LatLng getLatLng();
 
     /**
      * Returns the global scoreboard linked with the picture

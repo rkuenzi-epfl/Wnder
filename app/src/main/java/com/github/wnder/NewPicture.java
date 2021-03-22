@@ -1,15 +1,10 @@
 package com.github.wnder;
 
 import android.net.Uri;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.storage.UploadTask;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -17,11 +12,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import static com.google.android.gms.tasks.Tasks.await;
 
 public class NewPicture implements Picture{
     //Storage
@@ -139,12 +130,9 @@ public class NewPicture implements Picture{
         return uri;
     }
 
-    public Long getLongitude(){
-        return longitude;
-    }
-
-    public Long getLatitude(){
-        return latitude;
+    public LatLng getLatLng(){
+        LatLng latlng = new LatLng(latitude, longitude);
+        return latlng;
     }
 
     public Map<String, Object> getScoreboard(){

@@ -2,6 +2,8 @@ package com.github.wnder;
 
 import android.net.Uri;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,8 +45,9 @@ public class NewPictureTesting {
 
     @Test
     public void getLongitudeAndGetLatitudeWork(){
-        assertTrue(pic.getLongitude() == 0);
-        assertTrue(pic.getLatitude() == 0);
+        LatLng latlng = pic.getLatLng();
+        assertEquals(0, latlng.latitude, 0);
+        assertEquals(0, latlng.longitude, 0);
     }
 
     @Test
