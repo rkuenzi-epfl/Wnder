@@ -214,29 +214,28 @@ public class ExistingPicture implements Picture{
 
         }
 
-        public static Task<DocumentSnapshot> getGuessTask(ExistingPicture picture){
-            String[] path1 = {"pictures", picture.uniqueId, "userData", "userGuesses"};
-            Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path1);
-            guessTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        public static Task<DocumentSnapshot> getSimpleSetterTask(ExistingPicture picture, String setter){
+            String[] path = {};
+            OnSuccessListener<DocumentSnapshot> successFunction = new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    picture.setGuesses(documentSnapshot.getData());
-                }
-            });
-            return guessTask;
-        }
+                public void onSuccess(DocumentSnapshot documentSnapshot) {};};
 
-        public static Task<DocumentSnapshot> getScoreTask(ExistingPicture picture){
-            //retrieve scores
-            String[] path2 = {"pictures", picture.uniqueId, "userData", "userScores"};
-            Task<DocumentSnapshot> scoreTask = picture.storage.downloadFromFirestore(path2);
-            scoreTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
+            if(setter.equals("userGuesses")){
+                path = new String[]{"pictures", picture.uniqueId, "userData", "userGuesses"};
+                successFunction = ((DocumentSnapshot documentSnapshot) -> {
+                    picture.setGuesses(documentSnapshot.getData());
+                });
+            } else if(setter.equals("userScores")){
+                path = new String[]{"pictures", picture.uniqueId, "userData", "userScores"};
+                successFunction = ((DocumentSnapshot documentSnapshot) -> {
                     picture.setScoreboard(documentSnapshot.getData());
-                }
-            });
-            return scoreTask;
+                });
+
+            }
+
+            Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path);
+            guessTask.addOnSuccessListener(successFunction);
+            return guessTask;
         }
 
         public static Task<byte[]> getPictureTask(ExistingPicture picture){
@@ -257,9 +256,9 @@ public class ExistingPicture implements Picture{
 
             Task<DocumentSnapshot> coorTask = getCoorTask(picture);
 
-            Task<DocumentSnapshot> guessTask = getGuessTask(picture);
+            Task<DocumentSnapshot> guessTask = getSimpleSetterTask(picture, "userGuesses");
 
-            Task<DocumentSnapshot> scoreTask = getScoreTask(picture);
+            Task<DocumentSnapshot> scoreTask = getSimpleSetterTask(picture, "userScores");
 
             Task<byte[]> pictureTask = getPictureTask(picture);
 
