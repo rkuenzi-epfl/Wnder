@@ -114,6 +114,7 @@ public class NewPicture implements Picture{
 
         //Send picture to Cloud Storage
         this.storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId+".jpg");
+        this.addPhotoToUploadedUserPhoto();
 
         return true;
     }
