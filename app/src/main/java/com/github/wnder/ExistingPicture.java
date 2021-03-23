@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class ExistingPicture implements Picture{
     //Storage
@@ -33,11 +35,99 @@ public class ExistingPicture implements Picture{
     //Map<[user ID], Map<[longitude/latitude], [value]>>
     private Map<String, Object> guesses;
 
+
+    /**
+     * Start loading a picture with a given ID
+     *
+     * @param uniqueId
+     * @return a task that succeed when all subtask succeed (fail otherwise)
+     */
+    public static CompletableFuture<ExistingPicture> loadExistingPicture(String uniqueId){
+
+        CompletableFuture<ExistingPicture> pictureFuture = new CompletableFuture<ExistingPicture>();
+        ExistingPicture picture = new ExistingPicture(uniqueId);
+        if(PictureCache.isInCache(uniqueId)){
+            pictureFuture.complete((ExistingPicture) PictureCache.getPicture(uniqueId));
+            return pictureFuture;
+        }
+
+        picture.storage = new Storage();
+        Task<DocumentSnapshot> coorTask = picture.storage.downloadFromFirestore("pictures", picture.uniqueId);
+        coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                long longitude = (long)documentSnapshot.get("longitude");
+                long latitude = (long)documentSnapshot.get("latitude");
+                picture.setLocation(longitude, latitude);
+            }
+        });
+
+        String[] path1 = {"pictures", picture.uniqueId, "userData", "userGuesses"};
+        Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path1);
+        guessTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                picture.setGuesses(documentSnapshot.getData());
+            }
+        });
+
+        //retrieve scores
+        String[] path2 = {"pictures", picture.uniqueId, "userData", "userScores"};
+        Task<DocumentSnapshot> scoreTask = picture.storage.downloadFromFirestore(path2);
+        scoreTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                picture.setScoreboard(documentSnapshot.getData());
+            }
+        });
+
+        //retrieve picture
+        Task<byte[]> pictureTask = picture.storage.downloadFromCloudStorage("pictures/"+picture.uniqueId+".jpg");
+        pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                picture.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+            }
+        });
+
+        Tasks.whenAllSuccess(coorTask, guessTask, scoreTask, pictureTask).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+            @Override
+            public void onSuccess(List<Object> resultsList) {
+                PictureCache.addPicture(uniqueId, picture);
+                pictureFuture.complete(picture);
+            }
+        });
+
+        return pictureFuture;
+    }
+
+    private ExistingPicture(String uniqueId){
+        this.uniqueId = uniqueId;
+    }
+
+    private void setBitmap(Bitmap bmp){
+        this.bmp = bmp;
+    }
+
+    private void setLocation(long longitude, long latitude){
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    private void setScoreboard(Map<String, Object> scoreboard){
+        this.scoreboard = scoreboard;
+    }
+
+    private void setGuesses(Map<String, Object> guesses){
+        this.guesses = guesses;
+    }
+
+
     /**
      * Constructor for a picture already existing on db
      * @param uniqueId id of the image
      */
-    public ExistingPicture(String uniqueId){
+   /* public ExistingPicture(String uniqueId){
         //put dummy values in case the instantiation doesn't work
         this.longitude = -1;
         this.latitude = -1;
@@ -108,7 +198,7 @@ public class ExistingPicture implements Picture{
                 bmp = null;
             }
         });
-    }
+    }*/
 
     /**
      * Send a user's score and guess to the database
@@ -173,13 +263,8 @@ public class ExistingPicture implements Picture{
     public Double computeScoreAndSendToDb(String user, double guessedLongitude, double guessedLatitude) throws IllegalStateException{
         double score = Score.computeScore(this.latitude, this.longitude, guessedLatitude, guessedLongitude);
 
-        if(this.guesses != null && this.scoreboard != null) {
-            sendUserGuess(user, score);
-            addToUserGuessedPictures(user);
-        }
-        else{
-            throw new IllegalStateException("Image not correctly initialized");
-        }
+        sendUserGuess(user, score);
+        addToUserGuessedPictures(user);
 
         return score;
     }
@@ -191,9 +276,6 @@ public class ExistingPicture implements Picture{
      * @throws IllegalStateException if the image is not correctly initialized
      */
     public Object getUserScore(String user) throws IllegalStateException{
-        if(scoreboard == null){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         if(scoreboard.containsKey(user)){
             return scoreboard.get(user);
         }
@@ -209,9 +291,6 @@ public class ExistingPicture implements Picture{
      * * @throws IllegalStateException if the image is not correctly initialized
      */
     public Object getUserGuess(String user) throws IllegalStateException{
-        if(guesses == null){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         if(guesses.containsKey(user)){
             return guesses.get(user);
         }
@@ -221,38 +300,23 @@ public class ExistingPicture implements Picture{
     }
 
     public String getUniqueId() throws IllegalStateException{
-        if(uniqueId == null){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         return uniqueId;
     }
 
     public Bitmap getBmp() throws IllegalStateException{
-        if(bmp == null){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         return bmp;
     }
 
     public LatLng getLatLng() throws IllegalStateException{
-        if(longitude == -1 || latitude == -1){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         LatLng latlng = new LatLng(latitude, longitude);
         return latlng;
     }
 
     public Map<String, Object> getScoreboard() throws IllegalStateException{
-        if(scoreboard == null){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         return scoreboard;
     }
 
     public Map<String, Object> getGuesses() throws IllegalStateException{
-        if(guesses == null){
-            throw new IllegalStateException("Image not correctly initialized");
-        }
         return guesses;
     }
 }
