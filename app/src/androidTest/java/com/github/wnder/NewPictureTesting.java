@@ -21,10 +21,13 @@ import static org.junit.Assert.assertTrue;
 public class NewPictureTesting {
 
     private static NewPicture pic;
+    private static Picture picAsPicture;
+
 
     @BeforeClass
     public static void createPic() throws InterruptedException {
         pic = new NewPicture("testUser", 0, 0, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        picAsPicture = (Picture) pic;
         sleep(3000);
     }
 
@@ -35,7 +38,7 @@ public class NewPictureTesting {
 
     @Test
     public void uniqueIdHasGoodFormat(){
-        assertTrue(pic.getUniqueId().matches("testUser\\d+"));
+        assertTrue(picAsPicture.getUniqueId().matches("testUser\\d+"));
     }
 
     @Test
@@ -45,14 +48,14 @@ public class NewPictureTesting {
 
     @Test
     public void getLongitudeAndGetLatitudeWork(){
-        LatLng latlng = pic.getLatLng();
+        LatLng latlng = picAsPicture.getLatLng();
         assertEquals(0, latlng.latitude, 0);
         assertEquals(0, latlng.longitude, 0);
     }
 
     @Test
     public void scoreboardCorrectlyInitialized(){
-        Map<String, Object> scoreboard = pic.getScoreboard();
+        Map<String, Object> scoreboard = picAsPicture.getScoreboard();
         assertTrue(scoreboard.size() == 1);
         assertTrue(scoreboard.containsKey("default"));
         assertTrue((Double)scoreboard.get("default") == -1);
@@ -60,7 +63,7 @@ public class NewPictureTesting {
 
     @Test
     public void guessesCorrectlyInitialized(){
-        Map<String, Object> guesses = pic.getGuesses();
+        Map<String, Object> guesses = picAsPicture.getGuesses();
         assertTrue(guesses.size() == 1);
         assertTrue(guesses.containsKey("default"));
         Object guess = guesses.get("default");
