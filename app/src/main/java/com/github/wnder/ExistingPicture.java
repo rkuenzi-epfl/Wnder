@@ -35,7 +35,6 @@ public class ExistingPicture implements Picture{
     //Map<[user ID], Map<[longitude/latitude], [value]>>
     private Map<String, Object> guesses;
 
-
     /**
      * Start loading a picture with a given ID
      *
@@ -52,51 +51,8 @@ public class ExistingPicture implements Picture{
         }
 
         picture.storage = new Storage();
-        Task<DocumentSnapshot> coorTask = picture.storage.downloadFromFirestore("pictures", picture.uniqueId);
-        coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                long longitude = (long)documentSnapshot.get("longitude");
-                long latitude = (long)documentSnapshot.get("latitude");
-                picture.setLocation(longitude, latitude);
-            }
-        });
 
-        String[] path1 = {"pictures", picture.uniqueId, "userData", "userGuesses"};
-        Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path1);
-        guessTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                picture.setGuesses(documentSnapshot.getData());
-            }
-        });
-
-        //retrieve scores
-        String[] path2 = {"pictures", picture.uniqueId, "userData", "userScores"};
-        Task<DocumentSnapshot> scoreTask = picture.storage.downloadFromFirestore(path2);
-        scoreTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                picture.setScoreboard(documentSnapshot.getData());
-            }
-        });
-
-        //retrieve picture
-        Task<byte[]> pictureTask = picture.storage.downloadFromCloudStorage("pictures/"+picture.uniqueId+".jpg");
-        pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                picture.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-            }
-        });
-
-        Tasks.whenAllSuccess(coorTask, guessTask, scoreTask, pictureTask).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
-            @Override
-            public void onSuccess(List<Object> resultsList) {
-                PictureCache.addPicture(uniqueId, picture);
-                pictureFuture.complete(picture);
-            }
-        });
+        TaskAggregator.aggregate(picture, pictureFuture);
 
         return pictureFuture;
     }
@@ -121,84 +77,6 @@ public class ExistingPicture implements Picture{
     private void setGuesses(Map<String, Object> guesses){
         this.guesses = guesses;
     }
-
-
-    /**
-     * Constructor for a picture already existing on db
-     * @param uniqueId id of the image
-     */
-   /* public ExistingPicture(String uniqueId){
-        //put dummy values in case the instantiation doesn't work
-        this.longitude = -1;
-        this.latitude = -1;
-
-        this.storage = new Storage();
-        this.uniqueId = uniqueId;
-
-        //retrieve coordinates
-        Task<DocumentSnapshot> coorTask = storage.downloadFromFirestore("pictures", this.uniqueId);
-        coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                longitude = (long)documentSnapshot.get("longitude");
-                latitude = (long)documentSnapshot.get("latitude");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //set to dummy values
-                longitude = -1;
-                latitude = -1;
-            }
-        });
-
-        //retrieve guesses
-        String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
-        Task<DocumentSnapshot> guessTask = storage.downloadFromFirestore(path1);
-        guessTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                guesses = documentSnapshot.getData();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //set to dummy values
-                guesses = new HashMap<>();
-            }
-        });
-
-        //retrieve scores
-        String[] path2 = {"pictures", this.uniqueId, "userData", "userScores"};
-        Task<DocumentSnapshot> scoreTask = storage.downloadFromFirestore(path2);
-        scoreTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                scoreboard = documentSnapshot.getData();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //set to dummy values
-                scoreboard = new HashMap<>();
-            }
-        });
-
-        //retrieve picture
-        Task<byte[]> pictureTask = storage.downloadFromCloudStorage("pictures/"+this.uniqueId+".jpg");
-        pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //set to dummy values
-                bmp = null;
-            }
-        });
-    }*/
 
     /**
      * Send a user's score and guess to the database
@@ -318,5 +196,80 @@ public class ExistingPicture implements Picture{
 
     public Map<String, Object> getGuesses() throws IllegalStateException{
         return guesses;
+    }
+
+    private static class TaskAggregator{
+
+        public static Task<DocumentSnapshot> getCoorTask(ExistingPicture picture){
+            Task<DocumentSnapshot> coorTask = picture.storage.downloadFromFirestore("pictures", picture.uniqueId);
+            coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    long longitude = (long)documentSnapshot.get("longitude");
+                    long latitude = (long)documentSnapshot.get("latitude");
+                    picture.setLocation(longitude, latitude);
+                }
+            });
+            return coorTask;
+
+        }
+
+        public static Task<DocumentSnapshot> getGuessTask(ExistingPicture picture){
+            String[] path1 = {"pictures", picture.uniqueId, "userData", "userGuesses"};
+            Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path1);
+            guessTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    picture.setGuesses(documentSnapshot.getData());
+                }
+            });
+            return guessTask;
+        }
+
+        public static Task<DocumentSnapshot> getScoreTask(ExistingPicture picture){
+            //retrieve scores
+            String[] path2 = {"pictures", picture.uniqueId, "userData", "userScores"};
+            Task<DocumentSnapshot> scoreTask = picture.storage.downloadFromFirestore(path2);
+            scoreTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    picture.setScoreboard(documentSnapshot.getData());
+                }
+            });
+            return scoreTask;
+        }
+
+        public static Task<byte[]> getPictureTask(ExistingPicture picture){
+            //retrieve picture
+            Task<byte[]> pictureTask = picture.storage.downloadFromCloudStorage("pictures/"+picture.uniqueId+".jpg");
+            pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    picture.setBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                }
+            });
+            return pictureTask;
+        }
+
+        public static void aggregate(ExistingPicture picture, CompletableFuture<ExistingPicture> pictureFuture){
+            String uniqueId = picture.getUniqueId();
+            picture.storage = new Storage();
+
+            Task<DocumentSnapshot> coorTask = getCoorTask(picture);
+
+            Task<DocumentSnapshot> guessTask = getGuessTask(picture);
+
+            Task<DocumentSnapshot> scoreTask = getScoreTask(picture);
+
+            Task<byte[]> pictureTask = getPictureTask(picture);
+
+            Tasks.whenAllSuccess(coorTask, guessTask, scoreTask, pictureTask).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                @Override
+                public void onSuccess(List<Object> resultsList) {
+                    PictureCache.addPicture(uniqueId, picture);
+                    pictureFuture.complete(picture);
+                }
+            });
+        }
     }
 }
