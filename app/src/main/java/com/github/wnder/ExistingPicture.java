@@ -215,22 +215,19 @@ public class ExistingPicture implements Picture{
         }
 
         public static Task<DocumentSnapshot> getSimpleSetterTask(ExistingPicture picture, String setter){
-            String[] path = {};
+            String[] path = new String[]{"pictures", picture.uniqueId, "userData", setter};
             OnSuccessListener<DocumentSnapshot> successFunction = new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {};};
 
             if(setter.equals("userGuesses")){
-                path = new String[]{"pictures", picture.uniqueId, "userData", "userGuesses"};
                 successFunction = ((DocumentSnapshot documentSnapshot) -> {
                     picture.setGuesses(documentSnapshot.getData());
                 });
             } else if(setter.equals("userScores")){
-                path = new String[]{"pictures", picture.uniqueId, "userData", "userScores"};
                 successFunction = ((DocumentSnapshot documentSnapshot) -> {
                     picture.setScoreboard(documentSnapshot.getData());
                 });
-
             }
 
             Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path);
