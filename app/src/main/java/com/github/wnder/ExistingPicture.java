@@ -202,8 +202,8 @@ public class ExistingPicture implements Picture{
             coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    double longitude = (double)documentSnapshot.get("longitude");
-                    double latitude = (double)documentSnapshot.get("latitude");
+                    double longitude = (double)documentSnapshot.getDouble("longitude");
+                    double latitude = (double)documentSnapshot.getDouble("latitude");
                     picture.setLocation(longitude, latitude);
                 }
             });
