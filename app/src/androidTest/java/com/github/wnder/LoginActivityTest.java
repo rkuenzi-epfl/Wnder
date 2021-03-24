@@ -81,12 +81,12 @@ public class LoginActivityTest {
 
     @Test
     public void testButtonPress(){
-        onView(withId(R.id.sign_in_button)).perform(click());
+        onView(withId(R.id.signInButton)).perform(click());
     }
 
     @Test
     public void testGuestButton(){
-        onView(withId(R.id.guest_button)).perform(click());
+        onView(withId(R.id.guestButton)).perform(click());
         intended(hasComponent(MainActivity.class.getName()));
         assertThat(GlobalUser.getUser().getName(), is("Guest"));
         assertThat(GlobalUser.getUser().getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
