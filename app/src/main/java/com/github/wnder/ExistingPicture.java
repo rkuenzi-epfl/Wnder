@@ -27,8 +27,7 @@ public class ExistingPicture implements Picture{
     private Bitmap bmp;
 
     //Image location
-    private long longitude;
-    private long latitude;
+    private LatLng location;
 
     //User data for the image: global scoreboard + all guesses
     private Map<String, Object> scoreboard;
@@ -65,9 +64,8 @@ public class ExistingPicture implements Picture{
         this.bmp = bmp;
     }
 
-    private void setLocation(long longitude, long latitude){
-        this.longitude = longitude;
-        this.latitude = latitude;
+    private void setLocation(double longitude, double latitude){
+        this.location = new LatLng(latitude, longitude);
     }
 
     private void setScoreboard(Map<String, Object> scoreboard){
@@ -86,8 +84,8 @@ public class ExistingPicture implements Picture{
     private void sendUserGuess(String user, Double score){
         //userGuesses
         ArrayList<Object> userCoor = new ArrayList<>();
-        userCoor.add(longitude);
-        userCoor.add(latitude);
+        userCoor.add(location.latitude);
+        userCoor.add(location.longitude);
         this.guesses.put(user, userCoor);
         String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
         storage.uploadToFirestore(this.guesses, path1);
@@ -139,7 +137,7 @@ public class ExistingPicture implements Picture{
      * @return: user score
      */
     public Double computeScoreAndSendToDb(String user, double guessedLongitude, double guessedLatitude) throws IllegalStateException{
-        double score = Score.computeScore(this.latitude, this.longitude, guessedLatitude, guessedLongitude);
+        double score = Score.computeScore(this.location.latitude, this.location.longitude, guessedLatitude, guessedLongitude);
 
         sendUserGuess(user, score);
         addToUserGuessedPictures(user);
@@ -168,7 +166,7 @@ public class ExistingPicture implements Picture{
      * @return: user guess if it exists, empty map else
      * * @throws IllegalStateException if the image is not correctly initialized
      */
-    public Object getUserGuess(String user) throws IllegalStateException{
+    public Object getUserGuess(String user){
         if(guesses.containsKey(user)){
             return guesses.get(user);
         }
@@ -177,24 +175,23 @@ public class ExistingPicture implements Picture{
         }
     }
 
-    public String getUniqueId() throws IllegalStateException{
+    public String getUniqueId(){
         return uniqueId;
     }
 
-    public Bitmap getBmp() throws IllegalStateException{
+    public Bitmap getBmp(){
         return bmp;
     }
 
-    public LatLng getLatLng() throws IllegalStateException{
-        LatLng latlng = new LatLng(latitude, longitude);
-        return latlng;
+    public LatLng getLocation(){
+        return location;
     }
 
-    public Map<String, Object> getScoreboard() throws IllegalStateException{
+    public Map<String, Object> getScoreboard(){
         return scoreboard;
     }
 
-    public Map<String, Object> getGuesses() throws IllegalStateException{
+    public Map<String, Object> getGuesses(){
         return guesses;
     }
 
@@ -205,8 +202,8 @@ public class ExistingPicture implements Picture{
             coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    long longitude = (long)documentSnapshot.get("longitude");
-                    long latitude = (long)documentSnapshot.get("latitude");
+                    double longitude = (double)documentSnapshot.get("longitude");
+                    double latitude = (double)documentSnapshot.get("latitude");
                     picture.setLocation(longitude, latitude);
                 }
             });

@@ -26,8 +26,7 @@ public class NewPicture implements Picture{
     private Uri uri;
 
     //Image location
-    private long longitude;
-    private long latitude;
+    private LatLng location;
 
     //User data for the image: global scoreboard + all guesses
     private Map<String, Object> scoreboard;
@@ -37,18 +36,16 @@ public class NewPicture implements Picture{
     /**
      * Constructor for a new picture that doesn't exist in the db already
      * @param user user's id
-     * @param longitude longitude of the image's location
-     * @param latitude latitude of the image's location
+     * @param location the image location
      * @param uri uri of the image
      */
-    public NewPicture(String user, long longitude, long latitude, Uri uri){
+    public NewPicture(String user, LatLng location, Uri uri){
         //instantiate parameters
         this.storage = new Storage();
 
         this.user = user;
 
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.location = location;
         this.uri = uri;
 
         //default instantiation for the scoreboard
@@ -100,8 +97,8 @@ public class NewPicture implements Picture{
     public Boolean sendPictureToDb(){
         //coordinates
         Map<String, Object> coordinates = new HashMap<>();
-        coordinates.put("longitude", this.longitude);
-        coordinates.put("latitude", this.latitude);
+        coordinates.put("longitude", this.location.longitude);
+        coordinates.put("latitude", this.location.latitude);
         this.storage.uploadToFirestore(coordinates, "pictures", this.uniqueId);
 
         //userGuesses
@@ -131,9 +128,8 @@ public class NewPicture implements Picture{
         return uri;
     }
 
-    public LatLng getLatLng(){
-        LatLng latlng = new LatLng(latitude, longitude);
-        return latlng;
+    public LatLng getLocation(){
+        return location;
     }
 
     public Map<String, Object> getScoreboard(){

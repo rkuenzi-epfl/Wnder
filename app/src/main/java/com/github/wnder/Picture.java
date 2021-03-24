@@ -17,7 +17,7 @@ public interface Picture {
      * Returns the longitude and latitude of the location of the picture
      * @return the longitude and latitude of the location of the picture
      */
-    public LatLng getLatLng();
+    public LatLng getLocation();
 
     /**
      * Returns the global scoreboard linked with the picture

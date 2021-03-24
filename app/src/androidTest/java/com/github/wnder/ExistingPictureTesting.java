@@ -69,7 +69,7 @@ public class ExistingPictureTesting {
     @Test
     public void getLatLng() throws InterruptedException {
         ExistingPicture pic = testPic;
-        LatLng latlng = pic.getLatLng();
+        LatLng latlng = pic.getLocation();
         assertEquals(10, latlng.latitude, 0);
         assertEquals(10, latlng.longitude, 0);
     }
