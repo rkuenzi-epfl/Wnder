@@ -49,5 +49,6 @@ public class TakePictureActivityTest {
 
         onView(withId(R.id.takePictureButton)).perform(click());
         onView(withId(R.id.pictureConfirmButton)).perform(click());
+
     }
 }
