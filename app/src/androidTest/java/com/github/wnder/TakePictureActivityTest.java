@@ -21,7 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class TakePictureActivityTest {
     @Rule
-    public ActivityScenarioRule<ImageFromGalleryActivity> activityRule = new ActivityScenarioRule(TakePictureActivity.class);
+    public ActivityScenarioRule<TakePictureActivity> activityRule = new ActivityScenarioRule(TakePictureActivity.class);
 
     @Before
     public void setUp() {

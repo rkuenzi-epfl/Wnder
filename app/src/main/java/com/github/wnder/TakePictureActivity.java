@@ -35,21 +35,11 @@ public class TakePictureActivity extends AppCompatActivity {
         picture = findViewById(R.id.imageFromCamera);
 
         takePictureButton = findViewById(R.id.takePictureButton);
-        takePictureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchTakePictureIntent();
-            }
-        });
+        takePictureButton.setOnClickListener((view) -> dispatchTakePictureIntent());
 
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
         pictureConfirmButton.setVisibility(View.INVISIBLE);
-        pictureConfirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                storeBitmapInGallery();
-            }
-        });
+        pictureConfirmButton.setOnClickListener((view) -> storeBitmapInGallery());
     }
 
     @Override
