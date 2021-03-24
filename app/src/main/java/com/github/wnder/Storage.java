@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -48,5 +49,24 @@ public class Storage{
 
     public Task<DocumentSnapshot> downloadFromFirestore(String collection, String document){
         return db.collection(collection).document(document).get();
+    }
+
+    /**
+     * Uploads info to firestore
+     * @param map info to upload
+     * @param path path in the database(collection, document, collection, document)
+     * @return the task
+     */
+    public Task<Void> uploadToFirestore(Map<String, Object> map, String[] path){
+        return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).set(map);
+    }
+
+    /**
+     * Downloads info from Firestore
+     * @param path path in the database(collection, document, collection, document)
+     * @return the task
+     */
+    public Task<DocumentSnapshot> downloadFromFirestore(String[] path){
+        return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).get();
     }
 }

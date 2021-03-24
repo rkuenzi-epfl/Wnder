@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,6 +18,7 @@ import com.google.firebase.storage.UploadTask;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(JUnit4.class)
 public class StorageTesting {
     @Test
     public void testUploadAndDownloadToFireStore(){
@@ -46,6 +46,45 @@ public class StorageTesting {
             @Override
             public void onSuccess(Void aVoid) {
                 storage.downloadFromFirestore(collection, document).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //Should happen
+                        assertThat(documentSnapshot.getData(), is(testMap));
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Should not happen
+                        assertThat(1, is(2));
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Should not happen
+                assertThat(1, is(2));
+            }
+        });
+    }
+
+    @Test
+    public void testUploadAndDownloadToFireStoreWithLongerPath(){
+        Storage storage = new Storage();
+
+        Map<String, Object> testMap = new HashMap<>();
+        testMap.put("Jeremy", "Jus d'orange");
+        testMap.put("Léonard", "Lasagne");
+        testMap.put("Romain", "Pizza du jeudi soir");
+        testMap.put("Nico", "Cookies");
+        testMap.put("Alois", "merci MV");
+        testMap.put("Pablo", "Android");
+
+        String[] path = {"coll1", "doc1", "coll2", "doc2"};
+        storage.uploadToFirestore(testMap, path).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                storage.downloadFromFirestore(path).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         //Should happen
