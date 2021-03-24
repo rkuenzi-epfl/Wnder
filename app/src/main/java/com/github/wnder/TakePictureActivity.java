@@ -43,7 +43,7 @@ public class TakePictureActivity extends AppCompatActivity {
         });
 
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
-        pictureConfirmButton.setVisibility(View.GONE);
+        pictureConfirmButton.setVisibility(View.INVISIBLE);
         pictureConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
