@@ -7,7 +7,7 @@
     tools:context=".TakePictureActivity">
 
     <ImageView
-        android:id="@+id/image_from_camera"
+        android:id="@+id/imageFromCamera"
         android:layout_width="308dp"
         android:layout_height="309dp"
         android:layout_marginTop="92dp"
@@ -18,7 +18,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
-        android:id="@+id/take_picture_button"
+        android:id="@+id/takePictureButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
@@ -28,17 +28,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.459"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_from_camera" />
+        app:layout_constraintTop_toBottomOf="@+id/imageFromCamera" />
 
     <Button
-        android:id="@+id/picture_confirm_button"
+        android:id="@+id/pictureConfirmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="157dp"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="161dp"
         android:text="Confirm"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/take_picture_button" />
+        app:layout_constraintTop_toBottomOf="@+id/takePictureButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

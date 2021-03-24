@@ -14,16 +14,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.google.gson.internal.$Gson$Preconditions;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TakePictureActivity extends AppCompatActivity {
-    private Button take_picture_button;
-    private Button confirm_button;
+    private Button takePictureButton;
+    private Button pictureConfirmButton;
     private ImageView picture;
     private final int TAKE_PHOTO = 0;
     private String currentPhotoPath;
@@ -34,19 +32,19 @@ public class TakePictureActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_picture);
-        picture = findViewById(R.id.image_from_camera);
+        picture = findViewById(R.id.imageFromCamera);
 
-        take_picture_button = findViewById(R.id.take_picture_button);
-        take_picture_button.setOnClickListener(new View.OnClickListener() {
+        takePictureButton = findViewById(R.id.takePictureButton);
+        takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
             }
         });
 
-        confirm_button = findViewById(R.id.picture_confirm_button);
-        confirm_button.setVisibility(View.GONE);
-        confirm_button.setOnClickListener(new View.OnClickListener() {
+        pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
+        pictureConfirmButton.setVisibility(View.GONE);
+        pictureConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 storeBitmapInGallery();
@@ -59,8 +57,8 @@ public class TakePictureActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, cameraIntent);
         if(resultCode == RESULT_OK && requestCode == TAKE_PHOTO){
             setPic();
-            confirm_button.setVisibility(View.VISIBLE);
-         }
+            pictureConfirmButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void storeBitmapInGallery(){
@@ -85,21 +83,21 @@ public class TakePictureActivity extends AppCompatActivity {
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.github.wnder.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, TAKE_PHOTO);
-            }
+        // Create the File where the photo should go
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+        }
+        // Continue only if the File was successfully created
+        if (photoFile != null) {
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.github.wnder.android.fileprovider",
+                    photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, TAKE_PHOTO);
+        }
 
     }
 
