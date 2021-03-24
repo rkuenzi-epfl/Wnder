@@ -1,10 +1,10 @@
 package com.github.wnder;
 
+import android.location.Location;
 import android.net.Uri;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.sql.Array;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class NewPicture implements Picture{
     private Uri uri;
 
     //Image location
-    private LatLng location;
+    private Location location;
 
     //User data for the image: global scoreboard + all guesses
     private Map<String, Object> scoreboard;
@@ -39,7 +39,7 @@ public class NewPicture implements Picture{
      * @param location the image location
      * @param uri uri of the image
      */
-    public NewPicture(String user, LatLng location, Uri uri){
+    public NewPicture(String user, Location location, Uri uri){
         //instantiate parameters
         this.storage = new Storage();
 
@@ -97,8 +97,8 @@ public class NewPicture implements Picture{
     public Boolean sendPictureToDb(){
         //coordinates
         Map<String, Object> coordinates = new HashMap<>();
-        coordinates.put("longitude", this.location.longitude);
-        coordinates.put("latitude", this.location.latitude);
+        coordinates.put("longitude", this.location.getLatitude());
+        coordinates.put("latitude", this.location.getLongitude());
         this.storage.uploadToFirestore(coordinates, "pictures", this.uniqueId);
 
         //userGuesses
@@ -128,7 +128,7 @@ public class NewPicture implements Picture{
         return uri;
     }
 
-    public LatLng getLocation(){
+    public Location getLocation(){
         return location;
     }
 

@@ -2,6 +2,7 @@ package com.github.wnder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 
 import androidx.annotation.NonNull;
 
@@ -10,7 +11,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class ExistingPicture implements Picture{
     private Bitmap bmp;
 
     //Image location
-    private LatLng location;
+    private Location location;
 
     //User data for the image: global scoreboard + all guesses
     private Map<String, Object> scoreboard;
@@ -65,7 +65,9 @@ public class ExistingPicture implements Picture{
     }
 
     private void setLocation(double longitude, double latitude){
-        this.location = new LatLng(latitude, longitude);
+        location = new Location("");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
     }
 
     private void setScoreboard(Map<String, Object> scoreboard){
@@ -84,8 +86,8 @@ public class ExistingPicture implements Picture{
     private void sendUserGuess(String user, Double score){
         //userGuesses
         ArrayList<Object> userCoor = new ArrayList<>();
-        userCoor.add(location.latitude);
-        userCoor.add(location.longitude);
+        userCoor.add(location.getLatitude());
+        userCoor.add(location.getLongitude());
         this.guesses.put(user, userCoor);
         String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
         storage.uploadToFirestore(this.guesses, path1);
@@ -137,7 +139,7 @@ public class ExistingPicture implements Picture{
      * @return: user score
      */
     public Double computeScoreAndSendToDb(String user, double guessedLongitude, double guessedLatitude) throws IllegalStateException{
-        double score = Score.computeScore(this.location.latitude, this.location.longitude, guessedLatitude, guessedLongitude);
+        double score = Score.computeScore(this.location.getLatitude(), this.location.getLongitude(), guessedLatitude, guessedLongitude);
 
         sendUserGuess(user, score);
         addToUserGuessedPictures(user);
@@ -183,7 +185,7 @@ public class ExistingPicture implements Picture{
         return bmp;
     }
 
-    public LatLng getLocation(){
+    public Location getLocation(){
         return location;
     }
 

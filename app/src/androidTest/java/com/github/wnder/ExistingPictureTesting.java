@@ -1,11 +1,8 @@
 package com.github.wnder;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.location.Location;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,9 +66,9 @@ public class ExistingPictureTesting {
     @Test
     public void getLatLng() throws InterruptedException {
         ExistingPicture pic = testPic;
-        LatLng latlng = pic.getLocation();
-        assertEquals(10, latlng.latitude, 0);
-        assertEquals(10, latlng.longitude, 0);
+        Location latlng = pic.getLocation();
+        assertEquals(10, latlng.getLatitude(), 0);
+        assertEquals(10, latlng.getLongitude(), 0);
     }
 
     @Test

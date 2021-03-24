@@ -1,8 +1,7 @@
 package com.github.wnder;
 
+import android.location.Location;
 import android.net.Uri;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,7 +24,10 @@ public class NewPictureTesting {
 
     @BeforeClass
     public static void createPic() throws InterruptedException {
-        pic = new NewPicture("testUser", new LatLng(0,0), Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        Location loc = new Location("");
+        loc.setLatitude(0d);
+        loc.setLongitude(0d);
+        pic = new NewPicture("testUser", loc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         picAsPicture = (Picture) pic;
         sleep(3000);
     }
@@ -47,9 +49,9 @@ public class NewPictureTesting {
 
     @Test
     public void getLongitudeAndGetLatitudeWork(){
-        LatLng latlng = picAsPicture.getLocation();
-        assertEquals(0, latlng.latitude, 0);
-        assertEquals(0, latlng.longitude, 0);
+        Location latlng = picAsPicture.getLocation();
+        assertEquals(0, latlng.getLatitude(), 0);
+        assertEquals(0, latlng.getLongitude(), 0);
     }
 
     @Test
