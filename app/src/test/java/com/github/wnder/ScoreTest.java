@@ -33,4 +33,14 @@ public class ScoreTest {
         assertEquals(0, Score.calculationScore(dist3), 1);
         assertEquals(135, Score.calculationScore(dist1, dist2), 5);
     }
+
+    @Test
+    public void computeScoreCalculatedIsWithinRange(){
+        double realLat = 46.46256;
+        double realLong = 6.34004;
+        double guessedLat = 46.51968;
+        double guessedLong = 6.62706;
+
+        assertEquals(193, Score.computeScore(realLat, realLong, guessedLat, guessedLong), 2);
+    }
 }

@@ -39,4 +39,29 @@ public final class Score {
 
         return MAX_SCORE * sqrtDistribution;
     }
+
+    /**
+     * Computes a user's score given the real position of the location and the position of the user's guess
+     * @param realPos image real location
+     * @param guessedPos user guessed location
+     * @return score of the user depending on the distance between his guess and the real location
+     */
+    public static double computeScore(LatLng realPos, LatLng guessedPos){
+        double distance = calculationDistance(realPos, guessedPos);
+        return calculationScore(distance);
+    }
+
+    /**
+     * Computes a user's score given the real position of the location and the position of the user's guess
+     * @param realLat latitude of the location
+     * @param realLong longitude of the location
+     * @param guessedLat latitude of the guess
+     * @param guessedLong longitude of the guess
+     * @return score of the user depending on the distance between his guess and the real location
+     */
+    public static double computeScore(double realLat, double realLong, double guessedLat, double guessedLong){
+        LatLng realPos = new LatLng(realLat, realLong);
+        LatLng guessedPos = new LatLng(guessedLat, guessedLong);
+        return computeScore(realPos, guessedPos);
+    }
 }
