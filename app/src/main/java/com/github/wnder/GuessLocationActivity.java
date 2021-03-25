@@ -3,11 +3,9 @@ package com.github.wnder;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,12 +36,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Mapbox access token is configured here. This needs to be called either in your application
-        // object or in the same activity which contains the mapview.
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
-
-        // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_guess_location);
 
         mapView = findViewById(R.id.mapView);
@@ -76,13 +69,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                                 PropertyFactory.iconAllowOverlap(true)
                         ));
 
-                /*
-                Toast.makeText(
-                        GuessLocationActivity.this,
-                        getString(R.string.tap_on_map_instruction),
-                        Toast.LENGTH_LONG
-                ).show();*/
-
                 mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
 
             }
@@ -91,8 +77,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-// When the user clicks on the map, we want to animate the marker to that
-// location.
+
+        // When the user clicks on the map, we want to animate the marker to that location.
         if (animator != null && animator.isStarted()) {
             currentPosition = (LatLng) animator.getAnimatedValue();
             animator.cancel();
