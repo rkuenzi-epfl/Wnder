@@ -3,6 +3,7 @@ package com.github.wnder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +23,12 @@ import org.junit.runners.JUnit4;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(JUnit4.class)
@@ -138,5 +143,14 @@ public class StorageTesting {
                 assertThat(1, is(2));
             }
         });
+    }
+
+    @Test
+    public void getIdsWork() throws ExecutionException, InterruptedException {
+        Storage storage = new Storage();
+        CompletableFuture<Set<String>> ids = storage.getIdsOfAllUploadedPictures();
+        Set<String> idSet = ids.get();
+        Log.d("TAG", idSet.toString());
+        assertTrue(idSet.size() > 0);
     }
 }

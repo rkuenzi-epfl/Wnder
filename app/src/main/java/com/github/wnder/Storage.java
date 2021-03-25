@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -18,7 +19,11 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class Storage{
     private FirebaseFirestore db;
@@ -68,5 +73,32 @@ public class Storage{
      */
     public Task<DocumentSnapshot> downloadFromFirestore(String[] path){
         return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).get();
+    }
+
+    /**
+     * Returns a future containing all the ids of all the currently uploaded pictures on the db
+     * @return a future containing a set of string
+     */
+    public CompletableFuture<Set<String>> getIdsOfAllUploadedPictures(){
+        CompletableFuture<Set<String>> idsToReturn = new CompletableFuture<>();
+        Set<String> ids = new HashSet<>();
+
+        //If success, complete the future, if failure, complete the future with an empty hashset
+        db.collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                for(int i = 0; i < docs.size(); i++){
+                    ids.add(docs.get(i).getId());
+                }
+                idsToReturn.complete(ids);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                idsToReturn.complete(new HashSet<>());
+            }
+        });
+        return idsToReturn;
     }
 }
