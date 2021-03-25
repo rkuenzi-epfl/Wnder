@@ -5,7 +5,7 @@ import android.widget.ImageView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
-public class SignedInUser implements User{
+public class SignedInUser extends User{
 
     private String name;
     private Uri profilePicture;
@@ -19,10 +19,12 @@ public class SignedInUser implements User{
         this.profilePicture = profilePicture;
     }
 
+    @Override
     public String getName(){
         return name;
     }
 
+    @Override
     public Uri getProfilePicture(){
         return profilePicture;
     }

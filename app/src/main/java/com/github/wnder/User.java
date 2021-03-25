@@ -2,9 +2,15 @@ package com.github.wnder;
 
 import android.net.Uri;
 
-public interface User {
+import com.google.android.gms.maps.model.LatLng;
 
-    public String getName();
+public abstract class User {
 
-    public Uri getProfilePicture();
+    public abstract String getName();
+
+    public abstract Uri getProfilePicture();
+
+    public LatLng getPosition(){
+        return null;
+    }
 }
