@@ -45,67 +45,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        List<String> list = locationManager.getAllProviders();
+        String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
+        ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
 
-        boolean b = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-            onRequestPermissionsResult();
-
-            String[] ss = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-
-            ActivityCompat.requestPermissions(this, ss, 100);
-
-            //return;
-        }
-
-        //ActivityCompat.requestPermissions();
-
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location l) {
-                LatLng result = new LatLng(l.getLatitude(), l.getLongitude());
-
-                Log.d("TRUCC", "location changed");
-                System.out.println(l.getLatitude());
-                System.out.println(l.getLongitude());
-
-            }
-        };
-
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        Location l = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        LatLng result = new LatLng(l.getLatitude(), l.getLongitude());
-        System.out.println(l.getLatitude());
-        System.out.println(l.getLongitude());
-
-        /*if(b){
-            Log.d("TRUCC", "ok");
-        }
-
-        Log.d("TRUCC", "providers:");
-        //System.out.println("providers:");
-        for(String s : list) {
-            //System.out.println(s);
-            Log.d("TRUCC", s);
-        }*/
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-        if(requestCode == 100) { //permission location
-            
+        if(requestCode == 100) { //permission to get the location
+            for(int i = 0; i < permissions.length; ++i){
+                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)){
+                    if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                        //We are good
+                    }
+                    else{
+                        // TODO: What happens if the user did not accept?
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            }
         }
     }
 
