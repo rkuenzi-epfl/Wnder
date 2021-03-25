@@ -33,8 +33,8 @@ public class GuestUser implements User{
         Set<String> allIds = allIdsFuture.get();
 
         //If no image fits, return empty string
-        if(allIds.size() == 0){
-            return "";
+        if(0 == allIds.size()){
+            return new String();
         }
         //else, return randomly chosen string
         else{
