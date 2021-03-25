@@ -40,14 +40,14 @@ public class ExistingPicture implements Picture{
      * @param uniqueId
      * @return a task that succeed when all subtask succeed (fail otherwise)
      */
-    public static CompletableFuture<ExistingPicture> loadExistingPicture(String uniqueId){
+    public static CompletableFuture<Picture> loadExistingPicture(String uniqueId){
 
-        CompletableFuture<ExistingPicture> pictureFuture = new CompletableFuture<ExistingPicture>();
-        ExistingPicture picture = new ExistingPicture(uniqueId);
+        CompletableFuture<Picture> pictureFuture = new CompletableFuture<>();
         if(PictureCache.isInCache(uniqueId)){
-            pictureFuture.complete((ExistingPicture) PictureCache.getPicture(uniqueId));
+            pictureFuture.complete(PictureCache.getPicture(uniqueId));
             return pictureFuture;
         }
+        ExistingPicture picture = new ExistingPicture(uniqueId);
 
         picture.storage = new Storage();
 
@@ -246,7 +246,7 @@ public class ExistingPicture implements Picture{
             return pictureTask;
         }
 
-        public static void aggregate(ExistingPicture picture, CompletableFuture<ExistingPicture> pictureFuture){
+        public static void aggregate(ExistingPicture picture, CompletableFuture<Picture> pictureFuture){
             String uniqueId = picture.getUniqueId();
             picture.storage = new Storage();
 

@@ -27,7 +27,7 @@ public class ExistingPictureTesting {
         try{
             // Usually you'd use "thenApply()" to run another function when the future complete
             // Here with get() we want to wait for it to complete then test the class
-            testPic = ExistingPicture.loadExistingPicture("picture1").get();
+            testPic = (ExistingPicture) ExistingPicture.loadExistingPicture("picture1").get();
         } catch (Exception e){
             e.printStackTrace();
         }

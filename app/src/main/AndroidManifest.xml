@@ -12,7 +12,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
         <activity android:name=".GuessPreviewActivity" />
-        <activity android:name=".ScoreboardActivity"></activity>
+        <activity android:name=".ScoreboardActivity" android:exported="true"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
