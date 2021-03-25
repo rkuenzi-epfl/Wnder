@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.wnder">
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -8,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wnder">
+        <activity android:name=".GuessLocationActivity"></activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
         <activity android:name=".GuessPreviewActivity" />
@@ -19,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TakePictureActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.github.wnder.android.fileprovider"
@@ -26,7 +29,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 
