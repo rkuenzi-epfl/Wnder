@@ -39,7 +39,8 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void openGuessActivity() {
-        // TODO: open the guessing activity (the map to guess where the picture was taken)
+        Intent intent = new Intent(this, GuessLocationActivity.class);
+        startActivity(intent);
     }
 
     private void openPreviewActivity() {
