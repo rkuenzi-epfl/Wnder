@@ -38,11 +38,11 @@ public class GuestUser implements User{
         }
         //else, return randomly chosen string
         else{
-            Random rn = new Random();
-            int index = rn.nextInt(allIds.size());
-            List<String> ids = new ArrayList<>();
-            ids.addAll(allIds);
-            return ids.get(index);
+            List<String> idList = new ArrayList<>();
+            idList.addAll(allIds);
+            Random random = new Random();
+            int index = random.nextInt(allIds.size());
+            return idList.get(index);
         }
     }
 }
