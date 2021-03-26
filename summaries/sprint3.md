@@ -36,6 +36,11 @@ Next time, I will anticipate and make a higher time anticipation during the task
 
 ## Pablo
 
+I implemented a function to reduce the precision of a picture location. Since this was a pretty short task, I also did some refactoring to use a single class to store locations across the app.
+
+However, I did not start the UI part of the feature yet.
+
+Next time, I will try to get more involved in pull request reviews for instance.
 
 ## Romain 
 I added a Guest button to allow user to use the app without signing in. I also helped Nicolas to finish implementing the picture backend and then added a scoreboard activity. 
