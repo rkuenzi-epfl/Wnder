@@ -20,6 +20,11 @@ Next time, I want to see if it is possible to correct what I did wrong before.
 
 ## Léonard
 
+I modified the user implementation to add a way of getting the gps position of the phone.
+
+However, I did not finished the test yet and my implementation lack some informations on how we will handle user permissions.
+
+Next time, I will try to clarify everything with the team earlier about issues like this.
 
 ## Nicolas
 
