@@ -25,35 +25,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class Storage{
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+public final class Storage{
 
-
-    public Storage(){
-        this.db = FirebaseFirestore.getInstance();
-        this.storage = FirebaseStorage.getInstance();
-        this.storageRef = storage.getReference();
-    }
-
-    public Task<UploadTask.TaskSnapshot> uploadToCloudStorage(Uri uri, String databaseFilePath){
+    public static Task<UploadTask.TaskSnapshot> uploadToCloudStorage(Uri uri, String databaseFilePath){
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setContentType("image/jpeg")
                 .build();
         return storageRef.child(databaseFilePath).putFile(uri, metadata);
     }
 
-    public Task<byte[]> downloadFromCloudStorage(String filepath) {
+    public static Task<byte[]> downloadFromCloudStorage(String filepath) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         return storageRef.child(filepath).getBytes(Long.MAX_VALUE);
     }
 
-    public Task<Void> uploadToFirestore(Map<String, Object> map, String collection, String document){
-        return db.collection(collection).document(document).set(map);
+    public static Task<Void> uploadToFirestore(Map<String, Object> map, String collection, String document){
+        return FirebaseFirestore.getInstance().collection(collection).document(document).set(map);
     }
 
-    public Task<DocumentSnapshot> downloadFromFirestore(String collection, String document){
-        return db.collection(collection).document(document).get();
+    public static Task<DocumentSnapshot> downloadFromFirestore(String collection, String document){
+        return FirebaseFirestore.getInstance().collection(collection).document(document).get();
+    }
+
+    public static Task<QuerySnapshot> downloadCollectionFromFirestore(String collection){
+        return FirebaseFirestore.getInstance().collection(collection).get();
     }
 
     /**
@@ -62,8 +58,8 @@ public class Storage{
      * @param path path in the database(collection, document, collection, document)
      * @return the task
      */
-    public Task<Void> uploadToFirestore(Map<String, Object> map, String[] path){
-        return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).set(map);
+    public static Task<Void> uploadToFirestore(Map<String, Object> map, String[] path){
+        return FirebaseFirestore.getInstance().collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).set(map);
     }
 
     /**
@@ -71,20 +67,20 @@ public class Storage{
      * @param path path in the database(collection, document, collection, document)
      * @return the task
      */
-    public Task<DocumentSnapshot> downloadFromFirestore(String[] path){
-        return db.collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).get();
+    public static Task<DocumentSnapshot> downloadFromFirestore(String[] path){
+        return FirebaseFirestore.getInstance().collection(path[0]).document(path[1]).collection(path[2]).document(path[3]).get();
     }
 
     /**
      * Returns a future containing all the ids of all the currently uploaded pictures on the db
      * @return a future containing a set of string
      */
-    public CompletableFuture<Set<String>> getIdsOfAllUploadedPictures(){
+    public static CompletableFuture<Set<String>> getIdsOfAllUploadedPictures(){
         CompletableFuture<Set<String>> idsToReturn = new CompletableFuture<>();
         Set<String> ids = new HashSet<>();
 
         //If success, complete the future, if failure, complete the future with an empty hashset
-        db.collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();

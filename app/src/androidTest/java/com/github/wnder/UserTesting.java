@@ -36,11 +36,11 @@ public class UserTesting {
     public void getNewPictureForSignedInUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
         SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         String pic = u.getNewPicture();
-        FirebaseFirestore storage = FirebaseFirestore.getInstance();
 
         //Check that it is not in user's uploaded and guessed pictures
         Set<String> upAdownPics = new HashSet<>();
-        Task<DocumentSnapshot> task = storage.collection("users").document("testUser").get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+        Task<DocumentSnapshot> task = Storage.downloadFromFirestore("users", "testUser").addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
@@ -59,7 +59,7 @@ public class UserTesting {
 
         //Check that it's in the pool of pictures
         Set<String> allPictures = new HashSet<>();
-        Task<QuerySnapshot> task1 = storage.collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        Task<QuerySnapshot> task1 = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
@@ -83,10 +83,9 @@ public class UserTesting {
     public void getNewPictureForGuestUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
         User u = GlobalUser.getUser();
         String pic = u.getNewPicture();
-        FirebaseFirestore storage = FirebaseFirestore.getInstance();
 
         Set<String> allPictures = new HashSet<>();
-        Task<QuerySnapshot> task = storage.collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        Task<QuerySnapshot> task = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
