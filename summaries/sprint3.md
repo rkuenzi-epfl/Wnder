@@ -28,6 +28,11 @@ Next time, I will try to clarify everything with the team earlier about issues l
 
 ## Nicolas
 
+I was able to finish the picture backend that was assigned to me for the last sprint plus I was able to finish the task I had to do for this spring.
+
+However, I had a little trouble getting my test coverage right and Romain had to help me to for the finishing of it.
+
+Next time, I will anticipate and make a higher time anticipation during the tasks assignment, thus taking into account the fact that testing takes a lot of time.
 
 ## Pablo
 
