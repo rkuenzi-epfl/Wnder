@@ -30,3 +30,9 @@ Next time, if I work on an activity I should find a way to display it even witho
 
 ## Overall team
 
+All main tasks for this week were finished before the end of the sprint.
+
+However, we still underestimate in general the time that all the tasks take and couldn't finish all of them. It is also a shame that even though some of the task are done they are not present in the demo because not linked with the main app's activity yet. 
+
+Next time, we will discuss as a teamm at the beginning of the week better so that at the end of the week each one of us can integrate their own work on the main app in a way that it will show direct rewsults in the demo.
+
