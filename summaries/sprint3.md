@@ -11,6 +11,12 @@ Next time, I will discuss with my teammates better so that they can by merging a
 
 ## Jeremy
 
+I added an activity that takes a photo and stores it in the gallery and my time estimate was almost on point.
+
+However, I have noticed that there was some programming problems regarding what I've done last week.
+
+Next time, I want to see if it is possible to correct what I did wrong before.
+
 
 ## Léonard
 
