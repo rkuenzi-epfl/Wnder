@@ -35,8 +35,6 @@ import static org.hamcrest.core.Is.is;
 public class StorageTesting {
     @Test
     public void testUploadAndDownloadToFireStore(){
-        Storage storage = new Storage();
-
         Map<String, Object> testMap = new HashMap<>();
         testMap.put("Jeremy", "Jus d'orange");
         testMap.put("Léonard", "Lasagne");
@@ -47,10 +45,10 @@ public class StorageTesting {
 
         String collection = "test";
         String document = "doc";
-        storage.uploadToFirestore(testMap, collection, document).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Storage.uploadToFirestore(testMap, collection, document).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                storage.downloadFromFirestore(collection, document).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                Storage.downloadFromFirestore(collection, document).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         //Should happen
@@ -75,8 +73,6 @@ public class StorageTesting {
 
     @Test
     public void testUploadAndDownloadToFireStoreWithLongerPath(){
-        Storage storage = new Storage();
-
         Map<String, Object> testMap = new HashMap<>();
         testMap.put("Jeremy", "Jus d'orange");
         testMap.put("Léonard", "Lasagne");
@@ -86,10 +82,10 @@ public class StorageTesting {
         testMap.put("Pablo", "Android");
 
         String[] path = {"coll1", "doc1", "coll2", "doc2"};
-        storage.uploadToFirestore(testMap, path).addOnSuccessListener(new OnSuccessListener<Void>() {
+        Storage.uploadToFirestore(testMap, path).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                storage.downloadFromFirestore(path).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                Storage.downloadFromFirestore(path).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         //Should happen
@@ -116,13 +112,12 @@ public class StorageTesting {
     public void testUploadAndDownloadToCloudStorage(){
 
         Uri uri = Uri.parse("android.resource://raw/ladiag.jpg");
-        Storage storage = new Storage();
 
         String filepath = "test/ladiag.jpg";
-        storage.uploadToCloudStorage(uri, filepath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        Storage.uploadToCloudStorage(uri, filepath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                storage.downloadFromCloudStorage(filepath).addOnCompleteListener(new OnCompleteListener<byte[]>() {
+                Storage.downloadFromCloudStorage(filepath).addOnCompleteListener(new OnCompleteListener<byte[]>() {
                     @Override
                     public void onComplete(@NonNull Task<byte[]> task) {
                         assertThat(1, is(1));
@@ -131,7 +126,7 @@ public class StorageTesting {
             }
         });
 
-        storage.downloadFromCloudStorage(filepath).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        Storage.downloadFromCloudStorage(filepath).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bmp = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
@@ -147,8 +142,7 @@ public class StorageTesting {
 
     @Test
     public void getIdsWork() throws ExecutionException, InterruptedException {
-        Storage storage = new Storage();
-        CompletableFuture<Set<String>> ids = storage.getIdsOfAllUploadedPictures();
+        CompletableFuture<Set<String>> ids = Storage.getIdsOfAllUploadedPictures();
         Set<String> idSet = ids.get();
         Log.d("TAG", idSet.toString());
         assertTrue(idSet.size() > 0);

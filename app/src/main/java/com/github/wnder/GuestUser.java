@@ -26,10 +26,8 @@ public class GuestUser implements User{
      * @throws InterruptedException
      */
     public String getNewPicture() throws ExecutionException, InterruptedException{
-        Storage storage = new Storage();
-
         //Get the ids of all the uploaded pictures
-        CompletableFuture<Set<String>> allIdsFuture = storage.getIdsOfAllUploadedPictures();
+        CompletableFuture<Set<String>> allIdsFuture = Storage.getIdsOfAllUploadedPictures();
         Set<String> allIds = allIdsFuture.get();
 
         //If no image fits, return empty string

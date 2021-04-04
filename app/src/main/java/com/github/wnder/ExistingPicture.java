@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class ExistingPicture implements Picture{
-    //Storage
-    private Storage storage;
 
     //Image unique ID
     private String uniqueId;
@@ -48,8 +46,6 @@ public class ExistingPicture implements Picture{
             pictureFuture.complete((ExistingPicture) PictureCache.getPicture(uniqueId));
             return pictureFuture;
         }
-
-        picture.storage = new Storage();
 
         TaskAggregator.aggregate(picture, pictureFuture);
 
@@ -90,12 +86,12 @@ public class ExistingPicture implements Picture{
         userCoor.add(location.getLongitude());
         this.guesses.put(user, userCoor);
         String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
-        storage.uploadToFirestore(this.guesses, path1);
+        Storage.uploadToFirestore(this.guesses, path1);
 
         //userScores
         this.scoreboard.put(user, score);
         String[] path2 = {"pictures", this.uniqueId, "userData", "userScores"};
-        storage.uploadToFirestore(this.scoreboard, path2);
+        Storage.uploadToFirestore(this.scoreboard, path2);
     }
 
     /**
@@ -104,7 +100,7 @@ public class ExistingPicture implements Picture{
      */
     private void addToUserGuessedPictures(String user) {
         //user guessed pictures
-        storage.downloadFromFirestore("users", user).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        Storage.downloadFromFirestore("users", user).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
@@ -121,7 +117,7 @@ public class ExistingPicture implements Picture{
                 Map<String, Object> toUpload = new HashMap<>();
                 toUpload.put("guessedPics", guessedPictures);
                 toUpload.put("uploadedPics", uploadedPictures);
-                storage.uploadToFirestore(toUpload, "users", user);
+                Storage.uploadToFirestore(toUpload, "users", user);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -200,7 +196,7 @@ public class ExistingPicture implements Picture{
     private static class TaskAggregator{
 
         public static Task<DocumentSnapshot> getCoorTask(ExistingPicture picture){
-            Task<DocumentSnapshot> coorTask = picture.storage.downloadFromFirestore("pictures", picture.uniqueId);
+            Task<DocumentSnapshot> coorTask = Storage.downloadFromFirestore("pictures", picture.uniqueId);
             coorTask.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -229,14 +225,14 @@ public class ExistingPicture implements Picture{
                 });
             }
 
-            Task<DocumentSnapshot> guessTask = picture.storage.downloadFromFirestore(path);
+            Task<DocumentSnapshot> guessTask = Storage.downloadFromFirestore(path);
             guessTask.addOnSuccessListener(successFunction);
             return guessTask;
         }
 
         public static Task<byte[]> getPictureTask(ExistingPicture picture){
             //retrieve picture
-            Task<byte[]> pictureTask = picture.storage.downloadFromCloudStorage("pictures/"+picture.uniqueId+".jpg");
+            Task<byte[]> pictureTask = Storage.downloadFromCloudStorage("pictures/"+picture.uniqueId+".jpg");
             pictureTask.addOnSuccessListener(new OnSuccessListener<byte[]>() {
                 @Override
                 public void onSuccess(byte[] bytes) {
@@ -248,7 +244,6 @@ public class ExistingPicture implements Picture{
 
         public static void aggregate(ExistingPicture picture, CompletableFuture<ExistingPicture> pictureFuture){
             String uniqueId = picture.getUniqueId();
-            picture.storage = new Storage();
 
             Task<DocumentSnapshot> coorTask = getCoorTask(picture);
 
