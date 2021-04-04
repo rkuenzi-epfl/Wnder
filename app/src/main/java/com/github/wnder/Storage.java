@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public final class Storage{
-
     private Storage(){
         //Non-instanciable class
     }
