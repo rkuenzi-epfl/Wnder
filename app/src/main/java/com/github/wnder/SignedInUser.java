@@ -45,10 +45,8 @@ public class SignedInUser implements User{
      * @return a future that holds the ids of all the uploaded and guessed pictures of a user
      */
     public CompletableFuture<Set<String>> getUploadedAndGuessedPictures(){
-        Storage storage = new Storage();
-
         //Get the user data
-        Task<DocumentSnapshot> userData = storage.downloadFromFirestore("users", this.name);
+        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
         Set<String> allPictures = new HashSet<>();
         CompletableFuture<Set<String>> picturesToReturn = new CompletableFuture<>();
 
@@ -80,10 +78,8 @@ public class SignedInUser implements User{
      * @throws InterruptedException
      */
     public String getNewPicture() throws ExecutionException, InterruptedException {
-        Storage storage = new Storage();
-
         //Get the ids of all the uploaded pictures
-        CompletableFuture<Set<String>> allIdsFuture = storage.getIdsOfAllUploadedPictures();
+        CompletableFuture<Set<String>> allIdsFuture = Storage.getIdsOfAllUploadedPictures();
         Set<String> allIds = allIdsFuture.get();
 
         //Get the ids of all the pictures linked with the user (guessed or uploaded)
