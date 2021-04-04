@@ -27,6 +27,10 @@ import java.util.concurrent.CompletableFuture;
 
 public final class Storage{
 
+    private Storage(){
+        //Non-instanciable class
+    }
+
     public static Task<UploadTask.TaskSnapshot> uploadToCloudStorage(Uri uri, String databaseFilePath){
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageMetadata metadata = new StorageMetadata.Builder()
