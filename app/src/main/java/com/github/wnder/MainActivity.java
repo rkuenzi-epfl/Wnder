@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.getPictureButton).setOnClickListener(this);
         findViewById(R.id.uploadPictureButton).setOnClickListener(this);
+        findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
     }
 
     @Override
@@ -39,6 +40,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.getPictureButton:
                 openPreviewActivity();
+                break;
+            case R.id.menuToHistoryButton:
+                openHistoryActivity();
+                break;
+            default:
                 break;
             // Other buttons can be setup in this switch
         }
@@ -51,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
+        startActivity(intent);
+    }
+
+    private void openHistoryActivity() {
+        Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
 }

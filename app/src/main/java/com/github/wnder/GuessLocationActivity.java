@@ -3,6 +3,7 @@ package com.github.wnder;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -42,6 +43,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+        findViewById(R.id.confirmButton).setOnClickListener(this);
     }
 
     @Override
@@ -176,5 +178,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private void openGuessResultActivity() {
         //TODO Go to the Result Activity
+        Intent intent = new Intent(this, ScoreActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.wnder">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,10 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wnder">
-        <activity android:name=".GuessLocationActivity"></activity>
+        <activity android:name=".HistoryActivity"></activity>
+        <activity android:name=".PictureHistoryActivity" />
+        <activity android:name=".UploadActivity" />
+        <activity android:name=".ScoreBoardActivity" />
+        <activity android:name=".ScoreActivity" />
+        <activity android:name=".GuessLocationActivity"/>
         <activity android:name=".MainActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
-        <activity android:name=".GuessPreviewActivity" />
+        <activity android:name=".GuessPreviewActivity"
+            android:noHistory="true" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
