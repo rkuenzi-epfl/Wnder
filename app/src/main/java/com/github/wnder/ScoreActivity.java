@@ -23,7 +23,7 @@ public class ScoreActivity extends AppCompatActivity {
         goToMenu.setOnClickListener((view) -> {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
+            finish(); 
             startActivity(intent);
         });
         seeScoreBoard.setOnClickListener((view) -> {
