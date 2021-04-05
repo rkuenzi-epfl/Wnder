@@ -58,7 +58,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (intent != null) {
             extras = intent.getExtras();
         }
-        if (intent != null && extras != null) {
+        if (extras != null) {
             guessPosition = new LatLng(extras.getDouble(GuessPreviewActivity.EXTRA_GUESSLAT), extras.getDouble(GuessPreviewActivity.EXTRA_GUESSLNG));
             cameraPosition = new LatLng(extras.getDouble(GuessPreviewActivity.EXTRA_CAMERALAT), extras.getDouble(GuessPreviewActivity.EXTRA_CAMERALNG));
         } else {
