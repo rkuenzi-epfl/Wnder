@@ -20,6 +20,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -42,6 +43,8 @@ public class GuessLocationActivityInstrumentedTest  {
     @Test
     public void testButtonPress() {
         onView(withId(R.id.confirmButton)).perform(click());
+
+        Intents.intended(hasComponent(ScoreActivity.class.getName()));
     }
 
     @Test
