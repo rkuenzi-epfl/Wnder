@@ -83,3 +83,7 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+# MapBox tokens
+app/src/main/res/values/secretStrings.xml
+gradle.properties

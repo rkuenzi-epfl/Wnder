@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.user;
 
 import android.net.Uri;
 

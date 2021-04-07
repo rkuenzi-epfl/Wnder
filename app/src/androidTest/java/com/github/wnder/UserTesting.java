@@ -1,17 +1,17 @@
 package com.github.wnder;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

@@ -1,6 +1,9 @@
-package com.github.wnder;
+package com.github.wnder.user;
 
 import android.net.Uri;
+
+import com.github.wnder.R;
+import com.github.wnder.Storage;
 
 import java.util.ArrayList;
 import java.util.List;
