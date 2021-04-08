@@ -44,21 +44,13 @@ public class GetUserPositionTest {
 
     @Before
     public void setup(){
-        /*Intent i = new Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(InstrumentationRegistry.getInstrumentation().getTargetContext(), i, null);*/
-        //Settings.Secure.getString()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //with(getInstrumentation().uiAutomation) {
-            //...
                 InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("appops set " + InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName() + " android:mock_location allow");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //...
-            //}
         }
     }
 
@@ -83,32 +75,13 @@ public class GetUserPositionTest {
         locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
         locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
 
-
-
         Location l1 = user.getPositionFromGPS(locationManager, InstrumentationRegistry.getInstrumentation().getTargetContext());
-
-        /*try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
 
         location.setLatitude(60);
         locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
         Location l2 = user.getPositionFromGPS(locationManager, InstrumentationRegistry.getInstrumentation().getTargetContext());
 
-        /*try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
-        //Looper.loop();
-
-        //Looper.myLooper().quitSafely();
-
         assertThat(l1.getLatitude(), Matchers.is(50.0));
         assertThat(l2.getLatitude(), Matchers.is(60.0));
-        //assertThat(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude(), Matchers.is(60.0));
     }
 }

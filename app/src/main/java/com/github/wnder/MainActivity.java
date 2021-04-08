@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.getPictureButton).setOnClickListener(this);
         findViewById(R.id.uploadPictureButton).setOnClickListener(this);
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
 

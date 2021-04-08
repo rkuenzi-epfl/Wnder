@@ -27,20 +27,11 @@ public abstract class User {
 
     public Location getPositionFromGPS(LocationManager manager, Context context){
 
-        /*LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location l) {
-                position = new LatLng(l.getLatitude(), l.getLongitude());
-            }
-        };*/
-
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //TODO: Maybe ask for permission? Or just consider it to be an impossible case
             throw new IllegalStateException();
         }
-
-        //manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
-
+        
         return manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 }
