@@ -29,9 +29,9 @@ public abstract class User {
         
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //TODO: Maybe ask for permission? Or just consider it to be an impossible case
-            throw new IllegalStateException();
+            //throw new IllegalStateException();
         }
-        
+
         return manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 }
