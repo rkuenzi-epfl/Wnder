@@ -26,7 +26,7 @@ public abstract class User {
     public abstract Uri getProfilePicture();
 
     public Location getPositionFromGPS(LocationManager manager, Context context){
-
+        
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //TODO: Maybe ask for permission? Or just consider it to be an impossible case
             throw new IllegalStateException();

@@ -50,17 +50,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-        if(requestCode == 100) { //permission to get the location
-            for(int i = 0; i < permissions.length; ++i){
-                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)){
-                    if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
-                        //We are good
-                    }
-                    else{
-                        // TODO: What happens if the user did not accept?
-                        throw new UnsupportedOperationException();
-                    }
-                }
+        if(requestCode != 100){
+            return;
+        }
+        //permission to get the location
+        for(int i = 0; i < permissions.length; ++i){
+            if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
+                // TODO: What happens if the user did not accept?
+                throw new UnsupportedOperationException();
             }
         }
     }
