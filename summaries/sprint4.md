@@ -11,6 +11,7 @@ Next time, instead of wasting time on an issue for too long I will stop early my
 
 ## Jeremy
 
+This week, I refactored the Storage class which was not static and should  have been from the beginning. I also created a skeleton of all the activites we need for the app and made sure that all the transitions between activites were working.
 
 ## Léonard
 
