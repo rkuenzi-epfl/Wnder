@@ -5,11 +5,19 @@ check_android_task:
     TARGET: default
     ARCH: x86
     CC_TEST_REPORTER_ID: ENCRYPTED[483623932eccb8527e3bcd5192ddb65b4625037ddf2376a8151016db09c55f75f790781b1a1dc7190e04b83321f2f937]
+    SECRET_STRINGS: ENCRYPTED[61bea8cda2182a73e6c893a892586174a13a77f61cb2e753cdca944347d7e7246639942641b7e3cc9031e70b29cf7f79]
+    GRADLE_PROPERTIES: ENCRYPTED[60fd83fcbcd3638ee0c3f9ef462b6a2e8dce4baf85a7e964cdebef83fcf6ef49aa44705497f0312fc75b045c3672643c]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
     cpu: 8
     memory: 10G
+  secret_strings_file:
+    path: ./app/src/main/res/values/secretStrings.xml
+    variable_name: SECRET_STRINGS
+  gradle_properties_file:
+    path: ./gradle.properties
+    variable_name: GRADLE_PROPERTIES
   create_device_script:
     echo no | avdmanager create avd --force --name test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH"
   start_emulator_background_script:

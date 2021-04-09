@@ -1,34 +1,34 @@
-package com.github.wnder;
+package com.github.wnder.picture;
 
 import android.location.Location;
 import android.net.Uri;
+
+import com.github.wnder.Storage;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.UploadTask;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 
-public class NewPicture implements Picture{
+public class NewPicture extends Picture{
     //User id
     private String user;
 
-    //Image unique ID
-    private String uniqueId;
+    //Image content (as uri)
     private Uri uri;
 
-    //Image location
-    private Location location;
-
-    //User data for the image: global scoreboard + all guesses
-    private Map<String, Object> scoreboard;
-    //Map<[user ID], Map<[longitude/latitude], [value]>>
-    private Map<String, Object> guesses;
+    // Empty user data to create firebase documents
+    private Map<String, Object> emptyScoreboard;
+    private Map<String, Object> emptyGuesses;
 
     /**
      * Constructor for a new picture that doesn't exist in the db already
@@ -37,27 +37,25 @@ public class NewPicture implements Picture{
      * @param uri uri of the image
      */
     public NewPicture(String user, Location location, Uri uri){
+        //Unique id of the picture, depends on the user + the time
+        super(user + Calendar.getInstance().getTimeInMillis(), location);
+
         //instantiate parameters
         this.user = user;
-
-        this.location = location;
         this.uri = uri;
+
+        // Default creation value use the user as field name
 
         //default instantiation for the scoreboard
         //necessary to have the correct documents created in firestore
-        this.scoreboard = new HashMap<String, Object>();
-        this.scoreboard.put("default", -1.);
+        emptyScoreboard= new HashMap<>();
+        emptyScoreboard.put(user, -1.);
 
-        //default instantiation for the guesses
+        //default instantiation for the guesses ()
         //necessary to have the correct documents created in firestore
-        this.guesses = new HashMap<>();
-        ArrayList<Object> defaultCoordinates = new ArrayList<>();
-        defaultCoordinates.add(-1);
-        defaultCoordinates.add(-1);
-        this.guesses.put("default", defaultCoordinates);
-
-        //Unique id of the picture, depends on the user + the time
-        this.uniqueId = this.user + Calendar.getInstance().getTimeInMillis();
+        emptyGuesses = new HashMap<>();
+        GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
+        emptyGuesses.put(user, defaultGuess);
     }
 
     private void addPhotoToUploadedUserPhoto(){
@@ -74,8 +72,8 @@ public class NewPicture implements Picture{
                 if (uploadedPictures == null) {
                     uploadedPictures = new ArrayList<>();
                 }
-                if (!uploadedPictures.contains(uniqueId)){
-                    uploadedPictures.add(uniqueId);
+                if (!uploadedPictures.contains(getUniqueId())){
+                    uploadedPictures.add(getUniqueId());
                 }
                 Map<String, Object> toUpload = new HashMap<>();
                 toUpload.put("guessedPics", guessedPictures);
@@ -89,30 +87,31 @@ public class NewPicture implements Picture{
      * Send this picture to the database
      * @return true if the tasks were successfully created
      */
-    public Boolean sendPictureToDb(){
+    public CompletableFuture<Void> sendPictureToDb(){
+        CompletableFuture<Void> updateStatus= new CompletableFuture();
+
         //coordinates
         Map<String, Object> coordinates = new HashMap<>();
-        coordinates.put("longitude", this.location.getLatitude());
-        coordinates.put("latitude", this.location.getLongitude());
-        Storage.uploadToFirestore(coordinates, "pictures", this.uniqueId);
+        coordinates.put("latitude", this.getLocation().getLatitude());
+        coordinates.put("longitude", this.getLocation().getLongitude());
+        Task<Void> locationTask = Storage.uploadToFirestore(coordinates, "pictures", getUniqueId());
 
         //userGuesses
-        String[] path1 = {"pictures", this.uniqueId, "userData", "userGuesses"};
-        Storage.uploadToFirestore(this.guesses, path1);
+        String[] path1 = {"pictures", getUniqueId(), "userData", "userGuesses"};
+        Task<Void> guessesTask = Storage.uploadToFirestore(emptyGuesses, path1);
 
         //userScores
-        String[] path2 = {"pictures", this.uniqueId, "userData", "userGuesses"};
-        Storage.uploadToFirestore(this.scoreboard, path2);
+        String[] path2 = {"pictures", getUniqueId(), "userData", "userScores"};
+        Task<Void> scoreTask = Storage.uploadToFirestore(emptyScoreboard, path2);
 
         //Send picture to Cloud Storage
-        Storage.uploadToCloudStorage(this.uri, "pictures/"+this.uniqueId+".jpg");
+        Task<UploadTask.TaskSnapshot> pictureTask = Storage.uploadToCloudStorage(this.uri, "pictures/"+getUniqueId()+".jpg");
         this.addPhotoToUploadedUserPhoto();
 
-        return true;
-    }
-
-    public String getUniqueId(){
-        return uniqueId;
+        Tasks.whenAllSuccess(locationTask, guessesTask, scoreTask, pictureTask).addOnSuccessListener((results)->{
+            updateStatus.complete(null);
+        });
+        return updateStatus;
     }
 
     /**
@@ -123,15 +122,11 @@ public class NewPicture implements Picture{
         return uri;
     }
 
+    /**
+     * Returns the location of the image
+     * @return location of the picture
+     */
     public Location getLocation(){
-        return location;
-    }
-
-    public Map<String, Object> getScoreboard(){
-        return scoreboard;
-    }
-
-    public Map<String, Object> getGuesses(){
-        return guesses;
+        return new Location(location);
     }
 }
