@@ -6,65 +6,62 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
+import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-
+import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.turf.TurfTransformation;
 
+public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener{
+    public static final String EXTRA_CAMERA_LAT = "cameraLat";
+    public static final String EXTRA_CAMERA_LNG = "cameraLng";
+    public static final String EXTRA_PICTURE_LAT = "pictureLat";
+    public static final String EXTRA_PICTURE_LNG = "pictureLng";
 
-public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener, MapboxMap.OnMapClickListener{
-
-    private Intent intent;
-    private Bundle extras;
-
-    //Default parameters if there  isn't an extra attached to the intend of this activity (EPFL position)
-    final private double defaultGuessLat = 46.5197;
-    final private double defaultGuessLng = 6.5657;
-    final private double defaultCameraLat = 46.5197;
-    final private double defaultCameraLng = 6.5657;
+    private static final String GUESS_SOURCE_ID = "guess-source-id";
+    private static final String GUESS_LAYER_ID = "guess-layer-id";
+    private static final String GUESS_ICON_ID = "guess-icon-id";
+    private static final String PICTURE_SOURCE_ID = "picture-source-id";
+    private static final String PICTURE_LAYER_ID = "picture-layer-id";
 
     private MapView mapView;
     private MapboxMap mapboxMap;
-    private LatLng guessPosition;
     private LatLng cameraPosition;
-    private GeoJsonSource geoJsonSource;
+    private LatLng guessPosition;
+    private LatLng picturePosition;
+    private GeoJsonSource guessSource;
     private ValueAnimator animator;
 
-    /*
-     * MapBox gestion function
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        intent = getIntent();
-        if (intent != null) {
-            extras = intent.getExtras();
-        }
-        if (extras != null) {
-            guessPosition = new LatLng(extras.getDouble(GuessPreviewActivity.EXTRA_GUESSLAT), extras.getDouble(GuessPreviewActivity.EXTRA_GUESSLNG));
-            cameraPosition = new LatLng(extras.getDouble(GuessPreviewActivity.EXTRA_CAMERALAT), extras.getDouble(GuessPreviewActivity.EXTRA_CAMERALNG));
-        } else {
-            guessPosition = new LatLng(defaultGuessLat, defaultGuessLng);
-            cameraPosition = new LatLng(defaultCameraLat, defaultCameraLng);
-        }
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        double cameraLat = extras.getDouble(EXTRA_CAMERA_LAT);
+        double cameraLng = extras.getDouble(EXTRA_CAMERA_LNG);
+        cameraPosition = new LatLng(cameraLat, cameraLng);
+
+        guessPosition = new LatLng(cameraPosition);
+
+        double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
+        double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
+        picturePosition = new LatLng(pictureLat, pictureLng);
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
@@ -72,29 +69,28 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-        findViewById(R.id.confirmButton).setOnClickListener(this);
+
+        findViewById(R.id.confirmButton).setOnClickListener(id -> showActualLocation());
     }
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        //inisialisation of the camera position
         CameraPosition position = new CameraPosition.Builder().target(this.cameraPosition).build();
         this.mapboxMap.setCameraPosition(position);
 
-        geoJsonSource = new GeoJsonSource("source-id", Feature.fromGeometry(
+        guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Feature.fromGeometry(
                 Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude())));
 
         mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
-
-                style.addImage(("marker_icon"), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
-                style.addSource(geoJsonSource);
-                style.addLayer(new SymbolLayer("layer-id", "source-id")
+                style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                style.addSource(guessSource);
+                style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
                         .withProperties(
-                                PropertyFactory.iconImage("marker_icon"),
+                                PropertyFactory.iconImage(GUESS_ICON_ID),
                                 PropertyFactory.iconIgnorePlacement(true),
                                 PropertyFactory.iconAllowOverlap(true)
                         ));
@@ -128,13 +124,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     LatLng animatedPosition = (LatLng) valueAnimator.getAnimatedValue();
-                    geoJsonSource.setGeoJson(Point.fromLngLat(animatedPosition.getLongitude(), animatedPosition.getLatitude()));
+                    guessSource.setGeoJson(Point.fromLngLat(animatedPosition.getLongitude(), animatedPosition.getLatitude()));
                 }
             };
 
     // Class is used to interpolate the marker animation.
     private static final TypeEvaluator<LatLng> latLngEvaluator = new TypeEvaluator<LatLng>() {
-
         private final LatLng latLng = new LatLng();
 
         @Override
@@ -188,35 +183,18 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.onDestroy();
     }
 
-    /*
-     * Activity button flow gestion
-     */
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.confirmButton:
-                openGuessResultActivity();
-                break;
-            default:
-                break;
-            // Other buttons can be setup in this switch
-        }
-    }
+    private void showActualLocation() {
+        Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
+        Polygon circle = TurfTransformation.circle(point, 200, "meters");
+        GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
+        Style style = mapboxMap.getStyle();
+        style.addSource(pictureSource);
+        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
+                PropertyFactory.fillColor("#ff0000"),
+                PropertyFactory.fillOpacity(0.4f)
+        ));
 
-    private void openGuessResultActivity() {
-        //TODO Go to the Result Activity
-        //For now we keep the old idea
-        Intent intent = new Intent(this, ScoreActivity.class);
-        startActivity(intent);
-        finish();
-        /*
-         * Another and maybe better solution could be to display the result: score and actual position of the photo on this activity so that we don't have to reload the map in another activity.
-         * In that case clicking on "confirm guess" could
-         * 1 make the actual photo's position appear on the map with a marker and make a score appear
-         * 2 change the "confirm button" to a "GuessNewImage button" that put back the user to the GuesspreviewActivity
-         * 3 make appear a "scoreboard button" that could send the user to an activity where there is a full view of the scoreboard for that image
-         *
-         * This activity flow needs to be discussed with the tree-activity-flow Jemery is currently doing
-         */
+        CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
+        mapboxMap.setCameraPosition(position);
     }
 }
