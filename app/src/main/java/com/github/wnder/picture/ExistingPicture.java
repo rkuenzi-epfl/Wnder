@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
@@ -127,7 +128,7 @@ public class ExistingPicture extends Picture{
      * Modify the karma of a picture
      * @param delta the karma to add to the picture
      */
-    public CompletableFuture<Void> updateKarma(int delta){
+    public CompletableFuture<Void> updateKarma(int delta) {
         CompletableFuture toReturn = new CompletableFuture<>();
         onKarmaUpdated((pictureAttributes) -> {
             long newKarma = (long)pictureAttributes.get("karma") + delta;
@@ -138,5 +139,25 @@ public class ExistingPicture extends Picture{
             Storage.uploadToFirestore(toUpload, "pictures", getUniqueId()).addOnSuccessListener((result) -> toReturn.complete(null));
         });
         return toReturn;
+    }
+
+    /**
+     * Returns the picture's location with purposely reduced precision
+     * @return the location
+     */
+    public void onApproximateLocationAvailable(Consumer<Location> approximateLocationAvailable) {
+        onLocationAvailable((location) -> {
+            double radius = 200; // meters
+            Random random = new Random();
+            double distance = Math.sqrt(random.nextDouble()) * radius / 111000;
+            double angle = 2 * Math.PI * random.nextDouble();
+            double longitude_delta = distance * Math.cos(angle);
+            double latitude_delta = distance * Math.sin(angle);
+            longitude_delta /= Math.cos(Math.toRadians(location.getLatitude()));
+            Location al = new Location("");
+            al.setLongitude(location.getLongitude() + longitude_delta);
+            al.setLatitude(location.getLatitude() + latitude_delta);
+            approximateLocationAvailable.accept(al);
+        });
     }
 }
