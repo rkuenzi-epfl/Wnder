@@ -7,6 +7,9 @@ import android.location.Location;
 import com.github.wnder.Score;
 import com.github.wnder.Storage;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -28,7 +31,11 @@ public class ExistingPicture extends Picture{
 
     public ExistingPicture(String uniqueId){
         super(uniqueId);
-        addToUserGuessedPictures(GlobalUser.getUser().getName());
+        User user = GlobalUser.getUser();
+        if(user instanceof SignedInUser){
+
+            addToUserGuessedPictures(user.getName());
+        }
     }
 
     private void setBitmap(Bitmap bmp){

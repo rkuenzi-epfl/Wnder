@@ -3,8 +3,15 @@ package com.github.wnder;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.User;
 
 public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -25,7 +32,21 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onStart() {
         super.onStart();
-        // TODO: Get random image from DB and display it
+        User user = GlobalUser.getUser();
+        String picId = "";
+        try{
+            picId = user.getNewPicture();
+        } catch (Exception e){
+
+        }
+        if(!picId.equals("")){
+
+            new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+        } else{
+            // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+            setImageViewBitmap(bmp);
+        }
     }
 
     @Override
@@ -57,6 +78,11 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
+    }
+
+    private void setImageViewBitmap(Bitmap bmp){
+        ImageView img = findViewById(R.id.imagePreview);
+        img.setImageBitmap(bmp);
     }
 }
 
