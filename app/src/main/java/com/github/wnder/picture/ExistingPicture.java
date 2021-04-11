@@ -79,7 +79,7 @@ public class ExistingPicture extends Picture{
             // Send corresponding score
             onUpdatedScoreboardAvailable((scoreboard)-> {
 
-                Double score = Score.computeScore(location.getLatitude(), location.getLongitude(), guessedLocation.getLatitude(), guessedLocation.getLongitude());
+                Double score = Score.computeScore(location, guessedLocation);
                 scoreboard.put(user, score);
                 Map<String, Object> convertedScoreboard = new TreeMap<>();
                 for(Map.Entry<String, Double> e : scoreboard.entrySet()){
