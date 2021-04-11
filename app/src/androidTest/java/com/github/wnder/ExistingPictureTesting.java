@@ -116,4 +116,14 @@ public class ExistingPictureTesting {
             assertNotEquals(attributes.get("karma"), is(0L));
         });
     }
+
+    @Test
+    public void approximateLocationIsInRange(){
+        double radius = 200; // meters
+        double epsilon = 10; // meters
+        ExistingPicture pic = testPic;
+        pic.onLocationAvailable((location) -> pic.onApproximateLocationAvailable((approximateLocation) -> {
+            assertTrue(approximateLocation.distanceTo(location) < radius + epsilon);
+        }));
+    }
 }
