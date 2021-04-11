@@ -28,7 +28,11 @@ Next time, I will be more direct with my implementation to avoid unnecessary pro
 
 
 ## Romain 
+I moved the classes handling users and pictures to separate packages and I simplified and improved the picture classes.
 
+However, I did not manage to finish my other task (displaying the picture in the preview activity) and didn't find yet what the issue is.
+
+This time I started working on my tasks later than usual and could not finished them or ask my teammates for help, so for next time I should start earlier again.
 
 ## Overall team
 
