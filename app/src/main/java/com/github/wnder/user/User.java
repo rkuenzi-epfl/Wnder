@@ -3,6 +3,7 @@ package com.github.wnder.user;
 import android.net.Uri;
 
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public interface User {
 
@@ -10,5 +11,5 @@ public interface User {
 
     public Uri getProfilePicture();
 
-    public String getNewPicture() throws ExecutionException, InterruptedException;
+    public void onNewPictureAvailable(Consumer<String> pictureIdAvailable);
 }

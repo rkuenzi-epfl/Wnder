@@ -78,26 +78,7 @@ public final class Storage{
      * Returns a future containing all the ids of all the currently uploaded pictures on the db
      * @return a future containing a set of string
      */
-    public static CompletableFuture<Set<String>> getIdsOfAllUploadedPictures(){
-        CompletableFuture<Set<String>> idsToReturn = new CompletableFuture<>();
-        Set<String> ids = new HashSet<>();
-
-        //If success, complete the future, if failure, complete the future with an empty hashset
-        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                for(int i = 0; i < docs.size(); i++){
-                    ids.add(docs.get(i).getId());
-                }
-                idsToReturn.complete(ids);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                idsToReturn.complete(new HashSet<>());
-            }
-        });
-        return idsToReturn;
+    public static Task<QuerySnapshot> downloadFromFirestore(String collection){
+        return FirebaseFirestore.getInstance().collection(collection).get();
     }
 }

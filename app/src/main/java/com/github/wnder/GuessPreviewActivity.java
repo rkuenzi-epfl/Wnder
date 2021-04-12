@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+
+import java.util.concurrent.ExecutionException;
 
 public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -33,19 +36,21 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     protected void onStart() {
         super.onStart();
         User user = GlobalUser.getUser();
-        String picId = "";
-        try{
-            picId = user.getNewPicture();
-        } catch (Exception e){
 
-        }
-        if(!picId.equals("")){
+        try {
+            user.onNewPictureAvailable((picId) -> {
+                if(!picId.equals("")){
 
-            new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
-        } else{
-            // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
-            setImageViewBitmap(bmp);
+                    new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                } else{
+                    // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+                    setImageViewBitmap(bmp);
+                }
+            }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
