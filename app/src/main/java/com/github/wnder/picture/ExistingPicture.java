@@ -3,6 +3,7 @@ package com.github.wnder.picture;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Log;
 
 import com.github.wnder.Score;
 import com.github.wnder.Storage;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -121,18 +123,20 @@ public class ExistingPicture extends Picture{
         });
     }
 
-    public void updateKarma(int delta){
-        Storage.downloadFromFirestore("pictures", getUniqueId()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                //int karma = (int)documentSnapshot.get("karma");
-                //karma += delta;
-                Map<String, Object> toUpload = new HashMap<>();
-                toUpload.put("latitude", (int)documentSnapshot.get("latitude"));
-                toUpload.put("longitude", (int)documentSnapshot.get("longitude"));
-                //toUpload.put("karma", karma);
-                Storage.uploadToFirestore(toUpload, "pictures", getUniqueId());
-            }
+    /**
+     * Modify the karma of a picture
+     * @param delta the karma to add to the picture
+     */
+    public CompletableFuture<Void> updateKarma(int delta){
+        CompletableFuture toReturn = new CompletableFuture<>();
+        onKarmaUpdated((pictureAttributes) -> {
+            long newKarma = (long)pictureAttributes.get("karma") + delta;
+            Map<String, Object> toUpload = new HashMap<>();
+            toUpload.put("latitude", pictureAttributes.get("latitude"));
+            toUpload.put("longitude", pictureAttributes.get("longitude"));
+            toUpload.put("karma", newKarma);
+            Storage.uploadToFirestore(toUpload, "pictures", getUniqueId()).addOnSuccessListener((result) -> toReturn.complete(null));
         });
+        return toReturn;
     }
 }

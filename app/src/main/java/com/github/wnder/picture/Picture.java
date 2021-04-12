@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -103,11 +104,19 @@ public abstract class Picture {
         });
     }
 
-    public void onKarmaUpdated(Consumer<Integer> karmaAvailable){
+    /**
+     * Apply consumer function when the karma is available
+     * @param karmaAvailable consumer function to call when the karma is available
+     */
+    public void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
         Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", uniqueId);
         karmaTask.addOnSuccessListener((documentSnapshot) -> {
-            int karma = (int)documentSnapshot.get("karma");
-            karmaAvailable.accept(karma);
+            Map<String, Object> map = new HashMap<>();
+            //We put these attributes back because if we don't, they disappear from the db
+            map.put("latitude", documentSnapshot.getDouble("latitude"));
+            map.put("longitude", documentSnapshot.getDouble("longitude"));
+            map.put("karma", documentSnapshot.getLong("karma"));
+            karmaAvailable.accept(map);
         });
     }
 }
