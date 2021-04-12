@@ -8,6 +8,11 @@ import android.view.View;
 
 public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
 
+    public static final String EXTRA_GUESSLAT = "guessLat";
+    public static final String EXTRA_GUESSLNG = "guessLng";
+    public static final String EXTRA_CAMERALAT = "cameraLat";
+    public static final String EXTRA_CAMERALNG = "cameraLng";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +44,14 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void openGuessActivity() {
-        // TODO: open the guessing activity (the map to guess where the picture was taken)
+        Intent intent = new Intent(this, GuessLocationActivity.class);
+        Bundle b = new Bundle();
+        b.putDouble(EXTRA_GUESSLAT, 46.5197); //TODO instead of an arbitrary 5 get an appropriate double
+        b.putDouble(EXTRA_GUESSLNG, 6.5657); //TODO instead of an arbitrary 5 get an appropriate double
+        b.putDouble(EXTRA_CAMERALAT, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
+        b.putDouble(EXTRA_CAMERALNG, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     private void openPreviewActivity() {

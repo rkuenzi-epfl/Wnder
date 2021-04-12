@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import com.github.wnder.user.*;
 
 import android.Manifest;
 import android.app.AppOpsManager;
@@ -19,6 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.wnder.user.SignedInUser;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.hamcrest.Matchers;
@@ -58,7 +60,7 @@ public class GetUserPositionTest {
     public void PositionIsWithinRange(){
 
         LocationManager locationManager = (LocationManager) InstrumentationRegistry.getInstrumentation().getTargetContext().getSystemService(Context.LOCATION_SERVICE);
-        User user = new SignedInUser("test", null);
+        com.github.wnder.user.User user = new SignedInUser("test", null);
 
         Looper.prepare();
 

@@ -3,6 +3,11 @@ package com.github.wnder;
 
 import android.net.Uri;
 
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -10,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(RobolectricTestRunner.class)
@@ -65,5 +71,4 @@ public class UserTest {
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         GlobalUser.resetUser();
     }
-
 }

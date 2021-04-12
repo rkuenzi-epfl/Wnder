@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.user;
 
 public class GlobalUser{
 
