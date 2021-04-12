@@ -98,4 +98,9 @@ public class ExistingPictureTesting {
             assertThat(userGuesses.get("user0").getLongitude(), is(10d));
         });
     }
+
+    @Test
+    public void updateKarmaTest(){
+        testPic.updateKarma(-1);
+    }
 }
