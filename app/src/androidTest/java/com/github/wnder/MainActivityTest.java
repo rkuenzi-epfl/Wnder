@@ -54,4 +54,14 @@ public class MainActivityTest {
 
         Intents.release();
     }
+
+    @Test
+    public void testHistoryButton(){
+        Intents.init();
+        onView(withId(R.id.menuToHistoryButton)).perform(click());
+
+        Intents.intended(hasComponent(HistoryActivity.class.getName()));
+
+        Intents.release();
+    }
 }

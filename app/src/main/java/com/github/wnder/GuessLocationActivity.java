@@ -72,6 +72,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+        findViewById(R.id.confirmButton).setOnClickListener(this);
     }
 
     @Override
@@ -203,7 +204,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void openGuessResultActivity() {
-        //TODO Go to the Result Activity (might have to put extras to give the guessed and actual positions to the Result Activity)
+        //TODO Go to the Result Activity
+        //For now we keep the old idea
+        Intent intent = new Intent(this, ScoreActivity.class);
+        startActivity(intent);
+        finish();
         /*
          * Another and maybe better solution could be to display the result: score and actual position of the photo on this activity so that we don't have to reload the map in another activity.
          * In that case clicking on "confirm guess" could

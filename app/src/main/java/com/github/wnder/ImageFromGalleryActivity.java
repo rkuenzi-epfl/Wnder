@@ -19,6 +19,7 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
     private Uri imageUri;
     private TextView imageRef;
     private ImageView imageSelected;
+    private Button confirmButton;
     private static final int SELECT_IMAGE = 0;
 
     @Override
@@ -28,12 +29,16 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
         findImage = findViewById(R.id.getGalleryImage);
         imageRef = findViewById(R.id.textView);
         imageSelected = findViewById(R.id.imageSelected);
-        findImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-            }
+        confirmButton = findViewById(R.id.confirmUploadButton);
+        findImage.setOnClickListener((view) -> {
+            openGallery();
         });
+        confirmButton.setOnClickListener((view) -> {
+            Intent intent = new Intent(this, UploadActivity.class);
+            startActivity(intent);
+            this.finish();
+        });
+
 
     }
 
