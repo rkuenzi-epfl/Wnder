@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -99,5 +101,36 @@ public final class Storage{
             }
         });
         return idsToReturn;
+    }
+
+    /**
+     * Returns a future containing all the ids and locations of all the currently uploaded pictures on the db
+     * @return a future containing a map between strings and locations
+     */
+    public static CompletableFuture<Map<String, Location>> getIdsAndLocationOfAllUploadedPictures(){
+        CompletableFuture<Map<String, Location>> idsAndLocsToRet = new CompletableFuture<>();
+        Map<String, Location> idsAndLoc = new HashMap<>();
+
+        //If success, complete the future, if failure, complete the future with an empty hashmap
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                for(int i = 0; i < docs.size(); i++){
+                    Location loc = new Location("");
+                    loc.setLatitude((double)docs.get(i).get("latitude"));
+                    loc.setLongitude((double)docs.get(i).get("longitude"));
+
+                    idsAndLoc.put(docs.get(i).getId(), loc);
+                }
+                idsAndLocsToRet.complete(idsAndLoc);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                idsAndLocsToRet.complete(new HashMap<>());
+            }
+        });
+        return idsAndLocsToRet;
     }
 }

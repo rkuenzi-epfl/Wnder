@@ -11,4 +11,8 @@ public interface User {
     public Uri getProfilePicture();
 
     public String getNewPicture() throws ExecutionException, InterruptedException;
+
+    public int getRadius();
+
+    public void setRadius(int rad);
 }
