@@ -2,7 +2,7 @@ package com.github.wnder.user;
 
 import android.net.Uri;
 
-import com.github.wnder.Storage;
+import com.github.wnder.*;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class SignedInUser implements User{
+public class SignedInUser extends User{
 
     private String name;
     private Uri profilePicture;
@@ -29,10 +29,12 @@ public class SignedInUser implements User{
         this.profilePicture = profilePicture;
     }
 
+    @Override
     public String getName(){
         return name;
     }
 
+    @Override
     public Uri getProfilePicture(){
         return profilePicture;
     }
@@ -74,6 +76,7 @@ public class SignedInUser implements User{
      * @throws ExecutionException
      * @throws InterruptedException
      */
+    @Override
     public String getNewPicture() throws ExecutionException, InterruptedException {
         //Get the ids of all the uploaded pictures
         CompletableFuture<Set<String>> allIdsFuture = Storage.getIdsOfAllUploadedPictures();
