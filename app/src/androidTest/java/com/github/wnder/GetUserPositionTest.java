@@ -1,27 +1,18 @@
 package com.github.wnder;
 
-import com.github.wnder.user.*;
-
-import android.Manifest;
-import android.app.AppOpsManager;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.provider.Settings;
-import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.user.SignedInUser;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -29,10 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.regex.Matcher;
-
-import static androidx.core.content.ContextCompat.startActivity;
-import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
