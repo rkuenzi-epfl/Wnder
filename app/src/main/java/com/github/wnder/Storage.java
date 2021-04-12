@@ -118,8 +118,8 @@ public final class Storage{
                 List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
                 for(int i = 0; i < docs.size(); i++){
                     Location loc = new Location("");
-                    loc.setLatitude((double)docs.get(i).get("latitude"));
-                    loc.setLongitude((double)docs.get(i).get("longitude"));
+                    loc.setLatitude(Double.parseDouble(docs.get(i).get("latitude").toString()));
+                    loc.setLongitude(Double.parseDouble(docs.get(i).get("longitude").toString()));
 
                     idsAndLoc.put(docs.get(i).getId(), loc);
                 }

@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.location.Location;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -26,10 +27,40 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.google.android.gms.tasks.Tasks.await;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
 public class UserTesting {
+
+    @Test
+    public void getAndSetRadiusWorks(){
+        //Signed in user
+        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        u.setRadius(50);
+        assertThat(u.getRadius(), is(50));
+
+        //Guest user
+        User u1 = GlobalUser.getUser();
+        u1.setRadius(50);
+        assertThat(u1.getRadius(), is(50));
+        GlobalUser.resetUser();
+    }
+
+    private void ensureInRadius(String id, User u) throws InterruptedException, ExecutionException, TimeoutException {
+        Task<DocumentSnapshot> task = Storage.downloadFromFirestore("pictures", id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                float[] result = new float[1];
+                //TODO: replace with leonard's location getter
+                Location.distanceBetween((Double.parseDouble(documentSnapshot.get("latitude").toString())), Double.parseDouble(documentSnapshot.get("longitude").toString()), 0, 0, result);
+                assertTrue(result[0] <= u.getRadius());
+            }
+        });
+
+        await(task, 5, TimeUnit.SECONDS);
+    }
 
     @Test
     public void getNewPictureForSignedInUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
@@ -73,9 +104,12 @@ public class UserTesting {
                 assertTrue(false);
             }
         });
+
+        //Ensure location is in radius
+        ensureInRadius(pic, u);
+
         await(task, 5, TimeUnit.SECONDS);
         await(task1, 5, TimeUnit.SECONDS);
-
     }
 
     @Test
@@ -99,6 +133,10 @@ public class UserTesting {
                 assertTrue(false);
             }
         });
+
+        //Ensure location is in radius
+        ensureInRadius(pic, u);
+
         await(task, 5, TimeUnit.SECONDS);
         GlobalUser.resetUser();
     }
