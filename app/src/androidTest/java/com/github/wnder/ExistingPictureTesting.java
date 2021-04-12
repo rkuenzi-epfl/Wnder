@@ -35,9 +35,12 @@ public class ExistingPictureTesting {
         loc.setLatitude(22d);
         loc.setLongitude(44d);
         CompletableFuture guessSentResult = testPic.sendUserGuess("testUser", loc);
+        testPic.updateKarma(-1);
         try{
             // Make sure the picture finishes to upload before proceeding
+
             guessSentResult.get();
+            //karmaUpdated.get();
         } catch (Exception e){
 
         }
@@ -101,7 +104,6 @@ public class ExistingPictureTesting {
 
     @Test
     public void updateKarmaTest(){
-        testPic.updateKarma(-1);
         testPic.onKarmaUpdated((karma) -> {
             assertThat(karma, is(-1));
         });

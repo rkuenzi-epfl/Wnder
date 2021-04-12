@@ -121,20 +121,18 @@ public class ExistingPicture extends Picture{
         });
     }
 
-    public CompletableFuture<Void> updateKarma(int delta){
-        CompletableFuture karmaUpdated = new CompletableFuture();
+    public void updateKarma(int delta){
         Storage.downloadFromFirestore("pictures", getUniqueId()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                int karma = (int)documentSnapshot.get("karma");
-                karma += delta;
+                //int karma = (int)documentSnapshot.get("karma");
+                //karma += delta;
                 Map<String, Object> toUpload = new HashMap<>();
                 toUpload.put("latitude", (int)documentSnapshot.get("latitude"));
                 toUpload.put("longitude", (int)documentSnapshot.get("longitude"));
-                toUpload.put("karma", karma);
-                Storage.uploadToFirestore(toUpload, "pictures", getUniqueId()).addOnSuccessListener((result)-> karmaUpdated.complete(null));
+                //toUpload.put("karma", karma);
+                Storage.uploadToFirestore(toUpload, "pictures", getUniqueId());
             }
         });
-        return karmaUpdated;
     }
 }
