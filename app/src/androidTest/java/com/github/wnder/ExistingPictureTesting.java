@@ -102,5 +102,8 @@ public class ExistingPictureTesting {
     @Test
     public void updateKarmaTest(){
         testPic.updateKarma(-1);
+        testPic.onKarmaUpdated((karma) -> {
+            assertThat(karma, is(-1));
+        });
     }
 }

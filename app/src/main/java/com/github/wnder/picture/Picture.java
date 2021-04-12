@@ -102,4 +102,12 @@ public abstract class Picture {
             guessesAvailable.accept(convertedResult);
         });
     }
+
+    public void onKarmaUpdated(Consumer<Integer> karmaAvailable){
+        Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", uniqueId);
+        karmaTask.addOnSuccessListener((documentSnapshot) -> {
+            int karma = (int)documentSnapshot.get("karma");
+            karmaAvailable.accept(karma);
+        });
+    }
 }
