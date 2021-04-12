@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 public abstract class User {
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
-    protected int radius;
+    protected int radius = 5;
 
     //location, null if non-valid
     protected Location location;
