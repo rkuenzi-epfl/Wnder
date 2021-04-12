@@ -1,13 +1,10 @@
-package com.github.wnder;
+package com.github.wnder.user;
 
 import android.net.Uri;
-import android.util.Log;
-import android.widget.ImageView;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.github.wnder.Storage;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;

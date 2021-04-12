@@ -3,6 +3,9 @@ package com.github.wnder;
 import android.location.Location;
 import android.net.Uri;
 
+import com.github.wnder.picture.NewPicture;
+import com.github.wnder.picture.Picture;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,36 +13,38 @@ import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static java.lang.Thread.sleep;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
 public class NewPictureTesting {
 
     private static NewPicture pic;
-    private static Picture picAsPicture;
-
+    private static String userName = "testUser";
 
     @BeforeClass
     public static void createPic() throws InterruptedException {
         Location loc = new Location("");
-        loc.setLatitude(0d);
-        loc.setLongitude(0d);
-        pic = new NewPicture("testUser", loc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        picAsPicture = (Picture) pic;
-        sleep(3000);
-    }
+        loc.setLatitude(10d);
+        loc.setLongitude(5d);
+        pic = new NewPicture(userName, loc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        CompletableFuture uploadStatus = pic.sendPictureToDb();
+        try{
+            // Make sure the picture finishes to upload before proceeding
+            uploadStatus.get();
+        } catch (Exception e){
 
-    @Test
-    public void sendPictureToDbWorks(){
-        assertEquals(true, pic.sendPictureToDb());
+        }
     }
 
     @Test
     public void uniqueIdHasGoodFormat(){
-        assertTrue(picAsPicture.getUniqueId().matches("testUser\\d+"));
+        assertTrue(pic.getUniqueId().matches("testUser\\d+"));
     }
 
     @Test
@@ -48,27 +53,29 @@ public class NewPictureTesting {
     }
 
     @Test
-    public void getLongitudeAndGetLatitudeWork(){
-        Location latlng = picAsPicture.getLocation();
-        assertEquals(0, latlng.getLatitude(), 0);
-        assertEquals(0, latlng.getLongitude(), 0);
+    public void onLocationAvailableWorksForNewPicture(){
+        pic.onLocationAvailable((location)->{
+            assertThat(location.getLatitude(), is(10d));
+            assertThat(location.getLongitude(), is(5d));
+        });
     }
 
     @Test
     public void scoreboardCorrectlyInitialized(){
-        Map<String, Object> scoreboard = picAsPicture.getScoreboard();
-        assertTrue(scoreboard.size() == 1);
-        assertTrue(scoreboard.containsKey("default"));
-        assertTrue((Double)scoreboard.get("default") == -1);
+        pic.onUpdatedScoreboardAvailable((scoreboard)->{
+            assertThat(scoreboard.size(), is(1));
+            assertTrue(scoreboard.containsKey(userName));
+            assertThat(scoreboard.get(userName), is(-1d));
+        });
     }
 
     @Test
     public void guessesCorrectlyInitialized(){
-        Map<String, Object> guesses = picAsPicture.getGuesses();
-        assertTrue(guesses.size() == 1);
-        assertTrue(guesses.containsKey("default"));
-        Object guess = guesses.get("default");
-        assertTrue(((ArrayList<Integer>) guess).get(0) == -1);
-        assertTrue(((ArrayList<Integer>) guess).get(1) == -1);
+        pic.onUpdatedGuessesAvailable((userGuesses)->{
+            assertThat(userGuesses.size(), is(1));
+            assertTrue(userGuesses.containsKey(userName));
+            assertThat(userGuesses.get(userName).getLatitude(), is(10d));
+            assertThat(userGuesses.get(userName).getLongitude(), is(5d));
+        });
     }
 }

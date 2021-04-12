@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.User;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 

@@ -3,18 +3,14 @@ package com.github.wnder;
 
 import android.net.Uri;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
