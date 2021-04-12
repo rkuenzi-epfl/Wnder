@@ -19,11 +19,6 @@ import java.util.concurrent.ExecutionException;
 
 public class GuestUser extends User{
 
-    //Radius: the images will be taken into this radius around the user's location, in kilometers
-    private int radius = 5;
-    //location, null if non-valid
-    private Location location;
-
     @Override
     public String getName(){
         return "Guest";
@@ -32,25 +27,6 @@ public class GuestUser extends User{
     @Override
     public Uri getProfilePicture(){
         return Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag);
-    }
-
-    /**
-     * returns a map with only the ids of the photos in the radius of the user
-     * @param idsAndLocs the ids associated with the locations of the pictures
-     * @return a set of string with the ids of the pictures respecting the criteria
-     */
-    private Set<String> keepOnlyInRadius(Map<String, Location> idsAndLocs){
-
-        Set<String> correctIds = new HashSet<>();
-        for(Map.Entry<String, Location> entry : idsAndLocs.entrySet()){
-            float[] res = new float[1];
-            //TODO: replace with location getter from leonard
-            Location.distanceBetween(entry.getValue().getLatitude(), entry.getValue().getLongitude(), location.getLatitude(), location.getLongitude(), res);
-            if(res[0] < radius*1000){
-                correctIds.add(entry.getKey());
-            }
-        }
-        return correctIds;
     }
 
     /**
