@@ -67,6 +67,7 @@ public class GetUserPositionTest {
         Location l1 = user.getPositionFromGPS(locationManager, InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         location.setLatitude(60);
+        locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
         locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
         Location l2 = user.getPositionFromGPS(locationManager, InstrumentationRegistry.getInstrumentation().getTargetContext());
 
