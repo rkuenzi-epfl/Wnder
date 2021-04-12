@@ -3,8 +3,10 @@ package com.github.wnder;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -25,6 +27,8 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onStart() {
         super.onStart();
+        ImageView image = findViewById(R.id.imagePreview);
+        image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         // TODO: Get random image from DB and display it
     }
 
@@ -52,6 +56,7 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
         b.putDouble(EXTRA_CAMERALNG, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
         intent.putExtras(b);
         startActivity(intent);
+        finish();
     }
 
     private void openPreviewActivity() {
