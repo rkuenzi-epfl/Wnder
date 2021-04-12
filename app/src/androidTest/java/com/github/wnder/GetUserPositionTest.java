@@ -64,11 +64,24 @@ public class GetUserPositionTest {
         locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
         locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Location l1 = user.getPositionFromGPS(locationManager, InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         location.setLatitude(60);
         locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
         locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Location l2 = user.getPositionFromGPS(locationManager, InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         assertThat(l1.getLatitude(), Matchers.is(50.0));
