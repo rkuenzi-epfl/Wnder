@@ -3,7 +3,12 @@
     package="com.github.wnder"
     xmlns:dist="http://schemas.android.com/apk/distribution">
 
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <dist:module dist:instant="true" />
 

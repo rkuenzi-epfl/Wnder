@@ -3,7 +3,7 @@ package com.github.wnder.user;
 import android.net.Uri;
 
 import com.github.wnder.R;
-import com.github.wnder.Storage;
+import com.github.wnder.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +12,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class GuestUser implements User{
+public class GuestUser extends User{
 
+    @Override
     public String getName(){
         return "Guest";
     }
 
+    @Override
     public Uri getProfilePicture(){
         return Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag);
     }
@@ -28,6 +30,7 @@ public class GuestUser implements User{
      * @throws ExecutionException
      * @throws InterruptedException
      */
+    @Override
     public String getNewPicture() throws ExecutionException, InterruptedException{
         //Get the ids of all the uploaded pictures
         CompletableFuture<Set<String>> allIdsFuture = Storage.getIdsOfAllUploadedPictures();
