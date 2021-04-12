@@ -44,6 +44,20 @@
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/radiusTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Radius:" />
+
+    <SeekBar
+        android:id="@+id/radiusSeekBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="6"
+        android:progress="2" />
+
     <Button
         android:id="@+id/uploadPictureButton"
         android:layout_width="match_parent"

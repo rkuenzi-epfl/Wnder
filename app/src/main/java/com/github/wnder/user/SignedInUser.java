@@ -1,5 +1,6 @@
 package com.github.wnder.user;
 
+import android.content.res.Resources;
 import android.location.Location;
 import android.net.Uri;
 
@@ -22,7 +23,7 @@ public class SignedInUser implements User{
     private String name;
     private Uri profilePicture;
 
-    //Radius: the images will be taken into this radius around the user's location, in meters
+    //Radius: the images will be taken into this radius around the user's location, in kilometers
     private int radius;
 
     // These are guesses on future fields for a user
@@ -33,7 +34,7 @@ public class SignedInUser implements User{
 
         this.name = name;
         this.profilePicture = profilePicture;
-        this.radius = 5000;
+        this.radius = 5;
     }
 
     public String getName(){
@@ -102,7 +103,8 @@ public class SignedInUser implements User{
             float[] res = new float[1];
             //TODO: replace with location getter from leonard
             Location.distanceBetween(entry.getValue().getLatitude(), entry.getValue().getLongitude(), 0, 0, res);
-            if(res[0] < radius){
+            Resources resources;
+            if(res[0] < radius*1000){
                 correctIds.add(entry.getKey());
             }
         }

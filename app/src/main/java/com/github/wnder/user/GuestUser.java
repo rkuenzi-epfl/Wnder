@@ -17,8 +17,8 @@ import java.util.concurrent.ExecutionException;
 
 public class GuestUser implements User{
 
-    //Radius: the images will be taken into this radius around the user's location, in meters
-    private int radius = 5000;
+    //Radius: the images will be taken into this radius around the user's location, in kilometers
+    private int radius = 5;
 
     public String getName(){
         return "Guest";
@@ -39,7 +39,7 @@ public class GuestUser implements User{
             float[] res = new float[1];
             //TODO: replace with location getter from leonard
             Location.distanceBetween(entry.getValue().getLatitude(), entry.getValue().getLongitude(), 0, 0, res);
-            if(res[0] < radius){
+            if(res[0] < radius*1000){
                 correctIds.add(entry.getKey());
             }
         }
