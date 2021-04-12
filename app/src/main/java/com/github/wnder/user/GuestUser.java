@@ -1,10 +1,12 @@
 package com.github.wnder.user;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import com.github.wnder.R;
-import com.github.wnder.Storage;
+import com.github.wnder.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,15 +17,19 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class GuestUser implements User{
+public class GuestUser extends User{
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     private int radius = 5;
+    //location, null if non-valid
+    private Location location;
 
+    @Override
     public String getName(){
         return "Guest";
     }
 
+    @Override
     public Uri getProfilePicture(){
         return Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag);
     }
@@ -34,11 +40,12 @@ public class GuestUser implements User{
      * @return a set of string with the ids of the pictures respecting the criteria
      */
     private Set<String> keepOnlyInRadius(Map<String, Location> idsAndLocs){
+
         Set<String> correctIds = new HashSet<>();
         for(Map.Entry<String, Location> entry : idsAndLocs.entrySet()){
             float[] res = new float[1];
             //TODO: replace with location getter from leonard
-            Location.distanceBetween(entry.getValue().getLatitude(), entry.getValue().getLongitude(), 0, 0, res);
+            Location.distanceBetween(entry.getValue().getLatitude(), entry.getValue().getLongitude(), location.getLatitude(), location.getLongitude(), res);
             if(res[0] < radius*1000){
                 correctIds.add(entry.getKey());
             }
@@ -52,6 +59,7 @@ public class GuestUser implements User{
      * @throws ExecutionException
      * @throws InterruptedException
      */
+    @Override
     public String getNewPicture() throws ExecutionException, InterruptedException{
         //Get the ids of all the uploaded pictures
         CompletableFuture<Map<String, Location>> allIdsAndLocsFuture = Storage.getIdsAndLocationOfAllUploadedPictures();
@@ -86,5 +94,21 @@ public class GuestUser implements User{
      */
     public void setRadius(int rad){
         this.radius = rad;
+    }
+
+    /**
+     * get user location
+     * @return last known location
+     */
+    public Location getLocation(){
+        return location;
+    }
+
+    /**
+     * set user location
+     * @param loc location, null if non-valid
+     */
+    public void setLocation(Location loc){
+        this.location = loc;
     }
 }

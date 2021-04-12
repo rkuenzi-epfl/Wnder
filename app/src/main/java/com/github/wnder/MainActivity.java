@@ -1,19 +1,23 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.User;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+
+import com.github.wnder.user.*;
+
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
@@ -53,10 +57,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         
         radiusSeekBar.setOnSeekBarChangeListener(this);
 
+        //rights for location services
+        String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
+        ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(requestCode != 100){
+            return;
+        }
+        //permission to get the location
+        for(int i = 0; i < permissions.length; ++i){
+            if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
+                // TODO: What happens if the user did not accept?
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     @Override
     public void onClick(View v) {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
         switch (v.getId()) {
             case R.id.uploadPictureButton:
                 openUploadActivity();

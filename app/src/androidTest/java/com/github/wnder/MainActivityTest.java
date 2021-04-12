@@ -30,6 +30,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -51,6 +52,8 @@ public class MainActivityTest {
         Intents.init();
         onView(withId(R.id.getPictureButton)).perform(click());
 
+        assertTrue(GlobalUser.getUser().getLocation() != null);
+        GlobalUser.resetUser();
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
 
         Intents.release();
@@ -62,6 +65,7 @@ public class MainActivityTest {
         onView(withId(R.id.uploadPictureButton)).perform(click());
 
         Intents.intended(hasComponent(ImageFromGalleryActivity.class.getName()));
+        assertTrue(GlobalUser.getUser().getLocation() != null);
 
         Intents.release();
     }
