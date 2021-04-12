@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Wnder</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoiYWxvaXNtYXR0ZWkiLCJhIjoiY2ttb21xejR5MjV0azJ6bnprbWFieGFjbiJ9.8Lboj-vY8gv6BUY0CDy20w</string>
     <string name="title_activity_score">ScoreActivity</string>
     <!--
     This string is used for square devices and overridden by hello_world in
