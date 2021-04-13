@@ -47,6 +47,18 @@ public final class Storage{
         return FirebaseFirestore.getInstance().collection(collection).document(document).set(map);
     }
 
+    /**
+     * Update a field in a given document in a given collection on firestore
+     * @param collection the collection in which to update
+     * @param document the document to update
+     * @param field the field to update
+     * @param newValue the new value
+     * @return the task
+     */
+    public static Task<Void> updateOnFirestore(String collection, String document, String field, Object newValue){
+        return FirebaseFirestore.getInstance().collection(collection).document(document).update(field, newValue);
+    }
+
     public static Task<DocumentSnapshot> downloadFromFirestore(String collection, String document){
         return FirebaseFirestore.getInstance().collection(collection).document(document).get();
     }
