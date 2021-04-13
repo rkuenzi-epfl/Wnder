@@ -20,6 +20,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -48,6 +49,12 @@ public class ImageFromGalleryInstrumentedTest  {
     public void testGalleryOpens() {
         onView(withId(R.id.getGalleryImage)).perform(click());
         intended(hasAction(Intent.ACTION_PICK));
+    }
+
+    @Test
+    public void testConfirmButton() {
+        onView(withId(R.id.confirmUploadButton)).perform(click());
+        Intents.intended(hasComponent(UploadActivity.class.getName()));
     }
 
     @Test

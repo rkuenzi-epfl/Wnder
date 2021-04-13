@@ -1,16 +1,20 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.User;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+
+import com.github.wnder.user.*;
+
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,6 +36,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.getPictureButton).setOnClickListener(this);
         findViewById(R.id.uploadPictureButton).setOnClickListener(this);
+        findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
+
+        String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
+        ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(requestCode != 100){
+            return;
+        }
+        //permission to get the location
+        for(int i = 0; i < permissions.length; ++i){
+            if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
+                // TODO: What happens if the user did not accept?
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     @Override
@@ -42,6 +65,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.getPictureButton:
                 openPreviewActivity();
+                break;
+            case R.id.menuToHistoryButton:
+                openHistoryActivity();
+                break;
+            default:
                 break;
             // Other buttons can be setup in this switch
         }
@@ -54,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
+        startActivity(intent);
+    }
+
+    private void openHistoryActivity() {
+        Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
 }
