@@ -1,18 +1,23 @@
 package com.github.wnder;
 
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.github.wnder.picture.NewPicture;
+import com.github.wnder.user.GlobalUser;
+
+import java.util.concurrent.CompletableFuture;
 
 public class ImageFromGalleryActivity extends AppCompatActivity {
     private Button findImage;
@@ -21,6 +26,7 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
     private ImageView imageSelected;
     private Button confirmButton;
     private static final int SELECT_IMAGE = 0;
+    public static final String HAS_SUCCEEDED = "success";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,10 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
             openGallery();
         });
         confirmButton.setOnClickListener((view) -> {
+            boolean hasSucceeded = sendImageToDB();
+
             Intent intent = new Intent(this, UploadActivity.class);
+            intent.putExtra(HAS_SUCCEEDED, hasSucceeded);
             startActivity(intent);
             this.finish();
         });
@@ -64,6 +73,39 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
             // Commented out for now: image URI don't look that great
             //imageRef.setText(imageUri.toString());
             imageSelected.setImageURI(imageUri);
+        }
+    }
+
+    private boolean sendImageToDB(){
+        try {
+
+            Location loc = new Location(LocationManager.GPS_PROVIDER);
+            ExifInterface exif = new ExifInterface(imageUri.getPath());
+            float[] latLng = new float[2];
+            boolean hasTag = exif.getLatLong(latLng);
+
+            if(!hasTag){
+                return false;
+            }
+
+            loc.setLatitude(latLng[0]);
+            loc.setLongitude(latLng[1]);
+
+            NewPicture picture = new NewPicture(GlobalUser.getUser().getName(), loc, imageUri);
+
+            CompletableFuture<Void> futur = picture.sendPictureToDb();
+            futur.get();
+
+            //this.finishAffinity();
+
+            return true;
+
+        } catch (Exception e) {
+            Log.w("Upload", e.getMessage());
+
+            this.finishAffinity();
+
+            return false;
         }
     }
 
