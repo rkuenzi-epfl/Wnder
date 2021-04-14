@@ -131,11 +131,7 @@ public class ExistingPicture extends Picture{
         CompletableFuture toReturn = new CompletableFuture<>();
         onKarmaUpdated((pictureAttributes) -> {
             long newKarma = (long)pictureAttributes.get("karma") + delta;
-            Map<String, Object> toUpload = new HashMap<>();
-            toUpload.put("latitude", pictureAttributes.get("latitude"));
-            toUpload.put("longitude", pictureAttributes.get("longitude"));
-            toUpload.put("karma", newKarma);
-            Storage.uploadToFirestore(toUpload, "pictures", getUniqueId()).addOnSuccessListener((result) -> toReturn.complete(null));
+            Storage.updateOnFirestore("pictures", getUniqueId(), "karma", newKarma).addOnSuccessListener((result) -> toReturn.complete(null));
         });
         return toReturn;
     }
