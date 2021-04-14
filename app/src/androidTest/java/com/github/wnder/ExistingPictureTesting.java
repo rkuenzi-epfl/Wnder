@@ -27,7 +27,7 @@ import static org.mockito.Mockito.spy;
 public class ExistingPictureTesting {
 
     private static ExistingPicture testPic;
-
+    private static Location loc;
 
     @BeforeClass
     public static void getTestPic(){
@@ -85,7 +85,7 @@ public class ExistingPictureTesting {
             Location guessedLoc = new Location("");
             guessedLoc.setLatitude(22d);
             guessedLoc.setLongitude(44d);
-            assertThat(scoreboard.get("testUser"), is(Score.computeScore(actualLoc, guessedLoc)));
+            assertThat(scoreboard.get("testUser"), is(Score.computeScore(loc, guessedLoc)));
         });
     }
 
@@ -122,8 +122,8 @@ public class ExistingPictureTesting {
         double radius = 200; // meters
         double epsilon = 10; // meters
         ExistingPicture pic = testPic;
-        pic.onLocationAvailable((location) -> pic.onApproximateLocationAvailable((approximateLocation) -> {
-            assertTrue(approximateLocation.distanceTo(location) < radius + epsilon);
-        }));
+        pic.onApproximateLocationAvailable((approximateLocation) -> {
+            assertTrue(approximateLocation.distanceTo(loc) < radius + epsilon);
+        });
     }
 }
