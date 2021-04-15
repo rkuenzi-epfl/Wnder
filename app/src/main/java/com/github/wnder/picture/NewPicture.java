@@ -91,10 +91,11 @@ public class NewPicture extends Picture{
         CompletableFuture<Void> updateStatus= new CompletableFuture();
 
         //coordinates
-        Map<String, Object> coordinates = new HashMap<>();
-        coordinates.put("latitude", this.getLocation().getLatitude());
-        coordinates.put("longitude", this.getLocation().getLongitude());
-        Task<Void> locationTask = Storage.uploadToFirestore(coordinates, "pictures", getUniqueId());
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("latitude", this.getLocation().getLatitude());
+        attributes.put("longitude", this.getLocation().getLongitude());
+        attributes.put("karma", 0);
+        Task<Void> locationTask = Storage.uploadToFirestore(attributes, "pictures", getUniqueId());
 
         //userGuesses
         String[] path1 = {"pictures", getUniqueId(), "userData", "userGuesses"};
