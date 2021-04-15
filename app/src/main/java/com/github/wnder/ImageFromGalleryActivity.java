@@ -4,15 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class ImageFromGalleryActivity extends AppCompatActivity {
     private Button findImage;
@@ -21,6 +18,7 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
     private ImageView imageSelected;
     private Button confirmButton;
     private static final int SELECT_IMAGE = 0;
+    public static final String HAS_SUCCEEDED = "success";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

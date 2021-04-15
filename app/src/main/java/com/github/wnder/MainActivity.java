@@ -1,9 +1,11 @@
 package com.github.wnder;
 
 import android.Manifest;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
@@ -11,11 +13,13 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
-import com.github.wnder.user.*;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.User;
 
 
 
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         if(requestCode != 100){
@@ -75,6 +80,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // TODO: What happens if the user did not accept?
                 throw new UnsupportedOperationException();
             }
+
+            LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, location -> {
+                //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
+            });
         }
     }
 
@@ -100,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void openUploadActivity() {
-        Intent intent = new Intent(this, ImageFromGalleryActivity.class);
+        Intent intent = new Intent(this, TakePictureActivity.class);
         startActivity(intent);
     }
 
