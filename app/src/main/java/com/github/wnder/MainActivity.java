@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openUploadActivity() {
-        Intent intent = new Intent(this, ImageFromGalleryActivity.class);
+        Intent intent = new Intent(this, TakePictureActivity.class);
         startActivity(intent);
     }
 
