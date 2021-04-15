@@ -48,7 +48,7 @@ public class ReportedPicturesTest {
     @Test
     public void successfullyAddToReportedListAndRetrieve(){
         ReportedPictures.onAllReportedPicturesAvailable((reportedSet) ->{
-            assertThat(reportedSet, contains(pic.getUniqueId()));
+            assertTrue(reportedSet.contains(pic.getUniqueId()));
         });
     }
 }
