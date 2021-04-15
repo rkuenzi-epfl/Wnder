@@ -1,16 +1,22 @@
 package com.github.wnder.user;
 
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import com.github.wnder.R;
 import com.github.wnder.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public class GuestUser extends User{
 
@@ -31,22 +37,54 @@ public class GuestUser extends User{
      * @throws InterruptedException
      */
     @Override
-    public String getNewPicture() throws ExecutionException, InterruptedException{
+    public void onNewPictureAvailable(Consumer<String> pictureIdAvailable){
         //Get the ids of all the uploaded pictures
-        CompletableFuture<Set<String>> allIdsFuture = Storage.getIdsOfAllUploadedPictures();
-        Set<String> allIds = allIdsFuture.get();
+        Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
+            Set<String> allIds = keepOnlyInRadius(allIdsAndLocs);
+            //If no image fits, return empty string
+            if(0 == allIds.size()){
+                pictureIdAvailable.accept("");
+            }
+            //else, return randomly chosen string
+            else{
+                List<String> idList = new ArrayList<>();
+                idList.addAll(allIds);
+                Random random = new Random();
+                int index = random.nextInt(allIds.size());
+                pictureIdAvailable.accept(idList.get(index));
+            }
+        });
+    }
 
-        //If no image fits, return empty string
-        if(0 == allIds.size()){
-            return new String();
-        }
-        //else, return randomly chosen string
-        else{
-            List<String> idList = new ArrayList<>();
-            idList.addAll(allIds);
-            Random random = new Random();
-            int index = random.nextInt(allIds.size());
-            return idList.get(index);
-        }
+    /**
+     * returns radius for current user
+     * @return radius
+     */
+    public int getRadius(){
+        return radius;
+    }
+
+    /**
+     * set radius for current user
+     * @param rad
+     */
+    public void setRadius(int rad){
+        this.radius = rad;
+    }
+
+    /**
+     * get user location
+     * @return last known location
+     */
+    public Location getLocation(){
+        return location;
+    }
+
+    /**
+     * set user location
+     * @param loc location, null if non-valid
+     */
+    public void setLocation(Location loc){
+        this.location = loc;
     }
 }
