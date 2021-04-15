@@ -86,21 +86,16 @@ public final class Storage{
         Set<String> ids = new HashSet<>();
 
         //If success, complete the future, if failure, complete the future with an empty hashset
-        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                for(int i = 0; i < docs.size(); i++){
-                    ids.add(docs.get(i).getId());
-                }
-                idsToReturn.complete(ids);
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener((queryDocumentSnapshots) -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+            for(int i = 0; i < docs.size(); i++){
+                ids.add(docs.get(i).getId());
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                idsToReturn.complete(new HashSet<>());
-            }
+            idsToReturn.complete(ids);
+        }).addOnFailureListener((exception) -> {
+            idsToReturn.complete(new HashSet<>());
         });
+
         return idsToReturn;
     }
 
@@ -112,24 +107,18 @@ public final class Storage{
         Map<String, Location> idsAndLoc = new HashMap<>();
 
         //If success, complete the future, if failure, complete the future with an empty hashmap
-        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                for(int i = 0; i < docs.size(); i++){
-                    Location loc = new Location("");
-                    loc.setLatitude(Double.parseDouble(docs.get(i).get("latitude").toString()));
-                    loc.setLongitude(Double.parseDouble(docs.get(i).get("longitude").toString()));
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener((queryDocumentSnapshots) -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+            for(int i = 0; i < docs.size(); i++){
+                Location loc = new Location("");
+                loc.setLatitude(Double.parseDouble(docs.get(i).get("latitude").toString()));
+                loc.setLongitude(Double.parseDouble(docs.get(i).get("longitude").toString()));
 
-                    idsAndLoc.put(docs.get(i).getId(), loc);
-                }
-                idsAndLocsAvailable.accept(idsAndLoc);
+                idsAndLoc.put(docs.get(i).getId(), loc);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                idsAndLocsAvailable.accept(new HashMap<>());
-            }
+            idsAndLocsAvailable.accept(idsAndLoc);
+        }).addOnFailureListener((exception) -> {
+            idsAndLocsAvailable.accept(new HashMap<>());
         });
     }
 }
