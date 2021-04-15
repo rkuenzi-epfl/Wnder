@@ -32,10 +32,7 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
             openGallery();
         });
         confirmButton.setOnClickListener((view) -> {
-            boolean hasSucceeded = sendImageToDB();
-
             Intent intent = new Intent(this, UploadActivity.class);
-            intent.putExtra(HAS_SUCCEEDED, hasSucceeded);
             startActivity(intent);
             this.finish();
         });
@@ -66,11 +63,6 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
             //imageRef.setText(imageUri.toString());
             imageSelected.setImageURI(imageUri);
         }
-    }
-
-    //can be kept for further use (see how it is handle in TakePictureActivity)
-    private boolean sendImageToDB(){
-        return true;
     }
 
     @Override
