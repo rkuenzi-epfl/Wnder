@@ -62,15 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // TODO: What happens if the user did not accept?
                 throw new UnsupportedOperationException();
             }
-            else{
-                LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(@NonNull Location location) {
-                        
-                    }
-                });
-            }
+
+            LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+
+                }
+            });
         }
     }
 
