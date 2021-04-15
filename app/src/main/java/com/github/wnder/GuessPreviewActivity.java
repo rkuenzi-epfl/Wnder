@@ -1,7 +1,9 @@
 package com.github.wnder;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,7 +23,7 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_guess_preview);
         findViewById(R.id.guessButton).setOnClickListener(this);
         findViewById(R.id.skipButton).setOnClickListener(this);
-
+        findViewById(R.id.reportButton).setOnClickListener(this);
     }
 
     @Override
@@ -40,6 +42,9 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
                 break;
             case R.id.skipButton:
                 openPreviewActivity();
+                break;
+            case R.id.reportButton:
+                reportImage();
                 break;
             default:
                 break;
@@ -62,6 +67,29 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
+    }
+
+    private void reportImage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(R.string.report_confirm_title);
+        builder.setMessage(R.string.report_confirm_message);
+        builder.setPositiveButton("Confirm",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO Update the image karma in the database accordingly to the report policy and ad it to the reported pictures
+                    }
+                });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //If the cancle button is pressed we do nothing
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
 
