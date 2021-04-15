@@ -26,11 +26,12 @@ public class GuessPreviewActivity extends AppCompatActivity {
     }
 
     private void openGuessActivity() {
+        // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197); //TODO instead of an arbitrary 5 get an appropriate double
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657); //TODO instead of an arbitrary 5 get an appropriate double
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 5.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657);
         startActivity(intent);
         finish();
     }
