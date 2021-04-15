@@ -4,6 +4,8 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.wnder.picture.ExistingPicture;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +15,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
@@ -38,11 +42,20 @@ public class GuessPreviewActivityTest {
     @Test
     public void testSkipButton(){
         Intents.init();
-        onView(withId(R.id.skipButton)).perform(click());
+        //TODO: replace once PR 90 is merged
+        ExistingPicture pic = new ExistingPicture("testPicDontRm");
 
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        pic.onKarmaAvailable((k1) -> {
+            onView(withId(R.id.skipButton)).perform(click());
+            pic.onKarmaAvailable((k2) -> {
+                assertThat(k2, is(k1-1));
 
-        Intents.release();
+                Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+
+                Intents.release();
+            });
+        });
+
     }
 
 }

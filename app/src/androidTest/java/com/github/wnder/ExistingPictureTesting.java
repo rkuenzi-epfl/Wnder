@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.NewPicture;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -104,11 +105,19 @@ public class ExistingPictureTesting {
     }
 
     @Test
-    public void updateKarmaTest(){
-        testPic.onKarmaUpdated((attributes) -> {
-            System.out.println(attributes);
-            //Making sure that the created image(which has a karma of 0 that the start) has been modified
-            assertNotEquals(attributes.get("karma"), is(0L));
-        });
+    public void getAndUpdateKarmaTest(){
+        testPic.onKarmaAvailable((k1) -> {
+            testPic.updateKarma(-1);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            testPic.onKarmaAvailable((k2) -> {
+                    assertThat(k2, is(k1-1));
+                });
+            }
+        );
     }
+
 }

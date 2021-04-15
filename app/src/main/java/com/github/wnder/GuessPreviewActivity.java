@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.github.wnder.picture.ExistingPicture;
+
 public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
 
     public static final String EXTRA_GUESSLAT = "guessLat";
@@ -36,6 +38,10 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.guessButton:
+                //TODO: modify this once PR 90 is merged
+                final String pictureId = "testPicDontRm";
+                ExistingPicture picture = new ExistingPicture(pictureId);
+                picture.updateKarma(-1);
                 openGuessActivity();
                 break;
             case R.id.skipButton:

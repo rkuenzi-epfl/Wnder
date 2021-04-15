@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 
 public class NewPicture extends Picture{
@@ -129,5 +130,11 @@ public class NewPicture extends Picture{
      */
     public Location getLocation(){
         return new Location(location);
+    }
+
+    @Override
+    public void onKarmaAvailable(Consumer<Long> karmaAvailable) {
+        //0 karma if picture not uploaded yet
+        karmaAvailable.accept((long) 0);
     }
 }

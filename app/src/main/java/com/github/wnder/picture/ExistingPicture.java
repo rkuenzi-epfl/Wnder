@@ -124,6 +124,22 @@ public class ExistingPicture extends Picture{
     }
 
     /**
+     * Apply consumer function when the karma is available
+     * @param karmaAvailable consumer function to call when the karma is available
+     */
+    private void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
+        Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", getUniqueId());
+        karmaTask.addOnSuccessListener((documentSnapshot) -> {
+            Map<String, Object> map = new HashMap<>();
+            //We put these attributes back because if we don't, they disappear from the db
+            map.put("latitude", documentSnapshot.getDouble("latitude"));
+            map.put("longitude", documentSnapshot.getDouble("longitude"));
+            map.put("karma", documentSnapshot.getLong("karma"));
+            karmaAvailable.accept(map);
+        });
+    }
+
+    /**
      * Modify the karma of a picture
      * @param delta the karma to add to the picture
      */
@@ -138,5 +154,12 @@ public class ExistingPicture extends Picture{
             Storage.uploadToFirestore(toUpload, "pictures", getUniqueId()).addOnSuccessListener((result) -> toReturn.complete(null));
         });
         return toReturn;
+    }
+
+    @Override
+    public void onKarmaAvailable(Consumer<Long> karmaAvailable){
+        onKarmaUpdated((attributesAvailable) -> {
+            karmaAvailable.accept((long) attributesAvailable.get("karma"));
+        });
     }
 }
