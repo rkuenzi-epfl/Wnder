@@ -51,7 +51,6 @@ public class GuessPreviewActivityTest {
                 assertThat(k2, is(k1-1));
 
                 Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
-
                 Intents.release();
             });
         });
