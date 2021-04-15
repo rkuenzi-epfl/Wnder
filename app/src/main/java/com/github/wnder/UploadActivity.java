@@ -15,7 +15,7 @@ public class UploadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
-        boolean success = getIntent().getBooleanExtra(ImageFromGalleryActivity.HAS_SUCCEEDED, false);
+        boolean success = getIntent().getBooleanExtra(TakePictureActivity.HAS_SUCCEEDED, false);
         textOfSuccess = findViewById(R.id.textView4);
         if(success){
             textOfSuccess.setText("Success");
