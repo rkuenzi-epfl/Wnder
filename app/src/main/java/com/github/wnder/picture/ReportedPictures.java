@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class ReportedPictures {
+public final class ReportedPictures {
 
     private ReportedPictures(){
         //Non-instanciable class
