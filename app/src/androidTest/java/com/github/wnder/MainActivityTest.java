@@ -65,7 +65,7 @@ public class MainActivityTest {
         onView(withId(R.id.uploadPictureButton)).perform(click());
 
 
-        Intents.intended(hasComponent(ImageFromGalleryActivity.class.getName()));
+        Intents.intended(hasComponent(TakePictureActivity.class.getName()));
         assertTrue(GlobalUser.getUser().getLocation() != null);
 
         Intents.release();
