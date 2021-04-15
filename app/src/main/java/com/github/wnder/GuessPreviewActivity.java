@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
@@ -17,13 +18,23 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     public static final String EXTRA_CAMERALAT = "cameraLat";
     public static final String EXTRA_CAMERALNG = "cameraLng";
 
+    private Button guessButton;
+    private Button skipButton;
+    private Button reportButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_preview);
-        findViewById(R.id.guessButton).setOnClickListener(this);
-        findViewById(R.id.skipButton).setOnClickListener(this);
-        findViewById(R.id.reportButton).setOnClickListener(this);
+
+        guessButton = findViewById(R.id.guessButton);
+        guessButton.setOnClickListener((view) -> { openGuessActivity(); });
+
+        skipButton = findViewById(R.id.skipButton);
+        skipButton.setOnClickListener((view) -> { openPreviewActivity(); });
+
+        reportButton = findViewById(R.id.reportButton);
+        reportButton.setOnClickListener((view) -> { reportImage(); });
     }
 
     @Override
@@ -36,20 +47,6 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.guessButton:
-                openGuessActivity();
-                break;
-            case R.id.skipButton:
-                openPreviewActivity();
-                break;
-            case R.id.reportButton:
-                reportImage();
-                break;
-            default:
-                break;
-                // Other buttons can be setup in this switch
-        }
     }
 
     private void openGuessActivity() {
