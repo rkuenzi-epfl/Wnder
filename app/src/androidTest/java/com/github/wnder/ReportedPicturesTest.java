@@ -39,7 +39,6 @@ public class ReportedPicturesTest {
 
         }
         try {
-
             ReportedPictures.addToReportedPictures(pic.getUniqueId()).get();
         } catch (Exception e){
 
