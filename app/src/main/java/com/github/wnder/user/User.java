@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public abstract class User {
 
@@ -44,7 +45,7 @@ public abstract class User {
 
     public abstract void setRadius(int rad);
 
-    public abstract String getNewPicture() throws ExecutionException, InterruptedException;
+    public abstract void onNewPictureAvailable(Consumer<String> pictureIdAvailable);
 
     public abstract Location getLocation();
 
@@ -61,7 +62,6 @@ public abstract class User {
             float[] res = new float[1];
             //TODO: replace with location getter from leonard
             Location.distanceBetween(entry.getValue().getLatitude(), entry.getValue().getLongitude(), location.getLatitude(), location.getLongitude(), res);
-            Resources resources;
             if(res[0] < radius*1000){
                 correctIds.add(entry.getKey());
             }

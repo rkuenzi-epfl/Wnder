@@ -2,13 +2,10 @@ package com.github.wnder;
 
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.user.GlobalUser;
@@ -87,8 +84,6 @@ public class UserTesting {
                 assertTrue(result[0] <= u.getRadius()*1000);
             }
         });
-
-        await(task, 5, TimeUnit.SECONDS);
     }
 
     @Test
@@ -101,82 +96,93 @@ public class UserTesting {
         u.setLocation(loc);
         GlobalUser.setUser(u);
 
-        String pic = u.getNewPicture();
+        u.onNewPictureAvailable((pic) -> {
+            //Check that it is not in user's uploaded and guessed pictures
+            Set<String> upAdownPics = new HashSet<>();
 
-        //Check that it is not in user's uploaded and guessed pictures
-        Set<String> upAdownPics = new HashSet<>();
+            Task<DocumentSnapshot> task = Storage.downloadFromFirestore("users", "testUser").addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
+                    List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
+                    if (guessedPictures == null) {
+                        guessedPictures = new ArrayList<>();
+                    }
+                    if (uploadedPictures == null) {
+                        uploadedPictures = new ArrayList<>();
+                    }
+                    upAdownPics.addAll(guessedPictures);
+                    upAdownPics.addAll(uploadedPictures);
+                    assertTrue(!upAdownPics.contains(pic));
+                }
+            });
 
-        Task<DocumentSnapshot> task = Storage.downloadFromFirestore("users", "testUser").addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-                List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-                if (guessedPictures == null) {
-                    guessedPictures = new ArrayList<>();
+            //Check that it's in the pool of pictures
+            Set<String> allPictures = new HashSet<>();
+            Task<QuerySnapshot> task1 = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                    for(int i = 0; i < docs.size(); i++){
+                        allPictures.add(docs.get(i).getId());
+                    }
+                    assertTrue(allPictures.contains(pic));
                 }
-                if (uploadedPictures == null) {
-                    uploadedPictures = new ArrayList<>();
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    assertTrue(false);
                 }
-                upAdownPics.addAll(guessedPictures);
-                upAdownPics.addAll(uploadedPictures);
-                assertTrue(!upAdownPics.contains(pic));
+            });
+
+            //Ensure location is in radius
+            try {
+                ensureInRadius(pic, u);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
             }
+            GlobalUser.resetUser();
         });
-
-        //Check that it's in the pool of pictures
-        Set<String> allPictures = new HashSet<>();
-        Task<QuerySnapshot> task1 = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                for(int i = 0; i < docs.size(); i++){
-                    allPictures.add(docs.get(i).getId());
-                }
-                assertTrue(allPictures.contains(pic));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                assertTrue(false);
-            }
-        });
-
-        //Ensure location is in radius
-        ensureInRadius(pic, u);
-
-        await(task, 5, TimeUnit.SECONDS);
-        await(task1, 5, TimeUnit.SECONDS);
-        GlobalUser.resetUser();
     }
 
     @Test
     public void getNewPictureForGuestUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
         User u = GlobalUser.getUser();
         u.setRadius(20000);
-        String pic = u.getNewPicture();
-
-        Set<String> allPictures = new HashSet<>();
-        Task<QuerySnapshot> task = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                for(int i = 0; i < docs.size(); i++){
-                    allPictures.add(docs.get(i).getId());
+        u.onNewPictureAvailable((pic) -> {
+            Set<String> allPictures = new HashSet<>();
+            Task<QuerySnapshot> task = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                    for(int i = 0; i < docs.size(); i++){
+                        allPictures.add(docs.get(i).getId());
+                    }
+                    assertTrue(allPictures.contains(pic));
                 }
-                assertTrue(allPictures.contains(pic));
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    assertTrue(false);
+                }
+            });
+
+            //Ensure location is in radius
+            try {
+                ensureInRadius(pic, u);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                assertTrue(false);
-            }
+            GlobalUser.resetUser();
         });
-
-        //Ensure location is in radius
-        ensureInRadius(pic, u);
-
-        await(task, 5, TimeUnit.SECONDS);
-        GlobalUser.resetUser();
     }
 
     @Test

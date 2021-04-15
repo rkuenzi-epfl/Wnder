@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public final class Storage{
     private Storage(){
@@ -107,8 +108,7 @@ public final class Storage{
      * Returns a future containing all the ids and locations of all the currently uploaded pictures on the db
      * @return a future containing a map between strings and locations
      */
-    public static CompletableFuture<Map<String, Location>> getIdsAndLocationOfAllUploadedPictures(){
-        CompletableFuture<Map<String, Location>> idsAndLocsToRet = new CompletableFuture<>();
+    public static void onIdsAndLocAvailable(Consumer<Map<String, Location>> idsAndLocsAvailable){
         Map<String, Location> idsAndLoc = new HashMap<>();
 
         //If success, complete the future, if failure, complete the future with an empty hashmap
@@ -123,14 +123,13 @@ public final class Storage{
 
                     idsAndLoc.put(docs.get(i).getId(), loc);
                 }
-                idsAndLocsToRet.complete(idsAndLoc);
+                idsAndLocsAvailable.accept(idsAndLoc);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                idsAndLocsToRet.complete(new HashMap<>());
+                idsAndLocsAvailable.accept(new HashMap<>());
             }
         });
-        return idsAndLocsToRet;
     }
 }

@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 public class GuestUser extends User{
 
@@ -36,24 +37,23 @@ public class GuestUser extends User{
      * @throws InterruptedException
      */
     @Override
-    public String getNewPicture() throws ExecutionException, InterruptedException{
+    public void onNewPictureAvailable(Consumer<String> pictureIdAvailable){
         //Get the ids of all the uploaded pictures
-        CompletableFuture<Map<String, Location>> allIdsAndLocsFuture = Storage.getIdsAndLocationOfAllUploadedPictures();
-        Map<String, Location> allIdsAndLocs = allIdsAndLocsFuture.get();
-
-        Set<String> allIds = keepOnlyInRadius(allIdsAndLocs);
-        //If no image fits, return empty string
-        if(0 == allIds.size()){
-            return new String();
-        }
-        //else, return randomly chosen string
-        else{
-            List<String> idList = new ArrayList<>();
-            idList.addAll(allIds);
-            Random random = new Random();
-            int index = random.nextInt(allIds.size());
-            return idList.get(index);
-        }
+        Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
+            Set<String> allIds = keepOnlyInRadius(allIdsAndLocs);
+            //If no image fits, return empty string
+            if(0 == allIds.size()){
+                pictureIdAvailable.accept("");
+            }
+            //else, return randomly chosen string
+            else{
+                List<String> idList = new ArrayList<>();
+                idList.addAll(allIds);
+                Random random = new Random();
+                int index = random.nextInt(allIds.size());
+                pictureIdAvailable.accept(idList.get(index));
+            }
+        });
     }
 
     /**
