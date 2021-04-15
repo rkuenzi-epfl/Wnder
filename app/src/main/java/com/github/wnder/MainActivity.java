@@ -64,11 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-            LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-
-                }
+            LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, location -> {
+                //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
             });
         }
     }

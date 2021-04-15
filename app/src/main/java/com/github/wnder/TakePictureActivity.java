@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -77,7 +76,6 @@ public class TakePictureActivity extends AppCompatActivity {
     private boolean storeBitmapInDB(){
         try {
             Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager)getSystemService(Context.LOCATION_SERVICE), this);
-
             NewPicture picture = new NewPicture(GlobalUser.getUser().getName(), loc, imageUri);
 
             CompletableFuture<Void> futur = picture.sendPictureToDb();

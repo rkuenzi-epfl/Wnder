@@ -1,27 +1,15 @@
 package com.github.wnder;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Location;
-import android.location.LocationManager;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.picture.NewPicture;
-import com.github.wnder.user.GlobalUser;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.concurrent.CompletableFuture;
 
 public class ImageFromGalleryActivity extends AppCompatActivity {
     private Button findImage;
@@ -80,11 +68,9 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
         }
     }
 
+    //can be kept for further use (see how it is handle in TakePictureActivity)
     private boolean sendImageToDB(){
-
         return true;
-
-
     }
 
     @Override
