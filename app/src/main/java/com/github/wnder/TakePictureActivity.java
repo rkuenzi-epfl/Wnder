@@ -1,11 +1,11 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,10 +14,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
+import com.github.wnder.picture.NewPicture;
+import com.github.wnder.user.GlobalUser;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 public class TakePictureActivity extends AppCompatActivity {
     private Button takePictureButton;
@@ -26,7 +33,9 @@ public class TakePictureActivity extends AppCompatActivity {
     private final int TAKE_PHOTO = 0;
     private String currentPhotoPath;
     private String imageFileName;
+    private Uri imageUri;
     private Bitmap currentBitmap;
+    public static final String HAS_SUCCEEDED = "success";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +48,16 @@ public class TakePictureActivity extends AppCompatActivity {
 
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
         pictureConfirmButton.setVisibility(View.INVISIBLE);
-        pictureConfirmButton.setOnClickListener((view) -> storeBitmapInGallery());
+        pictureConfirmButton.setOnClickListener((view) -> {
+            storeBitmapInGallery();
+
+            boolean hasSucceeded = storeBitmapInDB();
+
+            Intent intent = new Intent(this, UploadActivity.class);
+            intent.putExtra(HAS_SUCCEEDED, hasSucceeded);
+            startActivity(intent);
+            this.finish();
+        });
     }
 
     @Override
@@ -53,6 +71,20 @@ public class TakePictureActivity extends AppCompatActivity {
 
     private void storeBitmapInGallery(){
         MediaStore.Images.Media.insertImage(getContentResolver(), currentBitmap, imageFileName , "");
+    }
+
+    private boolean storeBitmapInDB(){
+        try {
+            Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager)getSystemService(Context.LOCATION_SERVICE), this);
+            NewPicture picture = new NewPicture(GlobalUser.getUser().getName(), loc, imageUri);
+
+            CompletableFuture<Void> futur = picture.sendPictureToDb();
+
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private File createImageFile() throws IOException {
@@ -82,10 +114,10 @@ public class TakePictureActivity extends AppCompatActivity {
         }
         // Continue only if the File was successfully created
         if (photoFile != null) {
-            Uri photoURI = FileProvider.getUriForFile(this,
+            imageUri = FileProvider.getUriForFile(this,
                     "com.github.wnder.android.fileprovider",
                     photoFile);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             startActivityForResult(takePictureIntent, TAKE_PHOTO);
         }
 
