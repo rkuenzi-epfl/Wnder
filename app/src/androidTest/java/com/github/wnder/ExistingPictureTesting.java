@@ -18,6 +18,7 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
@@ -35,9 +36,12 @@ public class ExistingPictureTesting {
         loc.setLatitude(22d);
         loc.setLongitude(44d);
         CompletableFuture guessSentResult = testPic.sendUserGuess("testUser", loc);
+        CompletableFuture karmaResult = testPic.updateKarma(-1);
+
         try{
             // Make sure the picture finishes to upload before proceeding
             guessSentResult.get();
+            karmaResult.get();
         } catch (Exception e){
 
         }
@@ -101,6 +105,15 @@ public class ExistingPictureTesting {
             assertTrue(userGuesses.containsKey("user0"));
             assertThat(userGuesses.get("user0").getLatitude(), is(10d));
             assertThat(userGuesses.get("user0").getLongitude(), is(10d));
+        });
+    }
+
+    @Test
+    public void updateKarmaTest(){
+        testPic.onKarmaUpdated((attributes) -> {
+            System.out.println(attributes);
+            //Making sure that the created image(which has a karma of 0 that the start) has been modified
+            assertNotEquals(attributes.get("karma"), is(0L));
         });
     }
 }
