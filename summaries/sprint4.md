@@ -23,6 +23,12 @@ Next time, I will be more direct with my implementation to avoid unnecessary pro
 
 ## Nicolas
 
+This week, I implemented a feature that lets a user choose the radius around him in which the next picture will be selected.
+
+However, I didn't have time to finish and to merge it correctly, because I may have started to implement it a bit late.
+
+Next time, I will make sure that I begin soon enough to be ready for the end of the sprint.
+
 
 ## Pablo (Scrum Master)
 
