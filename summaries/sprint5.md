@@ -15,6 +15,11 @@ However I largely underestimated the amount of time needed to complete this task
 
 ## Nicolas
 
+This week I implemented karma-related features, I made a clear map of the db organization, and I started refractoring the user classes.
+
+However, the refractoring is taking more time than expected, and it's a bit harder to do than what I thought,
+
+Next time, I'll try to start the refractoring sooner, and I won't let the smells accumulate.
 
 ## Pablo (Scrum Master)
 
@@ -23,6 +28,6 @@ However I largely underestimated the amount of time needed to complete this task
 
 This week I implemented a way to store and retreive reported pictures to the database.
 
-Howerver I should also have implemented a function to display the picture that was chosen for the user to guess but I could not get it to work properly even with some help from the team.
+However I should also have implemented a function to display the picture that was chosen for the user to guess but I could not get it to work properly even with some help from the team.
 
 ## Overall team
