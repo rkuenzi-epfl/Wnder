@@ -21,5 +21,8 @@ However I largely underestimated the amount of time needed to complete this task
 
 ## Romain 
 
+This week I implemented a way to store and retreive reported pictures to the database.
+
+Howerver I should also have implemented a function to display the picture that was chosen for the user to guess but I could not get it to work properly even with some help from the team.
 
 ## Overall team
