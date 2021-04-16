@@ -79,8 +79,14 @@ public class ExistingPictureTesting {
 
         testPic.onUpdatedScoreboardAvailable((scoreboard)->{
             assertTrue(scoreboard.containsKey("testUser"));
-            assertThat(scoreboard.get("testUser"), is(Score.computeScore(10d,10d,22d,44d)));
 
+            Location actualLoc = new Location("");
+            actualLoc.setLatitude(10d);
+            actualLoc.setLongitude(10d);
+            Location guessedLoc = new Location("");
+            guessedLoc.setLatitude(22d);
+            guessedLoc.setLongitude(44d);
+            assertThat(scoreboard.get("testUser"), is(Score.computeScore(actualLoc, guessedLoc)));
         });
     }
 
@@ -91,7 +97,6 @@ public class ExistingPictureTesting {
             assertTrue(scoreboard.containsKey("user3"));
             assertThat(scoreboard.get("user2"), is(13d));
             assertThat(scoreboard.get("user4"), is(9d));
-
         });
     }
 

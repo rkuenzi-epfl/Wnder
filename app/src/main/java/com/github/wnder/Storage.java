@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
@@ -19,11 +20,13 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public final class Storage{
     private Storage(){
@@ -45,6 +48,18 @@ public final class Storage{
 
     public static Task<Void> uploadToFirestore(Map<String, Object> map, String collection, String document){
         return FirebaseFirestore.getInstance().collection(collection).document(document).set(map);
+    }
+
+    /**
+     * Update a field in a given document in a given collection on firestore
+     * @param collection the collection in which to update
+     * @param document the document to update
+     * @param field the field to update
+     * @param newValue the new value
+     * @return the task
+     */
+    public static Task<Void> updateOnFirestore(String collection, String document, String field, Object newValue){
+        return FirebaseFirestore.getInstance().collection(collection).document(document).update(field, newValue);
     }
 
     public static Task<DocumentSnapshot> downloadFromFirestore(String collection, String document){
@@ -83,21 +98,39 @@ public final class Storage{
         Set<String> ids = new HashSet<>();
 
         //If success, complete the future, if failure, complete the future with an empty hashset
-        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                for(int i = 0; i < docs.size(); i++){
-                    ids.add(docs.get(i).getId());
-                }
-                idsToReturn.complete(ids);
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener((queryDocumentSnapshots) -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+            for(int i = 0; i < docs.size(); i++){
+                ids.add(docs.get(i).getId());
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                idsToReturn.complete(new HashSet<>());
-            }
+            idsToReturn.complete(ids);
+        }).addOnFailureListener((exception) -> {
+            idsToReturn.complete(new HashSet<>());
         });
+
         return idsToReturn;
+    }
+
+    /**
+     * Returns a future containing all the ids and locations of all the currently uploaded pictures on the db
+     * @return a future containing a map between strings and locations
+     */
+    public static void onIdsAndLocAvailable(Consumer<Map<String, Location>> idsAndLocsAvailable){
+        Map<String, Location> idsAndLoc = new HashMap<>();
+
+        //If success, complete the future, if failure, complete the future with an empty hashmap
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener((queryDocumentSnapshots) -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+            for(int i = 0; i < docs.size(); i++){
+                Location loc = new Location("");
+                loc.setLatitude(Double.parseDouble(docs.get(i).get("latitude").toString()));
+                loc.setLongitude(Double.parseDouble(docs.get(i).get("longitude").toString()));
+
+                idsAndLoc.put(docs.get(i).getId(), loc);
+            }
+            idsAndLocsAvailable.accept(idsAndLoc);
+        }).addOnFailureListener((exception) -> {
+            idsAndLocsAvailable.accept(new HashMap<>());
+        });
     }
 }
