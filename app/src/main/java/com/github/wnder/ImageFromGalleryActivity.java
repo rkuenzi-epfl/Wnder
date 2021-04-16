@@ -4,22 +4,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class ImageFromGalleryActivity extends AppCompatActivity {
     private Button findImage;
     private Uri imageUri;
     private TextView imageRef;
     private ImageView imageSelected;
+    private Button confirmButton;
     private static final int SELECT_IMAGE = 0;
+    public static final String HAS_SUCCEEDED = "success";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +27,16 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
         findImage = findViewById(R.id.getGalleryImage);
         imageRef = findViewById(R.id.textView);
         imageSelected = findViewById(R.id.imageSelected);
-        findImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openGallery();
-            }
+        confirmButton = findViewById(R.id.confirmUploadButton);
+        findImage.setOnClickListener((view) -> {
+            openGallery();
         });
+        confirmButton.setOnClickListener((view) -> {
+            Intent intent = new Intent(this, UploadActivity.class);
+            startActivity(intent);
+            this.finish();
+        });
+
 
     }
 

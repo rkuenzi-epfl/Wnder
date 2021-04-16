@@ -1,16 +1,27 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,6 +43,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.getPictureButton).setOnClickListener(this);
         findViewById(R.id.uploadPictureButton).setOnClickListener(this);
+        findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
+
+        String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
+        ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
+
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(requestCode != 100){
+            return;
+        }
+        //permission to get the location
+        for(int i = 0; i < permissions.length; ++i){
+            if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
+                // TODO: What happens if the user did not accept?
+                throw new UnsupportedOperationException();
+            }
+
+            LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, location -> {
+                //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
+            });
+        }
     }
 
     @Override
@@ -43,17 +79,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.getPictureButton:
                 openPreviewActivity();
                 break;
+            case R.id.menuToHistoryButton:
+                openHistoryActivity();
+                break;
+            default:
+                break;
             // Other buttons can be setup in this switch
         }
     }
 
     private void openUploadActivity() {
-        Intent intent = new Intent(this, ImageFromGalleryActivity.class);
+        Intent intent = new Intent(this, TakePictureActivity.class);
         startActivity(intent);
     }
 
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
+        startActivity(intent);
+    }
+
+    private void openHistoryActivity() {
+        Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
 }

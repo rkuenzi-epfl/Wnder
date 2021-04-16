@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-public class SignedInUser implements User{
+public class SignedInUser extends User{
 
     private String name;
     private Uri profilePicture;
@@ -34,10 +34,12 @@ public class SignedInUser implements User{
         this.profilePicture = profilePicture;
     }
 
+    @Override
     public String getName(){
         return name;
     }
 
+    @Override
     public Uri getProfilePicture(){
         return profilePicture;
     }

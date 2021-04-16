@@ -50,7 +50,17 @@ public class MainActivityTest {
         Intents.init();
         onView(withId(R.id.uploadPictureButton)).perform(click());
 
-        Intents.intended(hasComponent(ImageFromGalleryActivity.class.getName()));
+        Intents.intended(hasComponent(TakePictureActivity.class.getName()));
+
+        Intents.release();
+    }
+
+    @Test
+    public void testHistoryButton(){
+        Intents.init();
+        onView(withId(R.id.menuToHistoryButton)).perform(click());
+
+        Intents.intended(hasComponent(HistoryActivity.class.getName()));
 
         Intents.release();
     }

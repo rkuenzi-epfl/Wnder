@@ -18,6 +18,7 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
@@ -35,9 +36,12 @@ public class ExistingPictureTesting {
         loc.setLatitude(22d);
         loc.setLongitude(44d);
         CompletableFuture guessSentResult = testPic.sendUserGuess("testUser", loc);
+        CompletableFuture karmaResult = testPic.updateKarma(-1);
+
         try{
             // Make sure the picture finishes to upload before proceeding
             guessSentResult.get();
+            karmaResult.get();
         } catch (Exception e){
 
         }
@@ -74,8 +78,14 @@ public class ExistingPictureTesting {
 
         testPic.onUpdatedScoreboardAvailable((scoreboard)->{
             assertTrue(scoreboard.containsKey("testUser"));
-            assertThat(scoreboard.get("testUser"), is(Score.computeScore(10d,10d,22d,44d)));
 
+            Location actualLoc = new Location("");
+            actualLoc.setLatitude(10d);
+            actualLoc.setLongitude(10d);
+            Location guessedLoc = new Location("");
+            guessedLoc.setLatitude(22d);
+            guessedLoc.setLongitude(44d);
+            assertThat(scoreboard.get("testUser"), is(Score.computeScore(actualLoc, guessedLoc)));
         });
     }
 
@@ -86,7 +96,6 @@ public class ExistingPictureTesting {
             assertTrue(scoreboard.containsKey("user3"));
             assertThat(scoreboard.get("user2"), is(13d));
             assertThat(scoreboard.get("user4"), is(9d));
-
         });
     }
 
@@ -96,6 +105,15 @@ public class ExistingPictureTesting {
             assertTrue(userGuesses.containsKey("user0"));
             assertThat(userGuesses.get("user0").getLatitude(), is(10d));
             assertThat(userGuesses.get("user0").getLongitude(), is(10d));
+        });
+    }
+
+    @Test
+    public void updateKarmaTest(){
+        testPic.onKarmaUpdated((attributes) -> {
+            System.out.println(attributes);
+            //Making sure that the created image(which has a karma of 0 that the start) has been modified
+            assertNotEquals(attributes.get("karma"), is(0L));
         });
     }
 }

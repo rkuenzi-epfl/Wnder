@@ -1,9 +1,6 @@
 package com.github.wnder.user;
 
 import android.net.Uri;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.github.wnder.R;
 import com.github.wnder.Storage;
@@ -22,12 +19,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-public class GuestUser implements User{
+public class GuestUser extends User{
 
+    @Override
     public String getName(){
         return "Guest";
     }
 
+    @Override
     public Uri getProfilePicture(){
         return Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag);
     }

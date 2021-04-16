@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -78,6 +77,7 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
         b.putDouble(EXTRA_CAMERALNG, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
         intent.putExtras(b);
         startActivity(intent);
+        finish();
     }
 
     private void openPreviewActivity() {
