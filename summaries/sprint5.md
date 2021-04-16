@@ -18,6 +18,11 @@ However I largely underestimated the amount of time needed to complete this task
 
 ## Léonard
 
+This week, I linked the database with our UI to make it possible to take a photo and then easily upload it on our DB.
+
+It took me longer than expected because at first I was working on the wrong activity. Luckily some of my code was also working on the right one so I could make the necessary changes.
+
+Next time, I will talk in more details with the person who created the activity I work in to know the goal of it.
 
 ## Nicolas
 
