@@ -72,18 +72,10 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
         builder.setTitle(R.string.report_confirm_title);
         builder.setMessage(R.string.report_confirm_message);
         builder.setPositiveButton("Confirm",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                (DialogInterface dialog, int which) -> {
                         //TODO Update the image karma in the database accordingly to the report policy and ad it to the reported pictures
-                    }
                 });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //If the cancle button is pressed we do nothing
-            }
-        });
+        builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
 
         AlertDialog dialog = builder.create();
         dialog.show();
