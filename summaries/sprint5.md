@@ -3,6 +3,12 @@
 
 ## Aloïs 
 
+This week I implemented the report button to report impossible images to guess.
+
+I did estimate my time better this week but since the functions that my button uses are still to be implemented my button actually does nothing.
+We will have to go back on my task to completly finish it once the functions names are known.
+
+Next time I will try to agree with my teammates on some functions names so that even if they encounter problems I can still completly finish my work for the end of the sprint.
 
 ## Jeremy
 
