@@ -27,14 +27,14 @@ import static org.mockito.Mockito.spy;
 public class ExistingPictureTesting {
 
     private static ExistingPicture testPic;
-
+    private static Location loc;
 
     @BeforeClass
     public static void getTestPic(){
         testPic = new ExistingPicture("picture1");
-        Location loc = new Location("");
-        loc.setLatitude(22d);
-        loc.setLongitude(44d);
+        loc = new Location("");
+        loc.setLatitude(10d);
+        loc.setLongitude(10d);
         CompletableFuture guessSentResult = testPic.sendUserGuess("testUser", loc);
         CompletableFuture karmaResult = testPic.updateKarma(-1);
 
@@ -72,20 +72,17 @@ public class ExistingPictureTesting {
 
         testPic.onUpdatedGuessesAvailable((userGuesses)->{
             assertTrue(userGuesses.containsKey("testUser"));
-            assertThat(userGuesses.get("testUser").getLatitude(), is(22d));
-            assertThat(userGuesses.get("testUser").getLongitude(), is(44d));
+            assertThat(userGuesses.get("testUser").getLatitude(), is(10d));
+            assertThat(userGuesses.get("testUser").getLongitude(), is(10d));
         });
 
         testPic.onUpdatedScoreboardAvailable((scoreboard)->{
             assertTrue(scoreboard.containsKey("testUser"));
 
-            Location actualLoc = new Location("");
-            actualLoc.setLatitude(10d);
-            actualLoc.setLongitude(10d);
             Location guessedLoc = new Location("");
-            guessedLoc.setLatitude(22d);
-            guessedLoc.setLongitude(44d);
-            assertThat(scoreboard.get("testUser"), is(Score.computeScore(actualLoc, guessedLoc)));
+            guessedLoc.setLatitude(10d);
+            guessedLoc.setLongitude(10d);
+            assertThat(scoreboard.get("testUser"), is(Score.computeScore(loc, guessedLoc)));
         });
     }
 
@@ -114,6 +111,16 @@ public class ExistingPictureTesting {
             System.out.println(attributes);
             //Making sure that the created image(which has a karma of 0 that the start) has been modified
             assertNotEquals(attributes.get("karma"), is(0L));
+        });
+    }
+
+    @Test
+    public void approximateLocationIsInRange(){
+        double radius = 200; // meters
+        double epsilon = 10; // meters
+        ExistingPicture pic = testPic;
+        pic.onApproximateLocationAvailable((approximateLocation) -> {
+            assertTrue(approximateLocation.distanceTo(loc) < radius + epsilon);
         });
     }
 }

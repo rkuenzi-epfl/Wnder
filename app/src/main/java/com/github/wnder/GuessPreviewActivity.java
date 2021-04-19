@@ -17,7 +17,7 @@ import com.github.wnder.user.User;
 
 import java.util.concurrent.ExecutionException;
 
-public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
+public class GuessPreviewActivity extends AppCompatActivity{
 
     public static final String EXTRA_GUESSLAT = "guessLat";
     public static final String EXTRA_GUESSLNG = "guessLng";
@@ -28,9 +28,8 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_preview);
-        findViewById(R.id.guessButton).setOnClickListener(this);
-        findViewById(R.id.skipButton).setOnClickListener(this);
-
+        findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
+        findViewById(R.id.skipButton).setOnClickListener(id -> openPreviewActivity());
     }
 
     @Override
@@ -54,29 +53,13 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.guessButton:
-                openGuessActivity();
-                break;
-            case R.id.skipButton:
-                openPreviewActivity();
-                break;
-            default:
-                break;
-                // Other buttons can be setup in this switch
-        }
-    }
-
     private void openGuessActivity() {
+        // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
-        Bundle b = new Bundle();
-        b.putDouble(EXTRA_GUESSLAT, 46.5197); //TODO instead of an arbitrary 5 get an appropriate double
-        b.putDouble(EXTRA_GUESSLNG, 6.5657); //TODO instead of an arbitrary 5 get an appropriate double
-        b.putDouble(EXTRA_CAMERALAT, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
-        b.putDouble(EXTRA_CAMERALNG, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
-        intent.putExtras(b);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 5.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657);
         startActivity(intent);
         finish();
     }
