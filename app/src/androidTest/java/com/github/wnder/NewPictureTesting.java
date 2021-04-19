@@ -78,4 +78,11 @@ public class NewPictureTesting {
             assertThat(userGuesses.get(userName).getLongitude(), is(5d));
         });
     }
+
+    @Test
+    public void getKarmaWorks(){
+        pic.onKarmaAvailable((k) -> {
+            assertThat(k, is((long)0));
+        });
+    }
 }
