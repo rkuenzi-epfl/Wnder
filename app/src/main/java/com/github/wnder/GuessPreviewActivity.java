@@ -2,9 +2,11 @@ package com.github.wnder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,9 +39,8 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
         User user = GlobalUser.getUser();
 
         try {
-            user.onNewPictureAvailable((picId) -> {
+            user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 if(!picId.equals("")){
-
                     new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
                 } else{
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)

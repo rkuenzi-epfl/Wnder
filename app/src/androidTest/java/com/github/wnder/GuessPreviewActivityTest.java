@@ -29,13 +29,6 @@ public class GuessPreviewActivityTest {
 
     @BeforeClass
     public static void setup(){
-        User user = mock(User.class);
-        try{
-
-            when(user.getNewPicture()).thenReturn("");
-        } catch(Exception e){
-
-        }
     }
 
     @Test

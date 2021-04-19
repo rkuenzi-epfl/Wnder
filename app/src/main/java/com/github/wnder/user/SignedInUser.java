@@ -1,19 +1,22 @@
 package com.github.wnder.user;
 
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import com.github.wnder.Storage;
+import com.github.wnder.*;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +35,7 @@ public class SignedInUser extends User{
 
         this.name = name;
         this.profilePicture = profilePicture;
+        this.radius = 5;
     }
 
     @Override
@@ -44,54 +48,27 @@ public class SignedInUser extends User{
         return profilePicture;
     }
 
-    @Override
-    public void onNewPictureAvailable(Consumer<String> pictureIdAvailable){
-        //Get the ids of all the uploaded pictures
-        Set<String> allIds = new HashSet<>();
+    /**
+     * return radius for current user
+     * @return radius, in meters
+     */
+    public int getRadius(){
+        return radius;
+    }
 
-        Storage.downloadFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                //Get the ids of all the pictures linked with the user (guessed or uploaded)
-                CompletableFuture<Set<String>> upAndGuessedPicsFuture = getUploadedAndGuessedPictures();
-                Set<String> upAndGuessedPics = null;
-                try {
-                    upAndGuessedPics = upAndGuessedPicsFuture.get();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                //Get only the ones we need
-                allIds.removeAll(upAndGuessedPics);
-
-                //If no image fits, return empty string
-                if(allIds.size() == 0){
-                    pictureIdAvailable.accept("");
-                }
-                //else, return randomly chosen string
-                else{
-                    Random rn = new Random();
-                    int index = rn.nextInt(allIds.size());
-                    List<String> ids = new ArrayList<>();
-                    ids.addAll(allIds);
-                    pictureIdAvailable.accept(ids.get(index));
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                pictureIdAvailable.accept("");
-            }
-        });
+    /**
+     * set radius for current user
+     * @param rad, in meters
+     */
+    public void setRadius(int rad){
+        this.radius = rad;
     }
 
     /**
      * Returns the ids of all the uploaded and guessed pictures of a user
      * @return a future that holds the ids of all the uploaded and guessed pictures of a user
      */
-    public CompletableFuture<Set<String>> getUploadedAndGuessedPictures(){
+    public void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
         //Get the user data
         Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
         Set<String> allPictures = new HashSet<>();
@@ -111,11 +88,66 @@ public class SignedInUser extends User{
                 }
                 allPictures.addAll(guessedPictures);
                 allPictures.addAll(uploadedPictures);
-                picturesToReturn.complete(allPictures);
+                uAGPA.accept(allPictures);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                uAGPA.accept(new HashSet<>());
             }
         });
-
-        return picturesToReturn;
     }
 
+    /**
+     * Returns the id of a picture existing in the db that the user neither already guessed nor uploaded himself
+     * @param pictureIdAvailable
+     */
+    @Override
+    public void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable){
+        //Get the ids and locs of all the uploaded pictures
+
+        Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
+            //Get the ids of all the pictures linked with the user (guessed or uploaded)
+            onUploadedAndGuessedPicturesAvailable((upAndGuessedPics) -> {
+
+                for (String id : upAndGuessedPics) {
+                    if (allIdsAndLocs.containsKey(id)) {
+                        allIdsAndLocs.remove(id, allIdsAndLocs.get(id));
+                    }
+                }
+
+                //Keep only ids in desired radius
+                Set<String> allIds = keepOnlyInRadius(manager, context, allIdsAndLocs);
+
+                //If no image fits, return empty string
+                if (allIds.size() == 0) {
+                    pictureIdAvailable.accept("");
+                }
+                //else, return randomly chosen string
+                else {
+                    Random rn = new Random();
+                    int index = rn.nextInt(allIds.size());
+                    List<String> ids = new ArrayList<>();
+                    ids.addAll(allIds);
+                    pictureIdAvailable.accept(ids.get(index));
+                }
+            });
+        });
+    }
+
+    /**
+     * get user location
+     * @return last known location
+     */
+    public Location getLocation(){
+        return location;
+    }
+
+    /**
+     * set user location
+     * @param loc location, null if non-valid
+     */
+    public void setLocation(Location loc){
+        this.location = loc;
+    }
 }
