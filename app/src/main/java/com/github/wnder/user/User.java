@@ -73,13 +73,7 @@ public abstract class User {
         return correctIds;
     }
 
-    /**
-     * Returns the id of a picture from the parameter selected randomly. The more karma a picture have, the more chances the image has to get selected
-     * @param idsAndKarma the ids associated with the karma of the pictures
-     * @param acceptedIds the ids that we want to take from the entire db
-     * @return
-     */
-    protected String selectImageBasedOnKarma(Map<String, Long> idsAndKarma, Set<String> acceptedIds){
+    private Map<String, Long> computeIntersectionBetweenMapAndSet(Map<String, Long> idsAndKarma, Set<String> acceptedIds){
         Map<String, Long> intersectionMap = new HashMap<>();
         //Takes only the entries inside the set of accepted IDs
         for(Map.Entry<String, Long> entry : idsAndKarma.entrySet()){
@@ -87,6 +81,31 @@ public abstract class User {
                 intersectionMap.put(entry.getKey(), entry.getValue());
             }
         }
+        return intersectionMap;
+    }
+
+    private String findAssociatedRandomId(int randomNumber, Map<String, Long> map){
+        //Select a random image
+        int counter = 0;
+        for(Map.Entry<String, Long> entry : map.entrySet()){
+            counter += entry.getValue();
+            if(counter >= randomNumber){
+                return entry.getKey();
+            }
+        }
+
+        //If there is no image, return this
+        return "";
+    }
+
+    /**
+     * Returns the id of a picture from the parameter selected randomly. The more karma a picture have, the more chances the image has to get selected
+     * @param idsAndKarma the ids associated with the karma of the pictures
+     * @param acceptedIds the ids that we want to take from the entire db
+     * @return
+     */
+    protected String selectImageBasedOnKarma(Map<String, Long> idsAndKarma, Set<String> acceptedIds){
+        Map<String, Long> intersectionMap = computeIntersectionBetweenMapAndSet(idsAndKarma, acceptedIds);
         //Compute the minimum karma of the pictures
         long minKarma = Collections.min(intersectionMap.values());
         Map<String, Long> correctedMap = new HashMap<>();
@@ -101,16 +120,7 @@ public abstract class User {
 
         Random rand = new Random();
         int randomNumber = rand.nextInt(sumKarma);
-        int counter = 0;
-        //Select a random image
-        for(Map.Entry<String, Long> entry : correctedMap.entrySet()){
-            counter += entry.getValue();
-            if(counter >= randomNumber){
-                return entry.getKey();
-            }
-        }
 
-        //If there is no image, return this
-        return "";
+        return findAssociatedRandomId(randomNumber, correctedMap);
     }
 }
