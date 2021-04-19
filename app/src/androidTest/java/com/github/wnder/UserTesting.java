@@ -1,6 +1,8 @@
 package com.github.wnder;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,10 @@ import static com.google.android.gms.tasks.Tasks.await;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class UserTesting {
@@ -88,15 +94,19 @@ public class UserTesting {
 
     @Test
     public void getNewPictureForSignedInUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
-        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        SignedInUser realUser = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        SignedInUser u = spy(realUser);
         u.setRadius(20000);
         Location loc = new Location("");
         loc.setLatitude(0);
         loc.setLongitude(0);
         u.setLocation(loc);
         GlobalUser.setUser(u);
+        Set<String> allIds = new HashSet<>();
+        allIds.add("testPicDontRm");
+        doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
 
-        u.onNewPictureAvailable((pic) -> {
+        u.onNewPictureAvailable(null, null,(pic) -> {
             //Check that it is not in user's uploaded and guessed pictures
             Set<String> upAdownPics = new HashSet<>();
 
@@ -151,9 +161,16 @@ public class UserTesting {
 
     @Test
     public void getNewPictureForGuestUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
-        User u = GlobalUser.getUser();
+        User realUser = GlobalUser.getUser();
+        User u = spy(realUser);
+
+
+        Set<String> allIds = new HashSet<>();
+        allIds.add("testPicDontRm");
+        doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
+
         u.setRadius(20000);
-        u.onNewPictureAvailable((pic) -> {
+        u.onNewPictureAvailable(null, null, (pic) -> {
             Set<String> allPictures = new HashSet<>();
             Task<QuerySnapshot> task = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override

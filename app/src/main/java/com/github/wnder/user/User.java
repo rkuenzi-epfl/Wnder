@@ -56,7 +56,7 @@ public abstract class User {
      * @param idsAndLocs the ids associated with the locations of the pictures
      * @return a set of string with the ids of the pictures respecting the criteria
      */
-    protected Set<String> keepOnlyInRadius(LocationManager manager, Context context, Map<String, Location> idsAndLocs){
+    public Set<String> keepOnlyInRadius(LocationManager manager, Context context, Map<String, Location> idsAndLocs){
         Set<String> correctIds = new HashSet<>();
         for(Map.Entry<String, Location> entry : idsAndLocs.entrySet()){
             float[] res = new float[1];
