@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
 
+    private int isDone = 0;
 
     @Rule
     public ActivityScenarioRule<GuessPreviewActivity> testRule = new ActivityScenarioRule<>(GuessPreviewActivity.class);
@@ -30,9 +31,8 @@ public class GuessPreviewActivityTest {
     public void setup(){
     }
 
-    //Process crashed because of Intents.release if we don't do it after.
-    @After
-    public void testSkipButton(){
+    @Test
+    public void testSkipAndGuessButton(){
         Intents.init();
         //TODO: replace once PR 90 is merged
         ExistingPicture pic = new ExistingPicture("testPicDontRm");
@@ -43,13 +43,21 @@ public class GuessPreviewActivityTest {
                 assertThat(k2, is(k1-1));
 
                 Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+
+                //Check guess location button
+                onView(withId(R.id.guessButton)).perform(click());
+
+                // TODO: Check openGuessActivity() correct execution, probably that the activity to make a guess is actually launched and maybe that it sends the image identifier with it
+                Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
+
                 Intents.release();
             });
 
-        });
 
+        });
     }
 
+    /* We test it in the skip button test for intents releasing problems purpose.
     @Test
     public void testGuessLocationButton(){
         Intents.init();
@@ -59,7 +67,7 @@ public class GuessPreviewActivityTest {
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
         Intents.release();
-    }
+    }*/
 
 
 
