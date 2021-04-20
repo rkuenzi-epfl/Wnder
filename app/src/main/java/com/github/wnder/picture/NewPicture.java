@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-
+/**
+ * Class defining a picture that is created locally, and that is not currently on the database
+ */
 public class NewPicture extends Picture{
     //User id
     private String user;
@@ -58,23 +60,33 @@ public class NewPicture extends Picture{
         emptyGuesses.put(user, defaultGuess);
     }
 
+    /**
+     * Add this picture to the list of uploaded pictures of the user
+     */
     private void addPhotoToUploadedUserPhoto(){
-        //upload specific user data
+        //get current user data
         Task<DocumentSnapshot> userUploaded = Storage.downloadFromFirestore("users", user);
         userUploaded.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                //Get current user data
                 List<String> guessedPictures = (List<String>) documentSnapshot.getData().get("guessedPics");
                 List<String> uploadedPictures = (List<String>) documentSnapshot.getData().get("uploadedPics");
+
+                //Create lists if they don't exist
                 if (guessedPictures == null) {
                     guessedPictures = new ArrayList<>();
                 }
                 if (uploadedPictures == null) {
                     uploadedPictures = new ArrayList<>();
                 }
+
+                //If uploaded pictures doesn't contain new picture, add it
                 if (!uploadedPictures.contains(getUniqueId())){
                     uploadedPictures.add(getUniqueId());
                 }
+
+                //Upload everything back to Firestore
                 Map<String, Object> toUpload = new HashMap<>();
                 toUpload.put("guessedPics", guessedPictures);
                 toUpload.put("uploadedPics", uploadedPictures);
@@ -85,7 +97,7 @@ public class NewPicture extends Picture{
 
     /**
      * Send this picture to the database
-     * @return true if the tasks were successfully created
+     * @return complete future with "null" once finished
      */
     public CompletableFuture<Void> sendPictureToDb(){
         CompletableFuture<Void> updateStatus= new CompletableFuture();
@@ -112,6 +124,7 @@ public class NewPicture extends Picture{
         Tasks.whenAllSuccess(locationTask, guessesTask, scoreTask, pictureTask).addOnSuccessListener((results)->{
             updateStatus.complete(null);
         });
+
         return updateStatus;
     }
 

@@ -26,7 +26,11 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.turf.TurfTransformation;
 
+/**
+ * Location activity
+ */
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener{
+    //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
@@ -38,6 +42,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final String PICTURE_SOURCE_ID = "picture-source-id";
     private static final String PICTURE_LAYER_ID = "picture-layer-id";
 
+    //Defines necessary mapBox setup
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LatLng cameraPosition;
@@ -46,6 +51,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
 
+    /**
+     * Executed on activity creation
+     * @param savedInstanceState instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+/**
+ * abstract class defining a user
+ */
 public abstract class User {
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
@@ -27,10 +30,24 @@ public abstract class User {
     protected String name;
     protected Uri profilePicture;
 
+    /**
+     * Returns name of user
+     * @return name of user
+     */
     public abstract String getName();
 
+    /**
+     * Returns profile picture of user
+     * @return profile picture of user
+     */
     public abstract Uri getProfilePicture();
 
+    /**
+     * Returns last know location of user
+     * @param manager LocationManager
+     * @param context current context
+     * @return last known location of user
+     */
     public Location getPositionFromGPS(LocationManager manager, Context context){
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -41,14 +58,34 @@ public abstract class User {
         return manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
+    /**
+     * Returns radius of the user
+     * @return radius of the user
+     */
     public abstract int getRadius();
 
+    /**
+     * Sets radius of the user
+     * @param rad new radius
+     */
     public abstract void setRadius(int rad);
 
+    /**
+     * Apply a function once a new pic to guess is available
+     * @param pictureIdAvailable function to apply
+     */
     public abstract void onNewPictureAvailable(Consumer<String> pictureIdAvailable);
 
+    /**
+     * Get location of user
+     * @return location of user
+     */
     public abstract Location getLocation();
 
+    /**
+     * Set location of user
+     * @param location location of user
+     */
     public abstract void setLocation(Location location);
 
     /**
