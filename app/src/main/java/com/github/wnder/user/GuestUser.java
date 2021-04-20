@@ -40,19 +40,13 @@ public class GuestUser extends User{
     public void onNewPictureAvailable(Consumer<String> pictureIdAvailable){
         //Get the ids of all the uploaded pictures
         Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
+            //Keep only ids in desired radius
             Set<String> allIds = keepOnlyInRadius(allIdsAndLocs);
-            //If no image fits, return empty string
-            if(0 == allIds.size()){
-                pictureIdAvailable.accept("");
-            }
-            //else, return randomly chosen string
-            else{
-                List<String> idList = new ArrayList<>();
-                idList.addAll(allIds);
-                Random random = new Random();
-                int index = random.nextInt(allIds.size());
-                pictureIdAvailable.accept(idList.get(index));
-            }
+
+            //Retrieve the karma of all pictures
+            Storage.onIdsAndKarmaAvailable((allIdsAndKarma) -> {
+                pictureIdAvailable.accept(selectImageBasedOnKarma(allIdsAndKarma, allIds));
+            });
         });
     }
 

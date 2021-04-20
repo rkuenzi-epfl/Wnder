@@ -105,18 +105,8 @@ public abstract class Picture {
     }
 
     /**
-     * Apply consumer function when the karma is available
-     * @param karmaAvailable consumer function to call when the karma is available
+     * Get karma of a picture
+     * @param karmaAvailable
      */
-    public void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
-        Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", uniqueId);
-        karmaTask.addOnSuccessListener((documentSnapshot) -> {
-            Map<String, Object> map = new HashMap<>();
-            //We put these attributes back because if we don't, they disappear from the db
-            map.put("latitude", documentSnapshot.getDouble("latitude"));
-            map.put("longitude", documentSnapshot.getDouble("longitude"));
-            map.put("karma", documentSnapshot.getLong("karma"));
-            karmaAvailable.accept(map);
-        });
-    }
+    public abstract void onKarmaAvailable(Consumer<Long> karmaAvailable);
 }

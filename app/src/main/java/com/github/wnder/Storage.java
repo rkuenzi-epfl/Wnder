@@ -133,4 +133,34 @@ public final class Storage{
             idsAndLocsAvailable.accept(new HashMap<>());
         });
     }
+
+    /**
+     * Returns a future containing all the ids and karma of all the currently uploaded pictures on the db
+     * @return a future containing a map between strings and karma
+     */
+    public static void onIdsAndKarmaAvailable(Consumer<Map<String, Long>> idsAndKarmaAvailable){
+        Map<String, Long> idsAndKarma = new HashMap<>();
+
+        //If success, complete the future, if failure, complete the future with an empty hashmap
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener((queryDocumentSnapshots) -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+            for(int i = 0; i < docs.size(); i++){
+                long karma;
+                try{
+                    //If a picture doesn't have the karma field
+                    karma = (long)docs.get(i).get("karma");
+                }
+                catch (NullPointerException nullPo){
+                    //Consider it to be zero
+                    karma = 0;
+                }
+
+
+                idsAndKarma.put(docs.get(i).getId(), karma);
+            }
+            idsAndKarmaAvailable.accept(idsAndKarma);
+        }).addOnFailureListener((exception) -> {
+            idsAndKarmaAvailable.accept(new HashMap<>());
+        });
+    }
 }
