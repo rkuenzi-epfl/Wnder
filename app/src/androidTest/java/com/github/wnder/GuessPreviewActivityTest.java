@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.picture.ExistingPicture;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
 
+
     @Rule
     public ActivityScenarioRule<GuessPreviewActivity> testRule = new ActivityScenarioRule<>(GuessPreviewActivity.class);
 
@@ -28,18 +30,8 @@ public class GuessPreviewActivityTest {
     public void setup(){
     }
 
-    /*@Test
-    public void testGuessLocationButton(){
-        Intents.init();
-        onView(withId(R.id.guessButton)).perform(click());
-
-        // TODO: Check openGuessActivity() correct execution, probably that the activity to make a guess is actually launched and maybe that it sends the image identifier with it
-        Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
-
-        Intents.release();
-    }*/
-
-    @Test
+    //Process crashed because of Intents.release if we don't do it after.
+    @After
     public void testSkipButton(){
         Intents.init();
         //TODO: replace once PR 90 is merged
@@ -53,8 +45,22 @@ public class GuessPreviewActivityTest {
                 Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
                 Intents.release();
             });
+
         });
 
     }
+
+    @Test
+    public void testGuessLocationButton(){
+        Intents.init();
+        onView(withId(R.id.guessButton)).perform(click());
+
+        // TODO: Check openGuessActivity() correct execution, probably that the activity to make a guess is actually launched and maybe that it sends the image identifier with it
+        Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
+
+        Intents.release();
+    }
+
+
 
 }
