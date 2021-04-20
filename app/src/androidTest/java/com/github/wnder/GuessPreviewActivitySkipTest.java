@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class GuessPreviewActivityTest {
+public class GuessPreviewActivitySkipTest {
 
     @Rule
     public ActivityScenarioRule<GuessPreviewActivity> testRule = new ActivityScenarioRule<>(GuessPreviewActivity.class);
@@ -36,15 +36,19 @@ public class GuessPreviewActivityTest {
         Intents.release();
     }
 
+    //Process crashed because of Intents.release if we don't do it after.
     @Test
-    public void testGuessLocationButton(){
-        onView(withId(R.id.guessButton)).perform(click());
+    public void testSkipButton(){
+        //TODO: replace once PR 90 is merged
+        ExistingPicture pic = new ExistingPicture("testPicDontRm");
 
-        // TODO: Check openGuessActivity() correct execution, probably that the activity to make a guess is actually launched and maybe that it sends the image identifier with it
-        Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
-
+        pic.onKarmaAvailable((k1) -> {
+            onView(withId(R.id.skipButton)).perform(click());
+            Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+            pic.onKarmaAvailable((k2) -> {
+                assertThat(k2, is(k1-1));
+            });
+        });
     }
-
-
 
 }
