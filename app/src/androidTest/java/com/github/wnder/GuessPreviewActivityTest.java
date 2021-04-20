@@ -36,6 +36,30 @@ public class GuessPreviewActivityTest {
         Intents.release();
     }
 
+    //Process crashed because of Intents.release if we don't do it after.
+    /*@Test
+    public void testSkipButton() throws InterruptedException {
+        //TODO: replace once PR 90 is merged
+        ExistingPicture pic = new ExistingPicture("testPicDontRm");
+
+        pic.onKarmaAvailable((k1) -> {
+            onView(withId(R.id.skipButton)).perform(click());
+            Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+            pic.onKarmaAvailable((k2) -> {
+                assertThat(k2, is(k1-1));
+            });
+
+
+        });
+    }*/
+
+    @Test
+    public void skipButtonsSkipsCorrectly() throws InterruptedException {
+        onView(withId(R.id.skipButton)).perform(click());
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        Thread.sleep(2000);
+    }
+
     @Test
     public void testGuessLocationButton(){
         onView(withId(R.id.guessButton)).perform(click());
