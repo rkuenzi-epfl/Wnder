@@ -1,7 +1,5 @@
 package com.github.wnder;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import androidx.test.espresso.intent.Intents;
@@ -11,7 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
-import com.github.wnder.user.User;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,8 +19,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {

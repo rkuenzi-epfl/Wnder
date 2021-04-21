@@ -3,17 +3,14 @@ package com.github.wnder.picture;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.util.Log;
 
 import com.github.wnder.Score;
 import com.github.wnder.Storage;
 import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -22,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;

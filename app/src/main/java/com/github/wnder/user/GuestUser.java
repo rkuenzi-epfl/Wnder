@@ -6,15 +6,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 
 import com.github.wnder.R;
-import com.github.wnder.*;
+import com.github.wnder.Storage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
