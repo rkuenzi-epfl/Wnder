@@ -103,6 +103,11 @@ public abstract class User {
      */
     protected String selectImageBasedOnKarma(Map<String, Long> idsAndKarma, Set<String> acceptedIds){
         Map<String, Long> intersectionMap = computeIntersectionBetweenMapAndSet(idsAndKarma, acceptedIds);
+
+        //The default image is the empty string if no images were found on the database
+        if(intersectionMap.size() == 0){
+            return "";
+        }
         //Compute the minimum karma of the pictures
         long minKarma = Collections.min(intersectionMap.values());
         Map<String, Long> correctedMap = new HashMap<>();
