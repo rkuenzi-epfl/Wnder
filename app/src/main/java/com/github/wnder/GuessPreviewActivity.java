@@ -18,22 +18,19 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
     public static final String EXTRA_CAMERALAT = "cameraLat";
     public static final String EXTRA_CAMERALNG = "cameraLng";
 
-    private Button guessButton;
-    private Button skipButton;
-    private Button reportButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_preview);
 
-        guessButton = findViewById(R.id.guessButton);
+        Button guessButton = findViewById(R.id.guessButton);
         guessButton.setOnClickListener((view) -> { openGuessActivity(); });
 
-        skipButton = findViewById(R.id.skipButton);
+        Button skipButton = findViewById(R.id.skipButton);
         skipButton.setOnClickListener((view) -> { openPreviewActivity(); });
 
-        reportButton = findViewById(R.id.reportButton);
+        Button reportButton = findViewById(R.id.reportButton);
         reportButton.setOnClickListener((view) -> { reportImage(); });
     }
 
