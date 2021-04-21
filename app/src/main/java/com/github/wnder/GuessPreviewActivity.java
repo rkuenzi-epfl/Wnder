@@ -1,11 +1,17 @@
 package com.github.wnder;
 
 import android.content.Context;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +33,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         setContentView(R.layout.activity_guess_preview);
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
         findViewById(R.id.skipButton).setOnClickListener(id -> openPreviewActivity());
+        findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
     }
 
     @Override
@@ -64,6 +71,21 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
+    }
+
+    private void reportImage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(R.string.report_confirm_title);
+        builder.setMessage(R.string.report_confirm_message);
+        builder.setPositiveButton("Confirm",
+                (DialogInterface dialog, int which) -> {
+                        //TODO Update the image karma in the database accordingly to the report policy and ad it to the reported pictures
+                });
+        builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void setImageViewBitmap(Bitmap bmp){
