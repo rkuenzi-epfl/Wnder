@@ -25,8 +25,6 @@ import java.util.function.Consumer;
 
 public class SignedInUser extends User{
 
-    private String name;
-    private Uri profilePicture;
     // These are guesses on future fields for a user
     //private int GlobalScore;
     //private History history;
@@ -118,19 +116,10 @@ public class SignedInUser extends User{
 
                 //Keep only ids in desired radius
                 Set<String> allIds = keepOnlyInRadius(manager, context, allIdsAndLocs);
+                Storage.onIdsAndKarmaAvailable((allIdsAndKarma) -> {
+                    pictureIdAvailable.accept(selectImageBasedOnKarma(allIdsAndKarma, allIds));
+                });
 
-                //If no image fits, return empty string
-                if (allIds.size() == 0) {
-                    pictureIdAvailable.accept("");
-                }
-                //else, return randomly chosen string
-                else {
-                    Random rn = new Random();
-                    int index = rn.nextInt(allIds.size());
-                    List<String> ids = new ArrayList<>();
-                    ids.addAll(allIds);
-                    pictureIdAvailable.accept(ids.get(index));
-                }
             });
         });
     }
