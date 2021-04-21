@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -102,4 +103,10 @@ public abstract class Picture {
             guessesAvailable.accept(convertedResult);
         });
     }
+
+    /**
+     * Get karma of a picture
+     * @param karmaAvailable
+     */
+    public abstract void onKarmaAvailable(Consumer<Long> karmaAvailable);
 }

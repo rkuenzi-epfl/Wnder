@@ -7,9 +7,10 @@ import android.location.Location;
 import com.github.wnder.Score;
 import com.github.wnder.Storage;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -28,7 +30,11 @@ public class ExistingPicture extends Picture{
 
     public ExistingPicture(String uniqueId){
         super(uniqueId);
-        addToUserGuessedPictures(GlobalUser.getUser().getName());
+        User user = GlobalUser.getUser();
+        if(user instanceof SignedInUser){
+
+            addToUserGuessedPictures(user.getName());
+        }
     }
 
     private void setBitmap(Bitmap bmp){
@@ -79,7 +85,7 @@ public class ExistingPicture extends Picture{
             // Send corresponding score
             onUpdatedScoreboardAvailable((scoreboard)-> {
 
-                Double score = Score.computeScore(location.getLatitude(), location.getLongitude(), guessedLocation.getLatitude(), guessedLocation.getLongitude());
+                Double score = Score.computeScore(location, guessedLocation);
                 scoreboard.put(user, score);
                 Map<String, Object> convertedScoreboard = new TreeMap<>();
                 for(Map.Entry<String, Double> e : scoreboard.entrySet()){
@@ -121,4 +127,63 @@ public class ExistingPicture extends Picture{
         });
     }
 
+    /**
+     * Apply consumer function when the karma is available
+     * @param karmaAvailable consumer function to call when the karma is available
+     */
+    private void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
+        Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", getUniqueId());
+        karmaTask.addOnSuccessListener((documentSnapshot) -> {
+            Map<String, Object> map = new HashMap<>();
+            //We put these attributes back because if we don't, they disappear from the db
+            map.put("latitude", documentSnapshot.getDouble("latitude"));
+            map.put("longitude", documentSnapshot.getDouble("longitude"));
+            map.put("karma", documentSnapshot.getLong("karma"));
+            karmaAvailable.accept(map);
+        });
+    }
+
+    /**
+     * Modify the karma of a picture
+     * @param delta the karma to add to the picture
+     */
+    public CompletableFuture<Void> updateKarma(int delta) {
+        CompletableFuture toReturn = new CompletableFuture<>();
+        onKarmaUpdated((pictureAttributes) -> {
+            long newKarma = (long)pictureAttributes.get("karma") + delta;
+            Map<String, Object> toUpload = new HashMap<>();
+            toUpload.put("latitude", pictureAttributes.get("latitude"));
+            toUpload.put("longitude", pictureAttributes.get("longitude"));
+            toUpload.put("karma", newKarma);
+            Storage.uploadToFirestore(toUpload, "pictures", getUniqueId()).addOnSuccessListener((result) -> toReturn.complete(null));
+        });
+        return toReturn;
+    }
+
+    @Override
+    public void onKarmaAvailable(Consumer<Long> karmaAvailable){
+        onKarmaUpdated((attributesAvailable) -> {
+            karmaAvailable.accept((long) attributesAvailable.get("karma"));
+        });
+    }
+
+    /**
+     * Returns the picture's location with purposely reduced precision
+     * @return the location
+     */
+    public void onApproximateLocationAvailable(Consumer<Location> approximateLocationAvailable) {
+        onLocationAvailable((location) -> {
+            double radius = 200; // meters
+            Random random = new Random();
+            double distance = Math.sqrt(random.nextDouble()) * radius / 111000;
+            double angle = 2 * Math.PI * random.nextDouble();
+            double longitude_delta = distance * Math.cos(angle);
+            double latitude_delta = distance * Math.sin(angle);
+            longitude_delta /= Math.cos(Math.toRadians(location.getLatitude()));
+            Location al = new Location("");
+            al.setLongitude(location.getLongitude() + longitude_delta);
+            al.setLatitude(location.getLatitude() + latitude_delta);
+            approximateLocationAvailable.accept(al);
+        });
+    }
 }

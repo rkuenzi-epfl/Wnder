@@ -18,6 +18,7 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
@@ -26,18 +27,21 @@ import static org.mockito.Mockito.spy;
 public class ExistingPictureTesting {
 
     private static ExistingPicture testPic;
-
+    private static Location loc;
 
     @BeforeClass
     public static void getTestPic(){
         testPic = new ExistingPicture("picture1");
-        Location loc = new Location("");
-        loc.setLatitude(22d);
-        loc.setLongitude(44d);
+        loc = new Location("");
+        loc.setLatitude(10d);
+        loc.setLongitude(10d);
         CompletableFuture guessSentResult = testPic.sendUserGuess("testUser", loc);
+        CompletableFuture karmaResult = testPic.updateKarma(-1);
+
         try{
             // Make sure the picture finishes to upload before proceeding
             guessSentResult.get();
+            karmaResult.get();
         } catch (Exception e){
 
         }
@@ -68,14 +72,17 @@ public class ExistingPictureTesting {
 
         testPic.onUpdatedGuessesAvailable((userGuesses)->{
             assertTrue(userGuesses.containsKey("testUser"));
-            assertThat(userGuesses.get("testUser").getLatitude(), is(22d));
-            assertThat(userGuesses.get("testUser").getLongitude(), is(44d));
+            assertThat(userGuesses.get("testUser").getLatitude(), is(10d));
+            assertThat(userGuesses.get("testUser").getLongitude(), is(10d));
         });
 
         testPic.onUpdatedScoreboardAvailable((scoreboard)->{
             assertTrue(scoreboard.containsKey("testUser"));
-            assertThat(scoreboard.get("testUser"), is(Score.computeScore(10d,10d,22d,44d)));
 
+            Location guessedLoc = new Location("");
+            guessedLoc.setLatitude(10d);
+            guessedLoc.setLongitude(10d);
+            assertThat(scoreboard.get("testUser"), is(Score.computeScore(loc, guessedLoc)));
         });
     }
 
@@ -86,7 +93,6 @@ public class ExistingPictureTesting {
             assertTrue(scoreboard.containsKey("user3"));
             assertThat(scoreboard.get("user2"), is(13d));
             assertThat(scoreboard.get("user4"), is(9d));
-
         });
     }
 
@@ -96,6 +102,32 @@ public class ExistingPictureTesting {
             assertTrue(userGuesses.containsKey("user0"));
             assertThat(userGuesses.get("user0").getLatitude(), is(10d));
             assertThat(userGuesses.get("user0").getLongitude(), is(10d));
+        });
+    }
+
+    @Test
+    public void getAndUpdateKarmaTest(){
+        testPic.onKarmaAvailable((k1) -> {
+                    testPic.updateKarma(-1);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    testPic.onKarmaAvailable((k2) -> {
+                        assertThat(k2, is(k1-1));
+                    });
+                }
+        );
+    }
+
+    @Test
+    public void approximateLocationIsInRange(){
+        double radius = 200; // meters
+        double epsilon = 10; // meters
+        ExistingPicture pic = testPic;
+        pic.onApproximateLocationAvailable((approximateLocation) -> {
+            assertTrue(approximateLocation.distanceTo(loc) < radius + epsilon);
         });
     }
 }

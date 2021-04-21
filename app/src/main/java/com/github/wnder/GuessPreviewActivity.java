@@ -1,59 +1,69 @@
 package com.github.wnder;
 
+import android.content.Context;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-public class GuessPreviewActivity extends AppCompatActivity implements View.OnClickListener{
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.User;
+
+public class GuessPreviewActivity extends AppCompatActivity{
 
     public static final String EXTRA_GUESSLAT = "guessLat";
     public static final String EXTRA_GUESSLNG = "guessLng";
     public static final String EXTRA_CAMERALAT = "cameraLat";
     public static final String EXTRA_CAMERALNG = "cameraLng";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_preview);
-
-        Button guessButton = findViewById(R.id.guessButton);
-        guessButton.setOnClickListener((view) -> { openGuessActivity(); });
-
-        Button skipButton = findViewById(R.id.skipButton);
-        skipButton.setOnClickListener((view) -> { openPreviewActivity(); });
-
-        Button reportButton = findViewById(R.id.reportButton);
-        reportButton.setOnClickListener((view) -> { reportImage(); });
+        findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
+        findViewById(R.id.skipButton).setOnClickListener(id -> openPreviewActivity());
+        findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        ImageView image = findViewById(R.id.imagePreview);
-        image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        // TODO: Get random image from DB and display it
-    }
+        User user = GlobalUser.getUser();
 
-    @Override
-    public void onClick(View v) {
+        try {
+            user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
+                if(!picId.equals("")){
+                    new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                } else{
+                    // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+                    setImageViewBitmap(bmp);
+                }
+            }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void openGuessActivity() {
+        // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
-        Bundle b = new Bundle();
-        b.putDouble(EXTRA_GUESSLAT, 46.5197); //TODO instead of an arbitrary 5 get an appropriate double
-        b.putDouble(EXTRA_GUESSLNG, 6.5657); //TODO instead of an arbitrary 5 get an appropriate double
-        b.putDouble(EXTRA_CAMERALAT, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
-        b.putDouble(EXTRA_CAMERALNG, 5.0); //TODO instead of an arbitrary 5 get an appropriate double
-        intent.putExtras(b);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 5.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657);
         startActivity(intent);
         finish();
     }
@@ -76,6 +86,11 @@ public class GuessPreviewActivity extends AppCompatActivity implements View.OnCl
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void setImageViewBitmap(Bitmap bmp){
+        ImageView img = findViewById(R.id.imagePreview);
+        img.setImageBitmap(bmp);
     }
 }
 

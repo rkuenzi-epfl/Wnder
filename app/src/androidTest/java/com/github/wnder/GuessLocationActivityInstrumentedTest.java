@@ -10,8 +10,6 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,9 +30,17 @@ import static junit.framework.TestCase.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessLocationActivityInstrumentedTest  {
+    static Intent intent;
+    static {
+        intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
+    }
 
     @Rule //launches a given activity before the test starts and closes after the test
-    public ActivityScenarioRule<ImageFromGalleryActivity> activityRule = new ActivityScenarioRule(GuessLocationActivity.class);
+    public ActivityScenarioRule<ImageFromGalleryActivity> activityRule = new ActivityScenarioRule(intent);
 
     //For activities that we did ourself otherwise need to use mockito
     @Before //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
@@ -50,28 +56,10 @@ public class GuessLocationActivityInstrumentedTest  {
     @Test
     public void testButtonPress() {
         onView(withId(R.id.confirmButton)).perform(click());
-
-        Intents.intended(hasComponent(ScoreActivity.class.getName()));
     }
 
     @Test
     public void testMapPress() {
-        onView(withId(R.id.mapView)).perform(click());
-    }
-
-    static Intent intent;
-    static {
-        intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
-        Bundle b = new Bundle();
-        b.putDouble("guessLat", 10);
-        b.putDouble("guessLng", 10);
-        b.putDouble("cameraLat", 10);
-        b.putDouble("cameraLng", 10);
-        intent.putExtras(b);
-    }
-
-    @Test
-    public void testMapPressWithExtra() {
         onView(withId(R.id.mapView)).perform(click());
     }
 }
