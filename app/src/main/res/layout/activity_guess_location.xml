@@ -9,19 +9,46 @@
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:mapbox_cameraTargetLat="64.900932"
-        app:mapbox_cameraTargetLng="-18.167040"
-        app:mapbox_cameraZoom="4.5"/>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/confirmButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constrainedHeight="true"
+        app:mapbox_cameraZoom="4.5" />
+
+    <TextView
+        android:id="@+id/distanceText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/mapView"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/distanceText"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/confirmButton"
         style="@style/Widget.AppCompat.Button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="confirm TODO"
+        android:text="confirm"
+        app:layout_constraintTop_toBottomOf="@id/mapView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <Button
+        android:id="@+id/scoreBoardButton"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="scoreboard"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/mapView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
