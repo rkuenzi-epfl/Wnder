@@ -1,11 +1,13 @@
 package com.github.wnder.user;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import com.github.wnder.*;
+import com.github.wnder.Storage;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -14,11 +16,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 public class SignedInUser extends User{
@@ -99,7 +98,7 @@ public class SignedInUser extends User{
      * @param pictureIdAvailable
      */
     @Override
-    public void onNewPictureAvailable(Consumer<String> pictureIdAvailable){
+    public void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable){
         //Get the ids and locs of all the uploaded pictures
 
         Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
@@ -113,7 +112,7 @@ public class SignedInUser extends User{
                 }
 
                 //Keep only ids in desired radius
-                Set<String> allIds = keepOnlyInRadius(allIdsAndLocs);
+                Set<String> allIds = keepOnlyInRadius(manager, context, allIdsAndLocs);
                 Storage.onIdsAndKarmaAvailable((allIdsAndKarma) -> {
                     pictureIdAvailable.accept(selectImageBasedOnKarma(allIdsAndKarma, allIds));
                 });

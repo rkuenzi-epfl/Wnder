@@ -1,14 +1,26 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 
-public class GuessPreviewActivity extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.User;
+
+public class GuessPreviewActivity extends AppCompatActivity{
+
+    public static final String EXTRA_GUESSLAT = "guessLat";
+    public static final String EXTRA_GUESSLNG = "guessLng";
+    public static final String EXTRA_CAMERALAT = "cameraLat";
+    public static final String EXTRA_CAMERALNG = "cameraLng";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,9 +32,22 @@ public class GuessPreviewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        ImageView image = findViewById(R.id.imagePreview);
-        image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        // TODO: Get random image from DB and display it
+        User user = GlobalUser.getUser();
+
+        try {
+            user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
+                if(!picId.equals("")){
+                    new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                } else{
+                    // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+                    setImageViewBitmap(bmp);
+                }
+            }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void openGuessActivity() {
@@ -39,6 +64,11 @@ public class GuessPreviewActivity extends AppCompatActivity {
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
+    }
+
+    private void setImageViewBitmap(Bitmap bmp){
+        ImageView img = findViewById(R.id.imagePreview);
+        img.setImageBitmap(bmp);
     }
 }
 
