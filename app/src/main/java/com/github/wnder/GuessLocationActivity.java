@@ -6,11 +6,14 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.LineString;
@@ -18,7 +21,9 @@ import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -33,7 +38,7 @@ import com.mapbox.turf.TurfTransformation;
 /**
  * Location activity
  */
-public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener{
+public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
     //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
@@ -56,9 +61,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private LatLng cameraPosition;
     private LatLng guessPosition;
     private LatLng picturePosition;
-    private int distance;
+    private int distanceDiameter;
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
+    private boolean guessConfirmed;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -67,6 +73,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Executed on activity creation
      * @param savedInstanceState instance state
      */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,12 +95,14 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         picturePosition = new LatLng(pictureLat, pictureLng);
 
         //Get distance
-        distance = extras.getInt(EXTRA_DISTANCE);
+        distanceDiameter = extras.getInt(EXTRA_DISTANCE);
 
         //Get picture ID
         pictureID = extras.getString(EXTRA_PICTURE_ID);
 
         //MapBox creation
+        guessConfirmed = false;
+
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
 
@@ -103,6 +112,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //On confirm, show real picture location
         findViewById(R.id.confirmButton).setOnClickListener(id -> showActualLocation());
+        findViewById(R.id.scoreBoardButton).setOnClickListener(id -> openScoreBoardActivity());
     }
 
     /**
@@ -116,7 +126,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //Set camera position
         CameraPosition position = new CameraPosition.Builder()
                 .target(cameraPosition)
-                .zoom(zoomFromKilometers(distance))
+                .zoom(zoomFromKilometers(distanceDiameter))
                 .build();
         this.mapboxMap.setCameraPosition(position);
 
@@ -151,6 +161,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
+        if (guessConfirmed) {
+            return true;
+        }
 
         // When the user clicks on the map, we want to animate the marker to that location.
         if (animator != null && animator.isStarted()) {
@@ -260,15 +273,61 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Shows the real location of the picture
      */
     private void showActualLocation() {
-        //TODO make the actual picture location appear
-        CameraPosition camPosition = new CameraPosition.Builder().target(cameraPosition).zoom(zoomFromKilometers(distance)).build();
-        mapboxMap.setCameraPosition(camPosition);
+        //Update karma after a guess
+        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+            ExistingPicture pic = new ExistingPicture(pictureID);
+            pic.addKarmaForGuess();
+        }
+
+
+        //Get real position
+        Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
+        Polygon circle = TurfTransformation.circle(point, 200, "meters");
+        GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
+
+        //Set mapbox style
+        Style style = mapboxMap.getStyle();
+        style.addSource(pictureSource);
+        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
+                PropertyFactory.fillColor("#ff0000"),
+                PropertyFactory.fillOpacity(0.4f)
+        ));
+
+
+        //Set camera position
+        CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
+        mapboxMap.setCameraPosition(position);
+        LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                .include(guessPosition)
+                .include(picturePosition)
+                .build();
+        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,100), 200);
+
+        findViewById(R.id.confirmButton).setVisibility(View.INVISIBLE);
+        findViewById(R.id.scoreBoardButton).setVisibility(View.VISIBLE);
+
+        guessConfirmed = true;
+
+        double distanceFromPicture = guessPosition.distanceTo(picturePosition);
+        TextView distanceText = findViewById(R.id.distanceText);
+        distanceText.setText("Distance: " + (int)distanceFromPicture + "m");
+
+        double score = Score.calculationScore(distanceFromPicture);
+        TextView scoreText = findViewById(R.id.scoreText);
+        scoreText.setText("Score: " + (int)score);
+
+    }
+
+    private void openScoreBoardActivity() {
+        Intent intent = new Intent(this, ScoreBoardActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void drawCircle(LatLng position) {
         Point center = Point.fromLngLat(position.getLongitude(), position.getLatitude());
-        Polygon outerCirclePolygon = TurfTransformation.circle(center,  distance + distance/15.0, "kilometers");
-        Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distance, "kilometers");
+        Polygon outerCirclePolygon = TurfTransformation.circle(center,  distanceDiameter + distanceDiameter/15.0, "kilometers");
+        Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distanceDiameter, "kilometers");
 
         GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
 
@@ -296,6 +355,4 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         return - Math.log((double) kilometers)/Math.log(2) + offset;
     }
-
-
 }
