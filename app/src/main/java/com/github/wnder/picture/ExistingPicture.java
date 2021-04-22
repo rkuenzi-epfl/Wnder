@@ -230,9 +230,16 @@ public class ExistingPicture extends Picture{
     }
 
     /**
-     * To be use when a picture is guessed, add 1 karma to it.
+     * To be used when a picture is guessed, add 1 karma to it.
      */
     public void addKarmaForGuess(){
         updateKarma(1);
+    }
+
+    /**
+     * To be used when a picture is reported, subtract 10 karma from it.
+     */
+    public void subtractKarmaForReport() {
+        updateKarma(-10);
     }
 }

@@ -117,7 +117,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //What to do when confirmed
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                        //TODO Update the image karma in the database accordingly to the report policy and ad it to the reported pictures
+                        if (pictureID != Picture.UNINITIALIZED_ID) {
+                            new ExistingPicture(pictureID).subtractKarmaForReport();
+                            // TODO add it to the reported pictures
+                        }
                 });
         //Cancellation possible
         builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
