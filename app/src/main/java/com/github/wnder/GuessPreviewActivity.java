@@ -27,6 +27,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
     public static final String EXTRA_CAMERALAT = "cameraLat";
     public static final String EXTRA_CAMERALNG = "cameraLng";
 
+    private static String pictureID = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 if(!picId.equals("")){
                     new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                    pictureID = picId;
                 } else{
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
                     Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
@@ -64,6 +67,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
         startActivity(intent);
         finish();
     }

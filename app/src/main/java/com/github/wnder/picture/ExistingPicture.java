@@ -186,4 +186,11 @@ public class ExistingPicture extends Picture{
             approximateLocationAvailable.accept(al);
         });
     }
+
+    /**
+     * To be use when a picture is guessed, add 1 karma to it.
+     */
+    public void addKarmaForGuess(){
+        updateKarma(1);
+    }
 }

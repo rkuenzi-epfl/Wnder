@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.picture.ExistingPicture;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
@@ -32,6 +33,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
 
+    public static final String EXTRA_PICTURE_ID = "picture_id";
+
     private static final String GUESS_SOURCE_ID = "guess-source-id";
     private static final String GUESS_LAYER_ID = "guess-layer-id";
     private static final String GUESS_ICON_ID = "guess-icon-id";
@@ -45,6 +48,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private LatLng picturePosition;
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
+
+    private String pictureID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
+
+        pictureID = extras.getString(EXTRA_PICTURE_ID);
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
@@ -184,6 +191,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void showActualLocation() {
+        //Update karma after a guess
+        if(!pictureID.equals("")){
+            ExistingPicture pic = new ExistingPicture(pictureID);
+            pic.addKarmaForGuess();
+        }
+
         Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
         Polygon circle = TurfTransformation.circle(point, 200, "meters");
         GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
