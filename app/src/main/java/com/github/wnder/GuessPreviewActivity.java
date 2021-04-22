@@ -60,7 +60,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
                 } else{
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
-                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
                     setImageViewBitmap(bmp);
                 }
             }
