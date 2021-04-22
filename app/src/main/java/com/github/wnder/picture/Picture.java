@@ -137,14 +137,15 @@ public abstract class Picture {
      */
     public void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
         //Get karma from Firestore
-        Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", uniqueId);
-        karmaTask.addOnSuccessListener((documentSnapshot) -> {
-            //Convert and accept result
+        Task<DocumentSnapshot> karmaT = Storage.downloadFromFirestore("pictures", uniqueId);
+        karmaT.addOnSuccessListener((documentSnapshot) -> {
+            //accept the result
             Map<String, Object> fields = new HashMap<>();
-            //We put these attributes back because if we don't, they disappear from the db
+
+            fields.put("karma", documentSnapshot.getLong("karma"));
             fields.put("longitude", documentSnapshot.getDouble("longitude"));
             fields.put("latitude", documentSnapshot.getDouble("latitude"));
-            fields.put("karma", documentSnapshot.getLong("karma"));
+
             karmaAvailable.accept(fields);
         });
     }
