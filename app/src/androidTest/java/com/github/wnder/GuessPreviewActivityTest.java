@@ -1,6 +1,8 @@
 package com.github.wnder;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -9,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,6 +25,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
@@ -51,7 +55,7 @@ public class GuessPreviewActivityTest {
         onView(withId(R.id.guessButton)).perform(click());
 
         // TODO: Check openGuessActivity() correct execution, probably that the activity to make a guess is actually launched and maybe that it sends the image identifier with it
-        // Intents.intended(hasComponent(GuessActivity.class.getName()));
+        Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
         Intents.release();
     }
