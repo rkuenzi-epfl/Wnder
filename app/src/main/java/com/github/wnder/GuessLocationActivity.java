@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.LineString;
@@ -26,7 +25,6 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfMeta;
@@ -291,6 +289,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private double zoomFromKilometers(int kilometers) {
         int absLat = Math.abs((int) cameraPosition.getLatitude());
+
+        //The latitude deformation taken care manually because of the lack of a good function (https://docs.mapbox.com/help/glossary/zoom-level/)
         double latDeformation = 0.00046*Math.pow(absLat, 2);
         double offset = 13.6 - latDeformation;
 

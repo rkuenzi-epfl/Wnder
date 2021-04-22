@@ -1,24 +1,18 @@
 package com.github.wnder;
 
 import android.content.Context;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import android.location.Location;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
-import com.github.wnder.picture.ReportedPictures;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;

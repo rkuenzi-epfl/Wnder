@@ -1,8 +1,6 @@
 package com.github.wnder;
 
-import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -11,7 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -25,7 +22,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
