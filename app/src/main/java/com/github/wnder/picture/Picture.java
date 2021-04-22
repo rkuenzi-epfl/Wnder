@@ -140,12 +140,12 @@ public abstract class Picture {
         Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", uniqueId);
         karmaTask.addOnSuccessListener((documentSnapshot) -> {
             //Convert and accept result
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> fields = new HashMap<>();
             //We put these attributes back because if we don't, they disappear from the db
-            map.put("latitude", documentSnapshot.getDouble("latitude"));
-            map.put("longitude", documentSnapshot.getDouble("longitude"));
-            map.put("karma", documentSnapshot.getLong("karma"));
-            karmaAvailable.accept(map);
+            fields.put("longitude", documentSnapshot.getDouble("longitude"));
+            fields.put("latitude", documentSnapshot.getDouble("latitude"));
+            fields.put("karma", documentSnapshot.getLong("karma"));
+            karmaAvailable.accept(fields);
         });
     }
 
