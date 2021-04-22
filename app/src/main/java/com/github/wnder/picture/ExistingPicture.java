@@ -163,7 +163,7 @@ public class ExistingPicture extends Picture{
      * Apply consumer function when the karma is available
      * @param karmaAvailable consumer function to call when the karma is available
      */
-    private void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
+    public void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
         Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", getUniqueId());
         karmaTask.addOnSuccessListener((documentSnapshot) -> {
             Map<String, Object> map = new HashMap<>();
