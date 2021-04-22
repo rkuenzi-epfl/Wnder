@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int[] distances = {5, 10, 20, 50, 100, 500, 1000};
     private Toolbar toolbar;
+    private SeekBar radiusSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
 
         //SeekBar for radius
-        SeekBar radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
+        radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
 
         int userRad = GlobalUser.getUser().getRadius();
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
+        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, distances[radiusSeekBar.getProgress()]);
         startActivity(intent);
     }
 

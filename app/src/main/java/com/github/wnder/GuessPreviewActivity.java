@@ -3,6 +3,7 @@ package com.github.wnder;
 import android.content.Context;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import android.location.Location;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,15 +18,23 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.ReportedPictures;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
+import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
+
 public class GuessPreviewActivity extends AppCompatActivity{
 
-    public static final String EXTRA_GUESSLAT = "guessLat";
-    public static final String EXTRA_GUESSLNG = "guessLng";
-    public static final String EXTRA_CAMERALAT = "cameraLat";
-    public static final String EXTRA_CAMERALNG = "cameraLng";
+    //EPFL Location
+    public static final double DEFAULT_LAT = 46.5197;
+    public static final double DEFAULT_LNG = 6.5657;
+
+    private User user;
+    private double pictureLat = DEFAULT_LAT;
+    private double pictureLng = DEFAULT_LNG;
+    private ExistingPicture previewPicture;
+    private boolean reported = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,31 +48,38 @@ public class GuessPreviewActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        User user = GlobalUser.getUser();
+        user = GlobalUser.getUser();
 
         try {
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 if(!picId.equals("")){
-                    new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                    // new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                    previewPicture = new ExistingPicture(picId);
+                    previewPicture.onBitmapAvailable((bmp) -> setImageViewBitmap(bmp));
+                    previewPicture.onLocationAvailable((Lct) -> {
+                        pictureLat = Lct.getLatitude();
+                        pictureLng = Lct.getLongitude();
+                    });
                 } else{
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
                     Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
                     setImageViewBitmap(bmp);
                 }
-            }
-            );
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void openGuessActivity() {
-        // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 5.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657);
+
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getLocation().getLatitude());
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLatitude());
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
+        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, getIntent().getExtras().getInt(GuessLocationActivity.EXTRA_DISTANCE));
+
         startActivity(intent);
         finish();
     }
@@ -80,7 +96,11 @@ public class GuessPreviewActivity extends AppCompatActivity{
         builder.setMessage(R.string.report_confirm_message);
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                        //TODO Update the image karma in the database accordingly to the report policy and ad it to the reported pictures
+                        if(reported){
+                            previewPicture.updateKarma(-1); //TODO discuss the report karma policy
+                            addToReportedPictures(previewPicture.getUniqueId());
+                            reported = true;
+                        }
                 });
         builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
 

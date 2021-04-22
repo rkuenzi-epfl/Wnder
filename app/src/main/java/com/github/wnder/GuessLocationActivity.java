@@ -9,8 +9,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -24,6 +26,7 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener{
@@ -31,6 +34,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
+    public static final String EXTRA_DISTANCE = "distance";
 
     private static final String GUESS_SOURCE_ID = "guess-source-id";
     private static final String GUESS_LAYER_ID = "guess-layer-id";
@@ -38,11 +42,14 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final String PICTURE_SOURCE_ID = "picture-source-id";
     private static final String PICTURE_LAYER_ID = "picture-layer-id";
 
+    private static final long ANIMATION_DURATION = 200;
+
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LatLng cameraPosition;
     private LatLng guessPosition;
     private LatLng picturePosition;
+    private int distance;
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
 
@@ -63,6 +70,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
 
+        distance = extras.getInt(EXTRA_DISTANCE);
+
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
 
@@ -77,7 +86,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        CameraPosition position = new CameraPosition.Builder().target(this.cameraPosition).build();
+        CameraPosition position = new CameraPosition.Builder()
+                .target(this.cameraPosition)
+                .zoom(distance)
+                .build();
         this.mapboxMap.setCameraPosition(position);
 
         guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Feature.fromGeometry(
@@ -111,7 +123,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         animator = ObjectAnimator
                 .ofObject(latLngEvaluator, guessPosition, point)
-                .setDuration(500);
+                .setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(animatorUpdateListener);
         animator.start();
 
@@ -184,17 +196,42 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void showActualLocation() {
+
+        Point point = Point.fromLngLat(cameraPosition.getLongitude(), cameraPosition.getLatitude());
+        Polygon outerCirclePolygon = TurfTransformation.circle(point, distance + distance/4, "kilometers");
+        Polygon innerCirclePolygon = TurfTransformation.circle(point, distance, "kilometers");
+
+        GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
+        /*
+        if (outerCircleSource != null) {
+            outerCircleSource.setGeoJson(Polygon.fromOuterInner(
+                    LineString.fromLngLats(TurfMeta.coordAll(outerCirclePolygon, false)),
+                    LineString.fromLngLats(TurfMeta.coordAll(innerCirclePolygon, false))
+            ));
+        }
+
+        Style style = mapboxMap.getStyle();
+        style.addSource(outerCircleSource);
+        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
+                PropertyFactory.fillColor(ContextCompat.getColor(this, R.color.red)),
+                PropertyFactory.fillOpacity(0.4f)
+        ));*/
+
+        /*
         Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
         Polygon circle = TurfTransformation.circle(point, 200, "meters");
         GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
         Style style = mapboxMap.getStyle();
         style.addSource(pictureSource);
         style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
-                PropertyFactory.fillColor("#ff0000"),
+                PropertyFactory.fillColor(ContextCompat.getColor(this, R.color.red)),
                 PropertyFactory.fillOpacity(0.4f)
         ));
+        */
 
-        CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
+        CameraPosition position = new CameraPosition.Builder().target(cameraPosition).zoom(5).build();
         mapboxMap.setCameraPosition(position);
+
+
     }
 }
