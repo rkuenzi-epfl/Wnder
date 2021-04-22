@@ -87,7 +87,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         this.mapboxMap = mapboxMap;
 
         CameraPosition position = new CameraPosition.Builder()
-                .target(this.cameraPosition)
+                .target(cameraPosition)
                 .zoom(zoomFromKilometers(distance))
                 .build();
         this.mapboxMap.setCameraPosition(position);
@@ -228,11 +228,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private double zoomFromKilometers(int kilometers) {
-        int absLat = Math.abs((int) picturePosition.getLatitude());
-        double offset = 13.6;
+        int absLat = Math.abs((int) cameraPosition.getLatitude());
+        double latDeformation = 0.0008*Math.pow(distance, 2) - 0.025*distance;
+        double offset = 13.6 - latDeformation;
 
         //Offset adjustment for the latitude deformation
-        if(40 < absLat && absLat <= 55) {
+        /*if(40 < absLat && absLat <= 55) {
             offset -= 0.7;
         }
         if(55 < absLat && absLat <= 70) {
@@ -243,7 +244,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         }
         if(absLat > 80) {
             offset -= 3.5;
-        }
+        }*/
 
         return - Math.log((double) kilometers)/Math.log(2) + offset;
     }
