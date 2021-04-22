@@ -137,14 +137,12 @@ public abstract class Picture {
      */
     public void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
         //Get karma from Firestore
-        Task<DocumentSnapshot> karmaT = Storage.downloadFromFirestore("pictures", uniqueId);
-        karmaT.addOnSuccessListener((documentSnapshot) -> {
+        Map<String, Object> fields = new HashMap<>();
+        Storage.downloadFromFirestore("pictures", uniqueId).addOnSuccessListener((snapshot) -> {
             //accept the result
-            Map<String, Object> fields = new HashMap<>();
-
-            fields.put("karma", documentSnapshot.getLong("karma"));
-            fields.put("longitude", documentSnapshot.getDouble("longitude"));
-            fields.put("latitude", documentSnapshot.getDouble("latitude"));
+            fields.put("karma", snapshot.getLong("karma"));
+            fields.put("longitude", snapshot.getDouble("longitude"));
+            fields.put("latitude", snapshot.getDouble("latitude"));
 
             karmaAvailable.accept(fields);
         });
