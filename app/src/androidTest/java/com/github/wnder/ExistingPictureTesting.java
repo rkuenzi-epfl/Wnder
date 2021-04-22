@@ -116,10 +116,9 @@ public class ExistingPictureTesting {
                 e.printStackTrace();
             }
             testPic.onKarmaAvailable((k2) -> {
-                    assertThat(k2, is(k1-1));
-                });
-            }
-        );
+                assertThat(k2, is(k1 - 1));
+            });
+        });
     }
 
     @Test

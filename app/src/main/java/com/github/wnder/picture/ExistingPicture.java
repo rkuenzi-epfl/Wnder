@@ -3,14 +3,14 @@ package com.github.wnder.picture;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.util.Log;
 
 import com.github.wnder.Score;
 import com.github.wnder.Storage;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -31,7 +30,11 @@ public class ExistingPicture extends Picture{
 
     public ExistingPicture(String uniqueId){
         super(uniqueId);
-        addToUserGuessedPictures(GlobalUser.getUser().getName());
+        User user = GlobalUser.getUser();
+        if(user instanceof SignedInUser){
+
+            addToUserGuessedPictures(user.getName());
+        }
     }
 
     private void setBitmap(Bitmap bmp){
@@ -126,6 +129,22 @@ public class ExistingPicture extends Picture{
 
     public void skipPicture(){
         updateKarma(-1);
+    }
+
+    /**
+     * Apply consumer function when the karma is available
+     * @param karmaAvailable consumer function to call when the karma is available
+     */
+    private void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
+        Task<DocumentSnapshot> karmaTask = Storage.downloadFromFirestore("pictures", getUniqueId());
+        karmaTask.addOnSuccessListener((documentSnapshot) -> {
+            Map<String, Object> map = new HashMap<>();
+            //We put these attributes back because if we don't, they disappear from the db
+            map.put("latitude", documentSnapshot.getDouble("latitude"));
+            map.put("longitude", documentSnapshot.getDouble("longitude"));
+            map.put("karma", documentSnapshot.getLong("karma"));
+            karmaAvailable.accept(map);
+        });
     }
 
     /**
