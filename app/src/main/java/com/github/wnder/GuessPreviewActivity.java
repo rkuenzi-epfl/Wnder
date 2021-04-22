@@ -80,7 +80,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
                     setImageViewBitmap(bmp);
                 }
-            });
+            }
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -125,11 +126,11 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //What to do when confirmed
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                        if(reported){
-                            previewPicture.updateKarma(-1); //TODO discuss the report karma policy
-                            addToReportedPictures(previewPicture.getUniqueId());
-                            reported = true;
-                        }
+                    if(!reported && pictureID != Picture.UNINITIALIZED_ID){
+                        previewPicture.subtractKarmaForReport();
+                        addToReportedPictures(previewPicture.getUniqueId());
+                        reported = true;
+                    }
                 });
         //Cancellation possible
         builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
