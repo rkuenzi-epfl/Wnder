@@ -23,27 +23,38 @@ import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
 
-
+/**
+ * Main activity
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
+    //Different distances for the radius
     private int[] distances = {5, 10, 20, 50, 100, 500, 1000};
+    //Toolbar
     private Toolbar toolbar;
 
+    /**
+     * Executes on activity creation
+     * @param savedInstanceState saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Set layout
         setContentView(R.layout.activity_main);
 
+        //Set toolbar
         this.toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
+        //Set user profile pic and name on toolbar
         TextView textView = toolbar.findViewById(R.id.username);
         User user = GlobalUser.getUser();
         textView.setText(user.getName());
-
         ImageView imageView = toolbar.findViewById(R.id.profile_picture);
         imageView.setImageURI(user.getProfilePicture());
 
+        //Set the buttons: guess, upload, history
         findViewById(R.id.getPictureButton).setOnClickListener(this);
         findViewById(R.id.uploadPictureButton).setOnClickListener(this);
         findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
@@ -52,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SeekBar radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
 
+        //Set radius seekbar depending on user selected radius
         int userRad = GlobalUser.getUser().getRadius();
         for(int i = 0; i < distances.length; i++){
             if(userRad == distances[i]){
@@ -69,9 +81,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     * To run when we get user's answer for location permission
+     * @param requestCode request code
+     * @param permissions permissions
+     * @param grantResults grant results
+     */
     @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        //if it's not the good request, return
         if(requestCode != 100){
             return;
         }
@@ -89,8 +108,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Manages what happens when use clicks on buttons
+     * @param v button clicked
+     */
     @Override
     public void onClick(View v) {
+        //When a button is clicked, set the user's location
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
         switch (v.getId()) {
@@ -109,17 +133,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+    /**
+     * To call when upload button is clicked
+     */
     private void openUploadActivity() {
         Intent intent = new Intent(this, TakePictureActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * To call when guess button is clicked
+     */
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * When user interacts with radius seekbar
+     * @param seekBar radius seekbar
+     * @param i step of seekbar
+     * @param b boolean
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
         User u = GlobalUser.getUser();
@@ -128,16 +163,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         radiusTextView.setText("Radius: "+distances[i]+"km");
     }
 
+    /**
+     * To override for seekbar
+     * @param seekBar
+     */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         //do nothing
     }
 
+    /**
+     * To override for seekbar
+     * @param seekBar
+     */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         //do nothing
     }
 
+    /**
+     * To be called when history is clicked
+     */
     private void openHistoryActivity() {
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
