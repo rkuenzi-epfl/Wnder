@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
@@ -53,7 +54,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
 
-    private String pictureID = "";
+    private String pictureID = Picture.UNINITIALIZED_ID;
 
 
     /**
@@ -245,7 +246,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     private void showActualLocation() {
         //Update karma after a guess
-        if(!pictureID.equals("")){
+        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
             ExistingPicture pic = new ExistingPicture(pictureID);
             pic.addKarmaForGuess();
         }

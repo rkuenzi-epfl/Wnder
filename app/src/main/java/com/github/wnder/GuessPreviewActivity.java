@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
@@ -30,7 +31,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
     public static final String EXTRA_CAMERALAT = "cameraLat";
     public static final String EXTRA_CAMERALNG = "cameraLng";
 
-    private static String pictureID = "";
+    private static String pictureID = Picture.UNINITIALIZED_ID;
 
     /**
      * executed on activity creation
@@ -63,7 +64,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         try {
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 //If there is a picture, display it
-                if(!picId.equals("")){
+                if(!picId.equals(Picture.UNINITIALIZED_ID)){
                     new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
                     pictureID = picId;
 
