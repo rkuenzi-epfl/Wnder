@@ -37,7 +37,7 @@ public class GuessLocationActivityInstrumentedTest  {
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
-        intent.putExtra((GuessLocationActivity.EXTRA_PICTURE_ID, ""));
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
     }
 
     @Rule //launches a given activity before the test starts and closes after the test
