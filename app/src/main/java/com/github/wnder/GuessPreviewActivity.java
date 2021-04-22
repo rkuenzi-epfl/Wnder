@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.ReportedPictures;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
@@ -38,6 +39,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private double pictureLng = DEFAULT_LNG;
     private ExistingPicture previewPicture;
     private boolean reported = false;
+
+    private static String pictureID = Picture.UNINITIALIZED_ID;
 
     /**
      * executed on activity creation
@@ -101,6 +104,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
         intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, getIntent().getExtras().getInt(GuessLocationActivity.EXTRA_DISTANCE));
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
 
         startActivity(intent);
         finish();

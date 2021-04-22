@@ -17,6 +17,8 @@ import java.util.function.Consumer;
  */
 public abstract class Picture {
 
+    public final static String UNINITIALIZED_ID = "";
+
     //Image unique ID
     private String uniqueId;
 

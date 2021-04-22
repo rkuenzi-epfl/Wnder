@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
@@ -26,6 +28,7 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
@@ -39,6 +42,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
     public static final String EXTRA_DISTANCE = "distance";
+    public static final String EXTRA_PICTURE_ID = "picture_id";
 
     private static final String GUESS_SOURCE_ID = "guess-source-id";
     private static final String GUESS_LAYER_ID = "guess-layer-id";
@@ -57,6 +61,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private int distance;
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
+
+    private String pictureID = Picture.UNINITIALIZED_ID;
+
 
     /**
      * Executed on activity creation
@@ -82,7 +89,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
 
+        //Get distance
         distance = extras.getInt(EXTRA_DISTANCE);
+
+        //Get picture ID
+        pictureID = extras.getString(EXTRA_PICTURE_ID);
 
         //MapBox creation
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
