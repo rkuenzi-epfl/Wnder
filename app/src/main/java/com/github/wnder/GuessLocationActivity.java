@@ -10,6 +10,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
@@ -22,8 +24,8 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfTransformation;
 
 /**
@@ -35,6 +37,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
+    public static final String EXTRA_PICTURE_ID = "picture_id";
 
     private static final String GUESS_SOURCE_ID = "guess-source-id";
     private static final String GUESS_LAYER_ID = "guess-layer-id";
@@ -50,6 +53,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private LatLng picturePosition;
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
+
+    private String pictureID = Picture.UNINITIALIZED_ID;
+
 
     /**
      * Executed on activity creation
@@ -74,6 +80,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
+
+        pictureID = extras.getString(EXTRA_PICTURE_ID);
 
         //MapBox creation
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
@@ -237,6 +245,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Shows the real location of the picture
      */
     private void showActualLocation() {
+        //Update karma after a guess
+        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+            ExistingPicture pic = new ExistingPicture(pictureID);
+            pic.addKarmaForGuess();
+        }
+
         //Get real position
         Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
         Polygon circle = TurfTransformation.circle(point, 200, "meters");
