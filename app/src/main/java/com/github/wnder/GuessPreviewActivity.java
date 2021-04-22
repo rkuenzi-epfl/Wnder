@@ -1,17 +1,34 @@
 package com.github.wnder;
 
+import android.content.Context;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.User;
 
 /**
  * Preview activity class
- */
-public class GuessPreviewActivity extends AppCompatActivity {
+*/
+public class GuessPreviewActivity extends AppCompatActivity{
+
+    public static final String EXTRA_GUESSLAT = "guessLat";
+    public static final String EXTRA_GUESSLNG = "guessLng";
+    public static final String EXTRA_CAMERALAT = "cameraLat";
+    public static final String EXTRA_CAMERALNG = "cameraLng";
 
     /**
      * executed on activity creation
@@ -27,6 +44,7 @@ public class GuessPreviewActivity extends AppCompatActivity {
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
         findViewById(R.id.skipButton).setOnClickListener(id -> openPreviewActivity());
+        findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
     }
 
     /**
@@ -35,12 +53,32 @@ public class GuessPreviewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //Get image preview
-        ImageView image = findViewById(R.id.imagePreview);
-        image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        // TODO: Get random image from DB and display it
+
+        //Get user
+        User user = GlobalUser.getUser();
+
+        //Get a new picture to display
+        try {
+            user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
+                //If there is a picture, display it
+                if(!picId.equals("")){
+                    new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                    //If not, display default picture
+                } else{
+                    // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+                    setImageViewBitmap(bmp);
+                }
+            }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Open guessing activity
+     */
     private void openGuessActivity() {
         // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
@@ -52,9 +90,43 @@ public class GuessPreviewActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Opens guess preview activity
+     */
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * Call this method on an image report
+     */
+    private void reportImage() {
+        //Confirm report
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(R.string.report_confirm_title);
+        builder.setMessage(R.string.report_confirm_message);
+
+        //What to do when confirmed
+        builder.setPositiveButton("Confirm",
+                (DialogInterface dialog, int which) -> {
+                        //TODO Update the image karma in the database accordingly to the report policy and ad it to the reported pictures
+                });
+        //Cancellation possible
+        builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * Displays the bitmap image
+     * @param bmp bitmap of image
+     */
+    private void setImageViewBitmap(Bitmap bmp){
+        ImageView img = findViewById(R.id.imagePreview);
+        img.setImageBitmap(bmp);
     }
 }
 

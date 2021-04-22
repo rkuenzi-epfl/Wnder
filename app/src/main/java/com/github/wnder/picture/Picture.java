@@ -132,8 +132,8 @@ public abstract class Picture {
     }
 
     /**
-     * Apply consumer function when the karma is available
-     * @param karmaAvailable consumer function to call when the karma is available
+     * Get karma of a picture
+     * @param karmaAvailable
      */
     public void onKarmaUpdated(Consumer<Map<String, Object>> karmaAvailable){
         //Get karma from Firestore
@@ -148,4 +148,10 @@ public abstract class Picture {
             karmaAvailable.accept(map);
         });
     }
+
+    /**
+     * get karma of a picture
+     * @param karmaAvailable consumer which will accept the karma
+     */
+    public abstract void onKarmaAvailable(Consumer<Long> karmaAvailable);
 }

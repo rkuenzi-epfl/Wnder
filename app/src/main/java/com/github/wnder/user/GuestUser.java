@@ -6,15 +6,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 
 import com.github.wnder.R;
-import com.github.wnder.*;
+import com.github.wnder.Storage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -46,22 +40,16 @@ public class GuestUser extends User{
      * @param pictureIdAvailable function to apply
      */
     @Override
-    public void onNewPictureAvailable(Consumer<String> pictureIdAvailable){
+    public void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable){
         //Get the ids of all the uploaded pictures
         Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
-            Set<String> allIds = keepOnlyInRadius(allIdsAndLocs);
-            //If no image fits, return empty string
-            if(0 == allIds.size()){
-                pictureIdAvailable.accept("");
-            }
-            //else, return randomly chosen string
-            else{
-                List<String> idList = new ArrayList<>();
-                idList.addAll(allIds);
-                Random random = new Random();
-                int index = random.nextInt(allIds.size());
-                pictureIdAvailable.accept(idList.get(index));
-            }
+            //Keep only ids in desired radius
+            Set<String> allIds = keepOnlyInRadius(manager, context, allIdsAndLocs);
+
+            //Retrieve the karma of all pictures
+            Storage.onIdsAndKarmaAvailable((allIdsAndKarma) -> {
+                pictureIdAvailable.accept(selectImageBasedOnKarma(allIdsAndKarma, allIds));
+            });
         });
     }
 

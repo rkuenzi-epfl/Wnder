@@ -2,20 +2,12 @@ package com.github.wnder;
 
 import android.location.Location;
 import android.net.Uri;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnPausedListener;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -123,14 +115,44 @@ public final class Storage{
             List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
             for(int i = 0; i < docs.size(); i++){
                 Location loc = new Location("");
-                loc.setLatitude(Double.parseDouble(docs.get(i).get("latitude").toString()));
-                loc.setLongitude(Double.parseDouble(docs.get(i).get("longitude").toString()));
+                loc.setLatitude(docs.get(i).getDouble("latitude"));
+                loc.setLongitude(docs.get(i).getDouble("longitude"));
 
                 idsAndLoc.put(docs.get(i).getId(), loc);
             }
             idsAndLocsAvailable.accept(idsAndLoc);
         }).addOnFailureListener((exception) -> {
             idsAndLocsAvailable.accept(new HashMap<>());
+        });
+    }
+
+    /**
+     * Returns a future containing all the ids and karma of all the currently uploaded pictures on the db
+     * @return a future containing a map between strings and karma
+     */
+    public static void onIdsAndKarmaAvailable(Consumer<Map<String, Long>> idsAndKarmaAvailable){
+        Map<String, Long> idsAndKarma = new HashMap<>();
+
+        //If success, complete the future, if failure, complete the future with an empty hashmap
+        FirebaseFirestore.getInstance().collection("pictures").get().addOnSuccessListener((queryDocumentSnapshots) -> {
+            List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+            for(int i = 0; i < docs.size(); i++){
+                long karma;
+                try{
+                    //If a picture doesn't have the karma field
+                    karma = (long)docs.get(i).get("karma");
+                }
+                catch (NullPointerException nullPo){
+                    //Consider it to be zero
+                    karma = 0;
+                }
+
+
+                idsAndKarma.put(docs.get(i).getId(), karma);
+            }
+            idsAndKarmaAvailable.accept(idsAndKarma);
+        }).addOnFailureListener((exception) -> {
+            idsAndKarmaAvailable.accept(new HashMap<>());
         });
     }
 }
