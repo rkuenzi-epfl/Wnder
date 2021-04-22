@@ -29,7 +29,11 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
+/**
+ * Location activity
+ */
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener{
+    //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
@@ -44,6 +48,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private static final long ANIMATION_DURATION = 200;
 
+    //Defines necessary mapBox setup
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LatLng cameraPosition;
@@ -53,6 +58,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private GeoJsonSource guessSource;
     private ValueAnimator animator;
 
+    /**
+     * Executed on activity creation
+     * @param savedInstanceState instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,18 +69,22 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
+        //Get camera position
         double cameraLat = extras.getDouble(EXTRA_CAMERA_LAT);
         double cameraLng = extras.getDouble(EXTRA_CAMERA_LNG);
         cameraPosition = new LatLng(cameraLat, cameraLng);
 
+        //Setup guess position
         guessPosition = new LatLng(cameraPosition);
 
+        //Get picture position
         double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
 
         distance = extras.getInt(EXTRA_DISTANCE);
 
+        //MapBox creation
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
 
@@ -79,22 +92,30 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        //On confirm, show real picture location
         findViewById(R.id.confirmButton).setOnClickListener(id -> showActualLocation());
     }
 
+    /**
+     * Executed when map is ready
+     * @param mapboxMap MapboxMap for mapbox
+     */
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
+        //Set camera position
         CameraPosition position = new CameraPosition.Builder()
                 .target(cameraPosition)
                 .zoom(zoomFromKilometers(distance))
                 .build();
         this.mapboxMap.setCameraPosition(position);
 
+        //Get guess source
         guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Feature.fromGeometry(
                 Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude())));
 
+        //Set mapbox style
         mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -112,10 +133,13 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
             }
         });
-
-
     }
 
+    /**
+     * To execute when a map is clicked
+     * @param point point where the map is clicked
+     * @return true
+     */
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
 
@@ -135,6 +159,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         return true;
     }
 
+    //Animator update listener
     private final ValueAnimator.AnimatorUpdateListener animatorUpdateListener =
             new ValueAnimator.AnimatorUpdateListener() {
                 @Override
@@ -157,48 +182,74 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     };
 
     //Necessary overwrites for MapView lifecycle methods
+
+    /**
+     * start mapbox
+     */
     @Override
     protected void onStart() {
         super.onStart();
         mapView.onStart();
     }
 
+    /**
+     * resume mapbox
+     */
     @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
     }
 
+    /**
+     * pause mapbox
+     */
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
     }
 
+    /**
+     * stop mapbox
+     */
     @Override
     protected void onStop() {
         super.onStop();
         mapView.onStop();
     }
 
+    /**
+     * save mapbox instance state
+     * @param outState output
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
 
+    /**
+     * when memory is low
+     */
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
     }
 
+    /**
+     * on mapbox destruction
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
     }
 
+    /**
+     * Shows the real location of the picture
+     */
     private void showActualLocation() {
         //TODO make the actual picture location appear
         CameraPosition camPosition = new CameraPosition.Builder().target(cameraPosition).zoom(zoomFromKilometers(distance)).build();
@@ -229,24 +280,19 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private double zoomFromKilometers(int kilometers) {
         int absLat = Math.abs((int) cameraPosition.getLatitude());
-        double latDeformation = 0.0008*Math.pow(distance, 2) - 0.025*distance;
-        double offset = 13.6 - latDeformation;
+        double offset = 13.6;
 
         //Offset adjustment for the latitude deformation
-        /*if(40 < absLat && absLat <= 55) {
+        if(40 < absLat && absLat <= 55) {
             offset -= 0.7;
-        }
-        if(55 < absLat && absLat <= 70) {
+        } else if(55 < absLat && absLat <= 70) {
             offset -= 1.5;
-        }
-        if(70 < absLat && absLat <= 80) {
+        } else if(70 < absLat && absLat <= 80) {
             offset -= 2.5;
-        }
-        if(absLat > 80) {
+        } else if(absLat > 80) {
             offset -= 3.5;
-        }*/
+        }
 
         return - Math.log((double) kilometers)/Math.log(2) + offset;
     }
 }
-

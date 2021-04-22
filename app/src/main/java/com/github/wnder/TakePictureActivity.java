@@ -26,26 +26,41 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Activity to take a picture
+ */
 public class TakePictureActivity extends AppCompatActivity {
+    //Buttons
     private Button takePictureButton;
     private Button pictureConfirmButton;
+    //Image view
     private ImageView picture;
     private final int TAKE_PHOTO = 0;
+    //Strings
     private String currentPhotoPath;
     private String imageFileName;
+    //Image
     private Uri imageUri;
     private Bitmap currentBitmap;
     public static final String HAS_SUCCEEDED = "success";
 
+    /**
+     * Executes when activity is created
+     * @param savedInstanceState saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //set layout
         setContentView(R.layout.activity_take_picture);
+        //get image from the camera
         picture = findViewById(R.id.imageFromCamera);
 
+        //button to take picture
         takePictureButton = findViewById(R.id.takePictureButton);
         takePictureButton.setOnClickListener((view) -> dispatchTakePictureIntent());
 
+        //button to confirm the taken picture, once confirmed, stored in gallery
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
         pictureConfirmButton.setVisibility(View.INVISIBLE);
         pictureConfirmButton.setOnClickListener((view) -> {
@@ -60,19 +75,33 @@ public class TakePictureActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Do something based on taking photo activity result
+     * @param requestCode request code
+     * @param resultCode result code
+     * @param cameraIntent intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent cameraIntent){
         super.onActivityResult(requestCode, resultCode, cameraIntent);
+        //If everything is ok + we just took a photo, then proceed to show it and to make confirm button visible
         if(resultCode == RESULT_OK && requestCode == TAKE_PHOTO){
             setPic();
             pictureConfirmButton.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Method that stores a bitmap into the gallery
+     */
     private void storeBitmapInGallery(){
         MediaStore.Images.Media.insertImage(getContentResolver(), currentBitmap, imageFileName , "");
     }
 
+    /**
+     * Method that stores a bitmap into the db
+     * @return
+     */
     private boolean storeBitmapInDB(){
         try {
             Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager)getSystemService(Context.LOCATION_SERVICE), this);
@@ -87,6 +116,11 @@ public class TakePictureActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method to create an image file
+     * @return image File
+     * @throws IOException
+     */
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -103,6 +137,9 @@ public class TakePictureActivity extends AppCompatActivity {
         return image;
     }
 
+    /**
+     * Dispatches taken picture intent
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         // Create the File where the photo should go
@@ -123,7 +160,9 @@ public class TakePictureActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Displays taken pic on the screen
+     */
     private void setPic() {
         // Get the dimensions of the View
         int targetW = picture.getWidth();

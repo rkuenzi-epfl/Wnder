@@ -20,11 +20,20 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+/**
+ * Class managing the storage and communication with firestore
+ */
 public final class Storage{
     private Storage(){
         //Non-instanciable class
     }
 
+    /**
+     * Upload an image to cloud storage
+     * @param uri image uri
+     * @param databaseFilePath path in cloud storage
+     * @return upload task
+     */
     public static Task<UploadTask.TaskSnapshot> uploadToCloudStorage(Uri uri, String databaseFilePath){
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageMetadata metadata = new StorageMetadata.Builder()
@@ -33,11 +42,23 @@ public final class Storage{
         return storageRef.child(databaseFilePath).putFile(uri, metadata);
     }
 
+    /**
+     * Downloads an image from cloud storage
+     * @param filepath path in cloud storage
+     * @return download task
+     */
     public static Task<byte[]> downloadFromCloudStorage(String filepath) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         return storageRef.child(filepath).getBytes(Long.MAX_VALUE);
     }
 
+    /**
+     * uploads a map in firestore given a collection and a document
+     * @param map elements to upload <Key, Object>
+     * @param collection first collection of path
+     * @param document document of path
+     * @return upload task
+     */
     public static Task<Void> uploadToFirestore(Map<String, Object> map, String collection, String document){
         return FirebaseFirestore.getInstance().collection(collection).document(document).set(map);
     }
@@ -54,10 +75,21 @@ public final class Storage{
         return FirebaseFirestore.getInstance().collection(collection).document(document).update(field, newValue);
     }
 
+    /**
+     * Download a document from firestore given a path
+     * @param collection collection of the path
+     * @param document document of the path
+     * @return download task
+     */
     public static Task<DocumentSnapshot> downloadFromFirestore(String collection, String document){
         return FirebaseFirestore.getInstance().collection(collection).document(document).get();
     }
 
+    /**
+     * download a collection from firestore
+     * @param collection collection to download, has to be the only element in the path
+     * @return download task
+     */
     public static Task<QuerySnapshot> downloadCollectionFromFirestore(String collection){
         return FirebaseFirestore.getInstance().collection(collection).get();
     }
