@@ -280,19 +280,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private double zoomFromKilometers(int kilometers) {
         int absLat = Math.abs((int) cameraPosition.getLatitude());
-        double offset = 13.6;
-
-        //Offset adjustment for the latitude deformation
-        if(40 < absLat && absLat <= 55) {
-            offset -= 0.7;
-        } else if(55 < absLat && absLat <= 70) {
-            offset -= 1.5;
-        } else if(70 < absLat && absLat <= 80) {
-            offset -= 2.5;
-        } else if(absLat > 80) {
-            offset -= 3.5;
-        }
+        double latDeformation = 0.00046*Math.pow(absLat, 2);
+        double offset = 13.6 - latDeformation;
 
         return - Math.log((double) kilometers)/Math.log(2) + offset;
     }
+
+
 }
