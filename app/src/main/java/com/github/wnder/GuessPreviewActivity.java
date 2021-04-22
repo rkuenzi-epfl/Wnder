@@ -8,18 +8,34 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
+/**
+ * Preview activity class
+ */
 public class GuessPreviewActivity extends AppCompatActivity {
+
+    /**
+     * executed on activity creation
+     * @param savedInstanceState saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Set layout
         setContentView(R.layout.activity_guess_preview);
+
+        //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
         findViewById(R.id.skipButton).setOnClickListener(id -> openPreviewActivity());
     }
 
+    /**
+     * Executed on activity start
+     */
     @Override
     protected void onStart() {
         super.onStart();
+        //Get image preview
         ImageView image = findViewById(R.id.imagePreview);
         image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         // TODO: Get random image from DB and display it

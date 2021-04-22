@@ -62,16 +62,20 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
+        //Get camera position
         double cameraLat = extras.getDouble(EXTRA_CAMERA_LAT);
         double cameraLng = extras.getDouble(EXTRA_CAMERA_LNG);
         cameraPosition = new LatLng(cameraLat, cameraLng);
 
+        //Setup guess position
         guessPosition = new LatLng(cameraPosition);
 
+        //Get picture position
         double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
 
+        //MapBox creation
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
 
@@ -79,19 +83,27 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        //On confirm, show real picture location
         findViewById(R.id.confirmButton).setOnClickListener(id -> showActualLocation());
     }
 
+    /**
+     * Executed when map is ready
+     * @param mapboxMap MapboxMap for mapbox
+     */
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
+        //Set camera position
         CameraPosition position = new CameraPosition.Builder().target(this.cameraPosition).build();
         this.mapboxMap.setCameraPosition(position);
 
+        //Get guess source
         guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Feature.fromGeometry(
                 Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude())));
 
+        //Set mapbox style
         mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -109,6 +121,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         });
     }
 
+    /**
+     * To execute when a map is clicked
+     * @param point point where the map is clicked
+     * @return true
+     */
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
 
@@ -128,6 +145,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         return true;
     }
 
+    //Animator update listener
     private final ValueAnimator.AnimatorUpdateListener animatorUpdateListener =
             new ValueAnimator.AnimatorUpdateListener() {
                 @Override
@@ -150,52 +168,81 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     };
 
     //Necessary overwrites for MapView lifecycle methods
+
+    /**
+     * start mapbox
+     */
     @Override
     protected void onStart() {
         super.onStart();
         mapView.onStart();
     }
 
+    /**
+     * resume mapbox
+     */
     @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
     }
 
+    /**
+     * pause mapbox
+     */
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
     }
 
+    /**
+     * stop mapbox
+     */
     @Override
     protected void onStop() {
         super.onStop();
         mapView.onStop();
     }
 
+    /**
+     * save mapbox instance state
+     * @param outState output
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
 
+    /**
+     * when memory is low
+     */
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
     }
 
+    /**
+     * on mapbox destruction
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
     }
 
+    /**
+     * Shows the real location of the picture
+     */
     private void showActualLocation() {
+        //Get real position
         Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
         Polygon circle = TurfTransformation.circle(point, 200, "meters");
         GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
+
+        //Set mapbox style
         Style style = mapboxMap.getStyle();
         style.addSource(pictureSource);
         style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
@@ -203,6 +250,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 PropertyFactory.fillOpacity(0.4f)
         ));
 
+        //Set camera position
         CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
         mapboxMap.setCameraPosition(position);
     }
