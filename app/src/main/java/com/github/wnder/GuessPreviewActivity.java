@@ -53,7 +53,6 @@ public class GuessPreviewActivity extends AppCompatActivity{
         try {
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 if(!picId.equals("")){
-                    // new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
                     previewPicture = new ExistingPicture(picId);
                     previewPicture.onBitmapAvailable((bmp) -> setImageViewBitmap(bmp));
                     previewPicture.onLocationAvailable((Lct) -> {

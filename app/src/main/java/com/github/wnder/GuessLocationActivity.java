@@ -88,7 +88,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         CameraPosition position = new CameraPosition.Builder()
                 .target(this.cameraPosition)
-                .zoom(distance)
+                .zoom(zoomFromKilometers(distance))
                 .build();
         this.mapboxMap.setCameraPosition(position);
 
@@ -98,6 +98,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
+                drawCircle(cameraPosition);
+
                 style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
                 style.addSource(guessSource);
                 style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
@@ -110,6 +112,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
             }
         });
+
+
     }
 
     @Override
@@ -196,13 +200,18 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void showActualLocation() {
+        //TODO make the actual picture location appear
+        CameraPosition camPosition = new CameraPosition.Builder().target(cameraPosition).zoom(zoomFromKilometers(distance)).build();
+        mapboxMap.setCameraPosition(camPosition);
+    }
 
-        Point point = Point.fromLngLat(cameraPosition.getLongitude(), cameraPosition.getLatitude());
-        Polygon outerCirclePolygon = TurfTransformation.circle(point, distance + distance/4, "kilometers");
-        Polygon innerCirclePolygon = TurfTransformation.circle(point, distance, "kilometers");
+    private void drawCircle(LatLng position) {
+        Point center = Point.fromLngLat(position.getLongitude(), position.getLatitude());
+        Polygon outerCirclePolygon = TurfTransformation.circle(center,  distance + distance/15.0, "kilometers");
+        Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distance, "kilometers");
 
         GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
-        /*
+
         if (outerCircleSource != null) {
             outerCircleSource.setGeoJson(Polygon.fromOuterInner(
                     LineString.fromLngLats(TurfMeta.coordAll(outerCirclePolygon, false)),
@@ -215,23 +224,28 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
                 PropertyFactory.fillColor(ContextCompat.getColor(this, R.color.red)),
                 PropertyFactory.fillOpacity(0.4f)
-        ));*/
-
-        /*
-        Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
-        Polygon circle = TurfTransformation.circle(point, 200, "meters");
-        GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
-        Style style = mapboxMap.getStyle();
-        style.addSource(pictureSource);
-        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
-                PropertyFactory.fillColor(ContextCompat.getColor(this, R.color.red)),
-                PropertyFactory.fillOpacity(0.4f)
         ));
-        */
+    }
 
-        CameraPosition position = new CameraPosition.Builder().target(cameraPosition).zoom(5).build();
-        mapboxMap.setCameraPosition(position);
+    private double zoomFromKilometers(int kilometers) {
+        int absLat = Math.abs((int) picturePosition.getLatitude());
+        double offset = 13.6;
 
+        //Offset adjustment for the latitude deformation
+        if(40 < absLat && absLat <= 55) {
+            offset -= 0.7;
+        }
+        if(55 < absLat && absLat <= 70) {
+            offset -= 1.5;
+        }
+        if(70 < absLat && absLat <= 80) {
+            offset -= 2.5;
+        }
+        if(absLat > 80) {
+            offset -= 3.5;
+        }
 
+        return - Math.log((double) kilometers)/Math.log(2) + offset;
     }
 }
+
