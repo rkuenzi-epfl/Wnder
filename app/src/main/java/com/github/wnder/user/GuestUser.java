@@ -12,23 +12,32 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+/**
+ * Defines a guest user
+ */
 public class GuestUser extends User{
 
+    /**
+     * get the name
+     * @return "Guest"
+     */
     @Override
     public String getName(){
         return "Guest";
     }
 
+    /**
+     * get the profile picture
+     * @return default profile picture
+     */
     @Override
     public Uri getProfilePicture(){
         return Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag);
     }
 
     /**
-     * Returns the id of a picture existing in the db
-     * @return the id of the picture, an empty string if non is eligible
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * Get a new picture id that the user can guess
+     * @param pictureIdAvailable function to apply
      */
     @Override
     public void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable){
@@ -54,7 +63,7 @@ public class GuestUser extends User{
 
     /**
      * set radius for current user
-     * @param rad
+     * @param rad new radius
      */
     public void setRadius(int rad){
         this.radius = rad;

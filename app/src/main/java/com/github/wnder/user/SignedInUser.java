@@ -20,24 +20,41 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+/**
+ * Defines a signed in user
+ */
 public class SignedInUser extends User{
 
     // These are guesses on future fields for a user
     //private int GlobalScore;
     //private History history;
-    
+
+    /**
+     * Constructor for SignedInUser
+     * @param name name of the user
+     * @param profilePicture profile picture of the user
+     */
     public SignedInUser(String name, Uri profilePicture){
 
         this.name = name;
         this.profilePicture = profilePicture;
+        //By default, radius is set at 5 km
         this.radius = 5;
     }
 
+    /**
+     * get name of user
+     * @return name of user
+     */
     @Override
     public String getName(){
         return name;
     }
 
+    /**
+     * get profile picture of user
+     * @return profile picture of user
+     */
     @Override
     public Uri getProfilePicture(){
         return profilePicture;
@@ -45,7 +62,7 @@ public class SignedInUser extends User{
 
     /**
      * return radius for current user
-     * @return radius, in meters
+     * @return radius, in kilometers
      */
     public int getRadius(){
         return radius;
@@ -53,21 +70,20 @@ public class SignedInUser extends User{
 
     /**
      * set radius for current user
-     * @param rad, in meters
+     * @param rad, in kilometers
      */
     public void setRadius(int rad){
         this.radius = rad;
     }
 
     /**
-     * Returns the ids of all the uploaded and guessed pictures of a user
-     * @return a future that holds the ids of all the uploaded and guessed pictures of a user
+     * Apply a function once the uploaded and the guessed pictures of the user have been retrieved
+     * @param uAGPA Function to apply
      */
-    public void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
+    void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
         //Get the user data
         Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
         Set<String> allPictures = new HashSet<>();
-        CompletableFuture<Set<String>> picturesToReturn = new CompletableFuture<>();
 
         //When successful, fuse the guessed and the uploaded pictures and complete the future accordingly
         userData.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -94,8 +110,8 @@ public class SignedInUser extends User{
     }
 
     /**
-     * Returns the id of a picture existing in the db that the user neither already guessed nor uploaded himself
-     * @param pictureIdAvailable
+     * apply a function on a picture in the db that the user neither already guessed nor uploaded himself
+     * @param pictureIdAvailable function to apply
      */
     @Override
     public void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable){
