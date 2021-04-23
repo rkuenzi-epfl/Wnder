@@ -17,6 +17,11 @@ I thought that my task would take me more time than it actually took me.
 
 ## Léonard (Scrum Master)
 
+This week I added the karma functions to modify karma on guessed pictures.
+
+My other task was apparently already done by someone else (some missunderstanding I guess), so I took this time to review more PR this week to help finish the user stories.
+
+Next time, I will try to take some more tasks to help more with the code.
 
 ## Nicolas
 
@@ -34,3 +39,9 @@ Next time, I will try to do a better work at testing my tasks.
 
 
 ## Overall team
+
+Our main focus was our long standing user stories, which we successfully resolve (with maybe one or two tasks not merged now).
+
+We encountered recuring problems with some tests that does not seem to work as intended and that slow us down for the merging process.
+
+Next time, we should try to resolve our architecture/tests to make them less painful. 
