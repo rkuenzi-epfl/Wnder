@@ -37,6 +37,11 @@ Next time, I will try to do a better work at testing my tasks.
 
 ## Romain 
 
+This week I finally managed to finish the task to display the picture on the guessing activity and it allowed us to finish one of our long pending user stories.
+
+However it still took a lot of time and I wasn't able to work on my refactoring task.
+
+Next time I will try to estimate better the complexity of my task to avoid underestimating.
 
 ## Overall team
 
