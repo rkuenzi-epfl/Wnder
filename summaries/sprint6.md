@@ -6,6 +6,9 @@
 
 ## Jeremy
 
+This week, I implemented a system that chooses an image to show to the user based on the karma system.
+
+I thought that my task would take me more time than it actually took me.
 
 ## Léonard (Scrum Master)
 
