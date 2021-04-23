@@ -3,6 +3,11 @@
 
 ## Aloïs 
 
+This week I implemented the initialisation default parameter for the guess activity and a red circle that indicate in which zone to guess.
+
+My time estimate for the first task was good but when I finished it instead of pushing and merging it instantly with the main I extended what I wanted to do with the red circle feature. I shoudn't have done that since I had issued with merging the red circle feature which delayed the merging of the default parameter feature into the main branch. 
+
+Next time I will separate my tasks better so that the essential features are ready and merged sooner with the main for the demo and my collegues. 
 
 ## Jeremy
 
