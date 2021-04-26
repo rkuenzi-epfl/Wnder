@@ -40,7 +40,7 @@ public class ScoreActivity extends AppCompatActivity {
 
         //What happens when you click on the see scoreboard button
         seeScoreBoard.setOnClickListener((view) -> {
-            Intent intent = new Intent(this, ScoreBoardActivity.class);
+            Intent intent = new Intent(this, ScoreboardActivity.class);
             startActivity(intent);
         });
 

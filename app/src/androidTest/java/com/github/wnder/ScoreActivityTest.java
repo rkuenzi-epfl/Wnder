@@ -4,8 +4,6 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.dx.command.Main;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +36,7 @@ public class ScoreActivityTest {
     public void testScoreboardButton() {
         onView(withId(R.id.scoreToScoreBoardButton)).perform(click());
 
-        Intents.intended(hasComponent(ScoreBoardActivity.class.getName()));
+        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
 
     @Test

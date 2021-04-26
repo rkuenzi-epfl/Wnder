@@ -36,6 +36,6 @@ public class PictureHistoryTest {
     public void testScoreboardButton(){
         //placeholder test. Change this later
         onView(withId(R.id.pictureHistoryToScoreboardButton)).perform(click());
-        Intents.intended(hasComponent(ScoreBoardActivity.class.getName()));
+        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
 }
