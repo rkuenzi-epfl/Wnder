@@ -60,7 +60,8 @@ public class GuessPreviewActivityTest {
 
     //Process crashed because of Intents.release if we don't do it after.
     /*@Test
-    public void testSkipButton() throws InterruptedException {
+    public void testSkipButtonKarma() throws InterruptedException {
+        Intents.init();
         //TODO: replace once PR 90 is merged
         ExistingPicture pic = new ExistingPicture("testPicDontRm");
 

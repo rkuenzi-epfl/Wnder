@@ -130,4 +130,19 @@ public class ExistingPictureTesting {
             assertTrue(approximateLocation.distanceTo(loc) < radius + epsilon);
         });
     }
+
+    @Test
+    public void skipPictureWorks(){
+        testPic.onKarmaAvailable((k1) -> {
+            testPic.skipPicture();
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            testPic.onKarmaAvailable((k2) ->{
+              assertThat(k2, is(k1-1));
+            });
+        });
+    }
 }
