@@ -17,6 +17,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 
+/**
+ * abstract class defining a user
+ */
 public abstract class User {
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
@@ -28,10 +31,24 @@ public abstract class User {
     protected String name;
     protected Uri profilePicture;
 
+    /**
+     * Returns name of user
+     * @return name of user
+     */
     public abstract String getName();
 
+    /**
+     * Returns profile picture of user
+     * @return profile picture of user
+     */
     public abstract Uri getProfilePicture();
 
+    /**
+     * Returns last know location of user
+     * @param manager LocationManager
+     * @param context current context
+     * @return last known location of user
+     */
     public Location getPositionFromGPS(LocationManager manager, Context context){
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -42,14 +59,34 @@ public abstract class User {
         return manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
+    /**
+     * Returns radius of the user
+     * @return radius of the user
+     */
     public abstract int getRadius();
 
+    /**
+     * Sets radius of the user
+     * @param rad new radius
+     */
     public abstract void setRadius(int rad);
 
+    /**
+     * Apply a function once a new pic to guess is available
+     * @param pictureIdAvailable function to apply
+     */
     public abstract void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable);
 
+    /**
+     * Get location of user
+     * @return location of user
+     */
     public abstract Location getLocation();
 
+    /**
+     * Set location of user
+     * @param location location of user
+     */
     public abstract void setLocation(Location location);
 
     /**
@@ -70,6 +107,12 @@ public abstract class User {
         return correctIds;
     }
 
+    /**
+     * compute the instersection between a map and a set
+     * @param idsAndKarma map
+     * @param acceptedIds set
+     * @return intersection between the map and the set
+     */
     private Map<String, Long> computeIntersectionBetweenMapAndSet(Map<String, Long> idsAndKarma, Set<String> acceptedIds){
         Map<String, Long> intersectionMap = new HashMap<>();
         //Takes only the entries inside the set of accepted IDs
@@ -81,6 +124,12 @@ public abstract class User {
         return intersectionMap;
     }
 
+    /**
+     * Find the string associated with a random number (for the tombola)
+     * @param randomNumber the random number
+     * @param map the ids associated with numbers
+     * @return picture id, "" if none is correct
+     */
     private String findAssociatedRandomId(int randomNumber, Map<String, Long> map){
         //Select a random image
         int counter = 0;
