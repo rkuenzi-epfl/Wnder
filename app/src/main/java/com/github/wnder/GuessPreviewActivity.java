@@ -1,19 +1,15 @@
 package com.github.wnder;
 
 import android.content.Context;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
@@ -32,7 +28,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
     public static final String EXTRA_CAMERALNG = "cameraLng";
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
-
+    
     /**
      * executed on activity creation
      * @param savedInstanceState saved instance state
