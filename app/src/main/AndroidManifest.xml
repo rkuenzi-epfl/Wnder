@@ -24,7 +24,6 @@
         <activity android:name=".PictureHistoryActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".ScoreboardActivity" />
-        <activity android:name=".ScoreActivity" />
         <activity android:name=".GuessLocationActivity"/>
         <activity android:name=".MainActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
