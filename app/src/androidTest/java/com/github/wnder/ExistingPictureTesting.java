@@ -107,7 +107,7 @@ public class ExistingPictureTesting {
     }
 
     @Test
-    public void getAndUpdateKarmaTest(){
+    public void getAndUpdateKarmaTest() throws InterruptedException {
         testPic.onKarmaAvailable((k1) -> {
             testPic.updateKarma(-1);
             try {
@@ -119,6 +119,7 @@ public class ExistingPictureTesting {
                 assertThat(k2, is(k1 - 1));
             });
         });
+        Thread.sleep(2000);
     }
 
     @Test
@@ -132,7 +133,7 @@ public class ExistingPictureTesting {
     }
 
     @Test
-    public void skipPictureWorks(){
+    public void skipPictureWorks() throws InterruptedException {
         testPic.onKarmaAvailable((k1) -> {
             testPic.skipPicture();
             try {
@@ -144,5 +145,6 @@ public class ExistingPictureTesting {
               assertThat(k2, is(k1-1));
             });
         });
+        Thread.sleep(2000);
     }
 }
