@@ -51,7 +51,8 @@ public class GetUserPositionTest {
 
         Looper.prepare();
 
-        locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false, false, false, false, false, false, 1, 1);
+        //Makes tests fail when it's here
+        //locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false, false, false, false, false, false, 1, 1);
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(50);
         location.setLongitude(30);
