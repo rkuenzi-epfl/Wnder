@@ -2,6 +2,7 @@ package com.github.wnder.picture;
 
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -57,7 +58,7 @@ public interface PicturesDatabase {
      * Upload a picture with all it's initial information to the database
      * @return a Future
      */
-    public abstract CompletableFuture<Void> uploadPicture(NewPicture picture);
+    public abstract CompletableFuture<Void> uploadPicture(String user, Location location, Uri uri);
 
     /**
      * Provides (later) karma associated to a picture

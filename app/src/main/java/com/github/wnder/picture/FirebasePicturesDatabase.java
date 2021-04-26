@@ -1,16 +1,26 @@
 package com.github.wnder.picture;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 
 import com.github.wnder.Score;
+import com.github.wnder.Storage;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -149,12 +159,82 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
-        return null;
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        storage.child("pictures/"+uniqueId+".jpg").getBytes(Long.MAX_VALUE)
+                .addOnSuccessListener(bytes -> cf.complete(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)))
+                .addOnFailureListener(cf::completeExceptionally);
+        return cf;
     }
 
     @Override
-    public CompletableFuture<Void> uploadPicture(NewPicture picture) {
-        return null;
+    public CompletableFuture<Void> uploadPicture(String user, Location location, Uri uri) {
+        CompletableFuture<Void> attributesCf = new CompletableFuture<>();
+        CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
+        CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
+        CompletableFuture<Void> pictureCf = new CompletableFuture<>();
+
+        String uniqueId = user + Calendar.getInstance().getTimeInMillis();
+        CompletableFuture<Void> userUploadListCf = addPhotoToUploadedUserPhoto(uniqueId, user);
+
+        //coordinates
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("latitude", location.getLatitude());
+        attributes.put("longitude", location.getLongitude());
+        attributes.put("karma", 0);
+        picturesCollection.document(uniqueId).set(attributes)
+                .addOnSuccessListener(result -> attributesCf.complete(null))
+                .addOnFailureListener(attributesCf::completeExceptionally);
+        picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(attributes)
+                .addOnSuccessListener(result -> userGuessesCf.complete(null))
+                .addOnFailureListener(userGuessesCf::completeExceptionally);
+        picturesCollection.document(uniqueId).collection("userData").document("userScores").set(attributes)
+                .addOnSuccessListener(result -> userScoresCf.complete(null))
+                .addOnFailureListener(userScoresCf::completeExceptionally);
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
+        storage.child("pictures/"+uniqueId+".jpg").putFile(uri, metadata)
+                .addOnSuccessListener(result -> pictureCf.complete(null))
+                .addOnFailureListener(pictureCf::completeExceptionally);
+        return CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf, pictureCf);
+    }
+
+    /**
+     * Add this picture to the list of uploaded pictures of the user
+     */
+    private CompletableFuture<Void> addPhotoToUploadedUserPhoto(String uniqueId, String user){
+        CompletableFuture<Void> cf = new CompletableFuture<>();
+        //get current user data
+        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
+        usersCollection.document(user).get()
+                .addOnSuccessListener((documentSnapshot) ->{
+
+                    //Get current user data
+                    List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
+                    List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
+
+                    //Create lists if they don't exist
+                    if (guessedPictures == null) {
+                        guessedPictures = new ArrayList<>();
+                    }
+                    if (uploadedPictures == null) {
+                        uploadedPictures = new ArrayList<>();
+                    }
+
+                    //If uploaded pictures doesn't contain new picture, add it
+                    if (!uploadedPictures.contains(uniqueId)){
+                        uploadedPictures.add(uniqueId);
+                    }
+
+                    //Upload everything back to Firestore
+                    Map<String, Object> toUpload = new HashMap<>();
+                    toUpload.put("guessedPics", guessedPictures);
+                    toUpload.put("uploadedPics", uploadedPictures);
+                    usersCollection.document(user).set(toUpload)
+                            .addOnSuccessListener(result -> cf.complete(null))
+                            .addOnFailureListener(cf::completeExceptionally);
+                })
+                .addOnFailureListener(cf::completeExceptionally);
+
+        return cf;
     }
 
     @Override
