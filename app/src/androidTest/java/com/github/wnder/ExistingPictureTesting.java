@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.NewPicture;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -106,19 +107,19 @@ public class ExistingPictureTesting {
     }
 
     @Test
-    public void getAndUpdateKarmaTest(){
+    public void getAndUpdateKarmaTest() throws InterruptedException {
         testPic.onKarmaAvailable((k1) -> {
-                    testPic.updateKarma(-1);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    testPic.onKarmaAvailable((k2) -> {
-                        assertThat(k2, is(k1-1));
-                    });
-                }
-        );
+            testPic.updateKarma(-1);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            testPic.onKarmaAvailable((k2) -> {
+                assertThat(k2, is(k1 - 1));
+            });
+        });
+        Thread.sleep(2000);
     }
 
     @Test
@@ -129,5 +130,21 @@ public class ExistingPictureTesting {
         pic.onApproximateLocationAvailable((approximateLocation) -> {
             assertTrue(approximateLocation.distanceTo(loc) < radius + epsilon);
         });
+    }
+
+    @Test
+    public void skipPictureWorks() throws InterruptedException {
+        testPic.onKarmaAvailable((k1) -> {
+            testPic.skipPicture();
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            testPic.onKarmaAvailable((k2) ->{
+              assertThat(k2, is(k1-1));
+            });
+        });
+        Thread.sleep(2000);
     }
 }
