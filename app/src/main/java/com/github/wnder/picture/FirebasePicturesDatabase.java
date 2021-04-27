@@ -135,8 +135,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                 }
                 picturesCollection.document(uniqueId).collection("userData").document("userGuesses")
                         .set(convertedGuesses)
-                        .addOnSuccessListener(result -> guessSent.complete(null))
-                        .addOnFailureListener(guessSent::completeExceptionally);
+                        .addOnSuccessListener(result -> guessSent.complete(null)).addOnFailureListener(guessSent::completeExceptionally);
 
             });
             getScoreboard(uniqueId).thenAccept((scoreboard) -> {
@@ -147,8 +146,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
                 picturesCollection.document(uniqueId).collection("userData").document("userScores")
                         .set(newScoreboard)
-                        .addOnSuccessListener(result -> scoreSent.complete(null))
-                        .addOnFailureListener(scoreSent::completeExceptionally);
+                        .addOnSuccessListener(result -> scoreSent.complete(null)).addOnFailureListener(scoreSent::completeExceptionally);
 
             });
         });
@@ -170,7 +168,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
         CompletableFuture<Void> pictureCf = new CompletableFuture<>();
-
         CompletableFuture<Void> userUploadListCf = addPhotoToUploadedUserPhoto(uniqueId, user);
 
         //coordinates
@@ -179,8 +176,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         attributes.put("longitude", location.getLongitude());
         attributes.put("karma", 0);
         picturesCollection.document(uniqueId).set(attributes)
-                .addOnSuccessListener(result -> attributesCf.complete(null))
-                .addOnFailureListener(attributesCf::completeExceptionally);
+                .addOnSuccessListener(result -> attributesCf.complete(null)).addOnFailureListener(attributesCf::completeExceptionally);
 
         //default instantiation for the guesses ()
         //necessary to have the correct documents created in firestore
@@ -188,19 +184,19 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
         emptyGuesses.put(user, defaultGuess);
         picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(emptyGuesses)
-                .addOnSuccessListener(result -> userGuessesCf.complete(null))
-                .addOnFailureListener(userGuessesCf::completeExceptionally);
-        //default instantiation for the scoreboard
+                .addOnSuccessListener(result -> userGuessesCf.complete(null)).addOnFailureListener(userGuessesCf::completeExceptionally);
+
+
         //necessary to have the correct documents created in firestore
         Map<String, Double> emptyScoreboard= new HashMap<>();
         emptyScoreboard.put(user, -1.);
         picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
-                .addOnSuccessListener(result -> userScoresCf.complete(null))
-                .addOnFailureListener(userScoresCf::completeExceptionally);
+                .addOnSuccessListener(result -> userScoresCf.complete(null)).addOnFailureListener(userScoresCf::completeExceptionally);
+
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
         storage.child("pictures/"+uniqueId+".jpg").putFile(uri, metadata)
-                .addOnSuccessListener(result -> pictureCf.complete(null))
-                .addOnFailureListener(pictureCf::completeExceptionally);
+                .addOnSuccessListener(result -> pictureCf.complete(null)).addOnFailureListener(pictureCf::completeExceptionally);
+
         return CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf, pictureCf);
     }
 
