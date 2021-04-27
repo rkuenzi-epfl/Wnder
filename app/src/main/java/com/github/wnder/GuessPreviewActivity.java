@@ -14,11 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.github.wnder.picture.ExistingPicture;
-
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
