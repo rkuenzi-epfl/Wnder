@@ -111,10 +111,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                     Map<String, Double> convertedResult = new TreeMap<>();
                     for(Map.Entry<String, Object> e : documentSnapshot.getData().entrySet()){
                         Double value = documentSnapshot.getDouble(e.getKey());
-                        if(value != -1){
-
-                            convertedResult.put(e.getKey(), documentSnapshot.getDouble(e.getKey()));
-                        }
+                        convertedResult.put(e.getKey(), documentSnapshot.getDouble(e.getKey()));
                     }
                     cf.complete(convertedResult);
                 })
@@ -136,8 +133,8 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                     GeoPoint guess = new GeoPoint(e.getValue().getLatitude(), e.getValue().getLongitude());
                     convertedGuesses.put(e.getKey(), guess);
                 }
-                picturesCollection.document(uniqueId).collection("userData").document("userScores")
-                        .set(userGuesses)
+                picturesCollection.document(uniqueId).collection("userData").document("userGuesses")
+                        .set(convertedGuesses)
                         .addOnSuccessListener(result -> guessSent.complete(null))
                         .addOnFailureListener(guessSent::completeExceptionally);
 
@@ -145,10 +142,11 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
             getScoreboard(uniqueId).thenAccept((scoreboard) -> {
                 //Compute score
                 Double score = Score.computeScore(location, guessedLocation);
-                scoreboard.put(user, score);
+                Map<String, Double> newScoreboard = new HashMap<>(scoreboard);
+                newScoreboard.put(user, score);
 
                 picturesCollection.document(uniqueId).collection("userData").document("userScores")
-                        .set(scoreboard)
+                        .set(newScoreboard)
                         .addOnSuccessListener(result -> scoreSent.complete(null))
                         .addOnFailureListener(scoreSent::completeExceptionally);
 
@@ -167,13 +165,12 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> uploadPicture(String user, Location location, Uri uri) {
+    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) {
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
         CompletableFuture<Void> pictureCf = new CompletableFuture<>();
 
-        String uniqueId = user + Calendar.getInstance().getTimeInMillis();
         CompletableFuture<Void> userUploadListCf = addPhotoToUploadedUserPhoto(uniqueId, user);
 
         //coordinates
@@ -184,10 +181,20 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         picturesCollection.document(uniqueId).set(attributes)
                 .addOnSuccessListener(result -> attributesCf.complete(null))
                 .addOnFailureListener(attributesCf::completeExceptionally);
-        picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(attributes)
+
+        //default instantiation for the guesses ()
+        //necessary to have the correct documents created in firestore
+        Map<String, GeoPoint> emptyGuesses = new HashMap<>();
+        GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
+        emptyGuesses.put(user, defaultGuess);
+        picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(emptyGuesses)
                 .addOnSuccessListener(result -> userGuessesCf.complete(null))
                 .addOnFailureListener(userGuessesCf::completeExceptionally);
-        picturesCollection.document(uniqueId).collection("userData").document("userScores").set(attributes)
+        //default instantiation for the scoreboard
+        //necessary to have the correct documents created in firestore
+        Map<String, Double> emptyScoreboard= new HashMap<>();
+        emptyScoreboard.put(user, -1.);
+        picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
                 .addOnSuccessListener(result -> userScoresCf.complete(null))
                 .addOnFailureListener(userScoresCf::completeExceptionally);
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
@@ -252,18 +259,13 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     public CompletableFuture<Void> updateKarma(String uniqueId, int delta) {
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //Get current karma
-        picturesCollection.document(uniqueId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> toUpload = new HashMap<>();
-                    toUpload.put("latitude", documentSnapshot.getDouble("latitude"));
-                    toUpload.put("longitude", documentSnapshot.getDouble("longitude"));
-                    toUpload.put("karma", documentSnapshot.getLong("karma") + delta);
+        getKarma(uniqueId)
+                .thenAccept(karma -> {
                     picturesCollection.document(uniqueId)
-                            .set(toUpload)
+                            .update("karma", karma+delta)
                             .addOnSuccessListener(result -> cf.complete(null))
                             .addOnFailureListener(cf::completeExceptionally);
-                })
-                .addOnFailureListener(cf::completeExceptionally);
+                });
         return cf;
     }
 }
