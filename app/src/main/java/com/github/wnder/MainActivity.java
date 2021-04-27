@@ -92,20 +92,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         //if it's not the good request, return
-        if(requestCode != 100){
-            return;
-        }
-        //permission to get the location
-        for(int i = 0; i < permissions.length; ++i){
-            if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
-                // TODO: What happens if the user did not accept?
-                throw new UnsupportedOperationException();
-            }
+        if(requestCode == 100){
+            //permission to get the location
+            for(int i = 0; i < permissions.length; ++i){
+                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
+                    // TODO: What happens if the user did not accept?
+                    throw new UnsupportedOperationException();
+                }
 
-            LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-            LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, location -> {
-                //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
-            });
+                LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, location -> {
+                    //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
+                });
+            }
         }
     }
 
