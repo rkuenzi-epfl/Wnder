@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -45,25 +46,20 @@ public class ScoreboardActivity extends AppCompatActivity {
      * Update the scoreboard display
      * @param scoreboard the new scoreboard to display
      */
-    private void updateScoreboard(Map<String, Double> scoreboard){
+    private void updateScoreboard(List<Map.Entry<String, Double>> scoreboard){
 
         TableLayout scoreTable = findViewById(R.id.scoreTable);
-        List<Map.Entry<String, Double>> scoreList = new ArrayList<>(scoreboard.entrySet());
-        scoreList.sort(Map.Entry.comparingByValue());
-        Collections.reverse(scoreList);
-        for(Map.Entry<String, Double> e : scoreList){
-            if(e.getValue() > 0){
+        for(Map.Entry<String, Double> e : scoreboard){
+            TableRow newRow = new TableRow(this);
+            TextView userName = new TextView(this);
+            userName.setText((String)e.getKey());
+            TextView score = new TextView(this);
+            Double value = (Double) e.getValue();
+            score.setText(String.format("%f", value));
+            newRow.addView(userName);
+            newRow.addView(score);
+            scoreTable.addView(newRow);
 
-                TableRow newRow = new TableRow(this);
-                TextView userName = new TextView(this);
-                userName.setText((String)e.getKey());
-                TextView score = new TextView(this);
-                Double value = (Double) e.getValue();
-                score.setText(value.toString());
-                newRow.addView(userName);
-                newRow.addView(score);
-                scoreTable.addView(newRow);
-            }
         }
     }
 }
