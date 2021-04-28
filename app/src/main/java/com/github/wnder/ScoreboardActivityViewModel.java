@@ -29,7 +29,7 @@ public class ScoreboardActivityViewModel extends ViewModel {
      * Scoreboard ViewModel constructor
      *
      * @param picturesDb the picture database
-     * @param savedStateHandle state notably containing intent content
+     * @param savedStateHandle state notably containing intent extras
      */
     @Inject
     public ScoreboardActivityViewModel(PicturesDatabase picturesDb /*, UserService userService*/, SavedStateHandle savedStateHandle){

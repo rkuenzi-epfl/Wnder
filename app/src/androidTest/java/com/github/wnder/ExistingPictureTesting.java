@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 
-@RunWith(JUnit4.class)
 public class ExistingPictureTesting {
 
     private static ExistingPicture testPic;

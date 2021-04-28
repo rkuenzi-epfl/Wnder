@@ -8,6 +8,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -32,6 +35,8 @@ public class ScoreboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoreboard);
 
+        findViewById(R.id.leaveScoreboardButton).setOnClickListener(id -> finish());
+
         viewModel = new ViewModelProvider(this).get(ScoreboardActivityViewModel.class);
         viewModel.getScoreboard().observe(this, this::updateScoreboard);
     }
@@ -43,17 +48,22 @@ public class ScoreboardActivity extends AppCompatActivity {
     private void updateScoreboard(Map<String, Double> scoreboard){
 
         TableLayout scoreTable = findViewById(R.id.scoreTable);
+        List<Map.Entry<String, Double>> scoreList = new ArrayList<>(scoreboard.entrySet());
+        scoreList.sort(Map.Entry.comparingByValue());
+        Collections.reverse(scoreList);
+        for(Map.Entry<String, Double> e : scoreList){
+            if(e.getValue() != -1){
 
-        for(Map.Entry e : scoreboard.entrySet()){
-            TableRow newRow = new TableRow(this);
-            TextView userName = new TextView(this);
-            userName.setText((String)e.getKey());
-            TextView score = new TextView(this);
-            Double value = (Double) e.getValue();
-            score.setText(value.toString());
-            newRow.addView(userName);
-            newRow.addView(score);
-            scoreTable.addView(newRow);
+                TableRow newRow = new TableRow(this);
+                TextView userName = new TextView(this);
+                userName.setText((String)e.getKey());
+                TextView score = new TextView(this);
+                Double value = (Double) e.getValue();
+                score.setText(value.toString());
+                newRow.addView(userName);
+                newRow.addView(score);
+                scoreTable.addView(newRow);
+            }
         }
     }
 }
