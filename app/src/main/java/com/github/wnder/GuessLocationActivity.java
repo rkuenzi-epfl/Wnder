@@ -292,11 +292,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         double distance = guessPosition.distanceTo(picturePosition);
         TextView distanceText = findViewById(R.id.distanceText);
-        distanceText.setText("Distance: " + (int)distance + "m");
+        distanceText.setText(getString(R.string.distance,(int)distance));
 
         double score = Score.calculationScore(distance);
         TextView scoreText = findViewById(R.id.scoreText);
-        scoreText.setText("Score: " + (int)score);
+        scoreText.setText(getString(R.string.score,(int)score));
     }
 
     private void openScoreboardActivity() {

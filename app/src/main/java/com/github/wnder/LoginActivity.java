@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             goToMain();
         } else {
             signInButton.setVisibility(View.VISIBLE);
-            textLogin.setText("Please sign in.");
+            textLogin.setText(R.string.please_login);
         }
 
     }

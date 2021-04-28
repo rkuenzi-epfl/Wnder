@@ -75,7 +75,7 @@ public class ImageFromGalleryActivity extends AppCompatActivity {
         if (extras != null) {
             imageRef.setText(extras.getString("imageReturnedName"));
         } else {
-            imageRef.setText("imageUri == null AND extras == null");
+            imageRef.setText(R.string.no_image);
         }
     }
 

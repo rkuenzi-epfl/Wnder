@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         for(int i = 0; i < distances.length; i++){
             if(userRad == distances[i]){
                 radiusSeekBar.setProgress(i);
-                radiusTextView.setText("Radius: "+distances[i]+"km");
+                radiusTextView.setText(getString(R.string.set_radius, distances[i]));
                 break;
             }
         }
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         User u = GlobalUser.getUser();
         u.setRadius(distances[i]);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
-        radiusTextView.setText("Radius: "+distances[i]+"km");
+        radiusTextView.setText(getString(R.string.set_radius, distances[i]));
     }
 
     /**
