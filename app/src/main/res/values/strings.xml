@@ -5,7 +5,6 @@
     This string is used for square devices and overridden by hello_world in
     values-round/strings.xml for round devices.
     -->
-    <string name="hello_world">Hello Square World!</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
 
@@ -14,4 +13,7 @@
     <string name="guess_location">Guess Location</string>
     <string name="skip_location">Skip</string>
     <string name="report_location">Report</string>
+
+    // Scoreboard strings
+    <string name="leave_scoreboard">Leave Scoreboard</string>
 </resources>

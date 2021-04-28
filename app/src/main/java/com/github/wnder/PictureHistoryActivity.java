@@ -23,7 +23,8 @@ public class PictureHistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_picture_history);
         seeScoreBoard = findViewById(R.id.pictureHistoryToScoreboardButton);
         seeScoreBoard.setOnClickListener((view) -> {
-            Intent intent = new Intent(this, ScoreBoardActivity.class);
+            Intent intent = new Intent(this, ScoreboardActivity.class);
+            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, "picture1");
             startActivity(intent);
         });
     }
