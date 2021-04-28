@@ -55,7 +55,7 @@ public class ScoreboardActivity extends AppCompatActivity {
             userName.setText((String)e.getKey());
             TextView score = new TextView(this);
             Double value = (Double) e.getValue();
-            score.setText(String.format("%f", value));
+            score.setText(Double.toString(value));
             newRow.addView(userName);
             newRow.addView(score);
             scoreTable.addView(newRow);
