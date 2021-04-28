@@ -52,7 +52,6 @@ public class MainActivityTest {
         Intents.init();
         onView(withId(R.id.getPictureButton)).perform(click());
 
-        assertTrue(GlobalUser.getUser().getLocation() != null);
         GlobalUser.resetUser();
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
 
@@ -66,7 +65,6 @@ public class MainActivityTest {
 
 
         Intents.intended(hasComponent(TakePictureActivity.class.getName()));
-        assertTrue(GlobalUser.getUser().getLocation() != null);
 
         Intents.release();
     }
