@@ -279,7 +279,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             pic.addKarmaForGuess();
         }
 
-
         //Get real position
         Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
         Polygon circle = TurfTransformation.circle(point, 200, "meters");
@@ -292,7 +291,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 PropertyFactory.fillColor("#ff0000"),
                 PropertyFactory.fillOpacity(0.4f)
         ));
-
 
         //Set camera position
         CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
