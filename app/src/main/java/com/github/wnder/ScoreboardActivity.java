@@ -52,7 +52,7 @@ public class ScoreboardActivity extends AppCompatActivity {
         scoreList.sort(Map.Entry.comparingByValue());
         Collections.reverse(scoreList);
         for(Map.Entry<String, Double> e : scoreList){
-            if(e.getValue() != -1){
+            if(e.getValue() < 0){
 
                 TableRow newRow = new TableRow(this);
                 TextView userName = new TextView(this);

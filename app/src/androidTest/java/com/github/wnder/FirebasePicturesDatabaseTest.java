@@ -61,7 +61,7 @@ public class FirebasePicturesDatabaseTest {
     public void getCorrectLocation() {
         Location loc = new Location("");
         loc.setLatitude(80);
-        loc.setLatitude(80);
+        loc.setLongitude(80);
         try {
             loc = db.getLocation(uniqueId).get();
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class FirebasePicturesDatabaseTest {
         Location loc = new Location("");
         // This should fail the test if we don't get a result I guess
         loc.setLatitude(80);
-        loc.setLatitude(80);
+        loc.setLongitude(80);
         try {
             loc = db.getApproximateLocation(uniqueId).get();
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class FirebasePicturesDatabaseTest {
 
         Location otherLoc = new Location("");
         otherLoc.setLatitude(20);
-        otherLoc.setLatitude(22);
+        otherLoc.setLongitude(22);
         String otherUser = "otherUser";
         try {
             db.sendUserGuess(uniqueId, otherUser, otherLoc).get();
