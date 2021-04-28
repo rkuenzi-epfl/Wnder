@@ -55,7 +55,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         imageView.setImageURI(user.getProfilePicture());
 
         //Set the buttons: guess, upload, history
-        findViewById(R.id.uploadPictureButton).setOnClickListener(id -> openUploadActivity());
+        findViewById(R.id.uploadPictureButton).setOnClickListener(id -> {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
+            openUploadActivity();
+        });
         findViewById(R.id.getPictureButton).setOnClickListener(id -> openPreviewActivity());
         findViewById(R.id.menuToHistoryButton).setOnClickListener(id -> openHistoryActivity());
 
