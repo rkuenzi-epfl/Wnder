@@ -26,7 +26,7 @@ import com.github.wnder.user.User;
 /**
  * Main activity
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
     //Different distances for the radius
     private int[] distances = {5, 10, 20, 50, 100, 500, 1000};
@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setImageURI(user.getProfilePicture());
 
         //Set the buttons: guess, upload, history
-        findViewById(R.id.getPictureButton).setOnClickListener(this);
-        findViewById(R.id.uploadPictureButton).setOnClickListener(this);
-        findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
+        findViewById(R.id.uploadPictureButton).setOnClickListener(id -> openUploadActivity());
+        findViewById(R.id.getPictureButton).setOnClickListener(id -> openPreviewActivity());
+        findViewById(R.id.menuToHistoryButton).setOnClickListener(id -> openHistoryActivity());
 
         //SeekBar for radius
         SeekBar radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
@@ -105,31 +105,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
                 });
             }
-        }
-    }
-
-    /**
-     * Manages what happens when use clicks on buttons
-     * @param v button clicked
-     */
-    @Override
-    public void onClick(View v) {
-        //When a button is clicked, set the user's location
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
-        switch (v.getId()) {
-            case R.id.uploadPictureButton:
-                openUploadActivity();
-                break;
-            case R.id.getPictureButton:
-                openPreviewActivity();
-                break;
-            case R.id.menuToHistoryButton:
-                openHistoryActivity();
-                break;
-            default:
-                break;
-            // Other buttons can be setup in this switch
         }
     }
 

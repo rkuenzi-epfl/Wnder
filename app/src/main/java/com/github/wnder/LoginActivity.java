@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.Task;
 /**
  * Activity for the login
  */
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity {
 
     //Setup buttons and google signin and texts
     private View signInButton;
