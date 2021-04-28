@@ -49,12 +49,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
-        findViewById(R.id.skipButton).setOnClickListener(id -> {
-            if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
-                new ExistingPicture(pictureID).skipPicture();
-            }
-            openPreviewActivity();
-        });
+        findViewById(R.id.skipButton).setOnClickListener(id -> skipPicture());
         findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
     }
 
@@ -75,6 +70,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     //If there is a picture, display it
                     previewPicture = new ExistingPicture(picId);
                     previewPicture.onBitmapAvailable((bmp) -> setImageViewBitmap(bmp));
+                    pictureID = picId;
                     previewPicture.onLocationAvailable((Lct) -> {
                         pictureLat = Lct.getLatitude();
                         pictureLng = Lct.getLongitude();
@@ -113,8 +109,13 @@ public class GuessPreviewActivity extends AppCompatActivity{
     /**
      * Opens guess preview activity
      */
-    private void openPreviewActivity() {
+    private void skipPicture() {
+        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+            new ExistingPicture(pictureID).skipPicture();
+        }
+
         Intent intent = new Intent(this, GuessPreviewActivity.class);
+        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, getIntent().getExtras().getInt(GuessLocationActivity.EXTRA_DISTANCE));
         startActivity(intent);
     }
 

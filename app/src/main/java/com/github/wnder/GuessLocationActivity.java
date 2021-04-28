@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
@@ -52,6 +53,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final String GUESS_ICON_ID = "guess-icon-id";
     private static final String PICTURE_SOURCE_ID = "picture-source-id";
     private static final String PICTURE_LAYER_ID = "picture-layer-id";
+    private static final String ICONS_SOURCE_ID = "icons-source-id";
+    private static final String ICONS_LAYER_ID = "icons-layer-id";
 
     private static final long ANIMATION_DURATION = 200;
 
@@ -131,26 +134,26 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         this.mapboxMap.setCameraPosition(position);
 
         //Get guess source
-        guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Feature.fromGeometry(
-                Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude())));
+        guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
 
         //Set mapbox style
         mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
-            @Override
-            public void onStyleLoaded(@NonNull Style style) {
-                drawCircle(cameraPosition);
+                @Override
+                public void onStyleLoaded(@NonNull Style style) {
+                    drawCircle(cameraPosition);
 
-                style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
-                style.addSource(guessSource);
-                style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
-                        .withProperties(
-                                PropertyFactory.iconImage(GUESS_ICON_ID),
-                                PropertyFactory.iconIgnorePlacement(true),
-                                PropertyFactory.iconAllowOverlap(true)
-                        ));
+                    style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+                    style.addSource(guessSource);
+                    style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
+                            .withProperties(
+                                    PropertyFactory.iconImage(GUESS_ICON_ID),
+                                    PropertyFactory.iconIgnorePlacement(true),
+                                    PropertyFactory.iconAllowOverlap(true)
+                            ));
 
-                mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
-            }
+
+                    mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
+                }
         });
     }
 
@@ -279,18 +282,27 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             pic.addKarmaForGuess();
         }
 
-        //Get real position
-        Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
-        Polygon circle = TurfTransformation.circle(point, 200, "meters");
-        GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, circle);
-
-        //Set mapbox style
+        //Remove old style with only the guess source
         Style style = mapboxMap.getStyle();
-        style.addSource(pictureSource);
-        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
-                PropertyFactory.fillColor("#ff0000"),
-                PropertyFactory.fillOpacity(0.4f)
-        ));
+        style.removeSource(guessSource);
+        style.removeLayer(GUESS_LAYER_ID);
+
+        //Features
+        Feature guessFeature = Feature.fromGeometry(Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
+        Feature pictureFeature = Feature.fromGeometry(Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
+
+        //Add new style with both icons
+        style.addSource(new GeoJsonSource(ICONS_SOURCE_ID,
+                FeatureCollection.fromFeatures(new Feature[] {
+                        guessFeature,
+                        pictureFeature
+                })));
+        style.addLayer(new SymbolLayer(ICONS_LAYER_ID, ICONS_SOURCE_ID)
+                .withProperties(
+                        PropertyFactory.iconImage(GUESS_ICON_ID),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
 
         //Set camera position
         CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
@@ -323,12 +335,14 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void drawCircle(LatLng position) {
+        //Create circles
         Point center = Point.fromLngLat(position.getLongitude(), position.getLatitude());
         Polygon outerCirclePolygon = TurfTransformation.circle(center,  distanceDiameter + distanceDiameter/15.0, "kilometers");
         Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distanceDiameter, "kilometers");
 
         GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
 
+        //Create hollow circle
         if (outerCircleSource != null) {
             outerCircleSource.setGeoJson(Polygon.fromOuterInner(
                     LineString.fromLngLats(TurfMeta.coordAll(outerCirclePolygon, false)),
@@ -336,6 +350,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             ));
         }
 
+        //Set mapbox style
         Style style = mapboxMap.getStyle();
         style.addSource(outerCircleSource);
         style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
