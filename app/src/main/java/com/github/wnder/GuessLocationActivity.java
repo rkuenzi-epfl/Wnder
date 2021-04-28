@@ -303,6 +303,5 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         Intent intent = new Intent(this, ScoreboardActivity.class);
         intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
         startActivity(intent);
-        finish();
     }
 }
