@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
             openUploadActivity();
         });
+
         findViewById(R.id.getPictureButton).setOnClickListener(id -> openPreviewActivity());
         findViewById(R.id.menuToHistoryButton).setOnClickListener(id -> openHistoryActivity());
 
@@ -67,17 +68,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         SeekBar radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
 
-        //Set radius seekbar depending on user selected radius
-        int userRad = GlobalUser.getUser().getRadius();
-        for(int i = 0; i < distances.length; i++){
-            if(userRad == distances[i]){
-                radiusSeekBar.setProgress(i);
-                radiusTextView.setText(getString(R.string.set_radius, distances[i]));
-                break;
-            }
-        }
-        
-        radiusSeekBar.setOnSeekBarChangeListener(this);
+        manageSeekBar(radiusSeekBar, radiusTextView);
 
         //rights for location services
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
@@ -158,6 +149,22 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         //do nothing
+    }
+
+    /**
+     * Manage the SeekBar
+     */
+    private void manageSeekBar(SeekBar radiusSeekBar, TextView radiusTextView){
+        //Set radius seekbar depending on user selected radius
+        int userRad = GlobalUser.getUser().getRadius();
+        for(int i = 0; i < distances.length; i++){
+            if(userRad == distances[i]){
+                radiusSeekBar.setProgress(i);
+                radiusTextView.setText(getString(R.string.set_radius, distances[i]));
+                break;
+            }
+        }
+        radiusSeekBar.setOnSeekBarChangeListener(this);
     }
 
     /**
