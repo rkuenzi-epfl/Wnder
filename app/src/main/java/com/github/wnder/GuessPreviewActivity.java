@@ -26,11 +26,6 @@ import com.github.wnder.user.User;
 */
 public class GuessPreviewActivity extends AppCompatActivity{
 
-    public static final String EXTRA_GUESSLAT = "guessLat";
-    public static final String EXTRA_GUESSLNG = "guessLng";
-    public static final String EXTRA_CAMERALAT = "cameraLat";
-    public static final String EXTRA_CAMERALNG = "cameraLng";
-
     private static String pictureID = Picture.UNINITIALIZED_ID;
 
     /**
