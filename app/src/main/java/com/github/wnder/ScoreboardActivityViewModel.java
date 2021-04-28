@@ -8,6 +8,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.github.wnder.picture.PicturesDatabase;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,7 +26,7 @@ public class ScoreboardActivityViewModel extends ViewModel {
 
     private String uniqueId;
 
-    private MutableLiveData<Map<String,Double>> scoreboard;
+    private MutableLiveData<List<Map.Entry<String,Double>>> scoreboard;
 
     /**
      * Scoreboard ViewModel constructor
@@ -35,7 +38,7 @@ public class ScoreboardActivityViewModel extends ViewModel {
     public ScoreboardActivityViewModel(PicturesDatabase picturesDb /*, UserService userService*/, SavedStateHandle savedStateHandle){
         this.picturesDb = picturesDb;
 
-        this.scoreboard = new MutableLiveData<>(new TreeMap<String, Double>());
+        this.scoreboard = new MutableLiveData<>(new ArrayList<Map.Entry<String, Double>>());
         this.uniqueId = savedStateHandle.get(ScoreboardActivity.EXTRA_PICTURE_ID);
 
         this.refreshScoreboard();
@@ -46,7 +49,13 @@ public class ScoreboardActivityViewModel extends ViewModel {
      */
     public void refreshScoreboard(){
         picturesDb.getScoreboard(uniqueId)
-                .thenAccept(this.scoreboard::postValue);
+                .thenAccept((scoreboard) -> {
+                    List<Map.Entry<String, Double>> scoreList = new ArrayList<>(scoreboard.entrySet());
+                    scoreList.removeIf(e -> e.getValue() < 0);
+                    scoreList.sort(Map.Entry.comparingByValue());
+                    Collections.reverse(scoreList);
+                    this.scoreboard.postValue(scoreList);
+                });
                 //.exceptionally();
     }
 
@@ -54,7 +63,7 @@ public class ScoreboardActivityViewModel extends ViewModel {
      * Get the scoreboard LiveData
      * @return scoreboard LiveData
      */
-    public LiveData<Map<String,Double>> getScoreboard(){
+    public LiveData<List<Map.Entry<String,Double>>> getScoreboard(){
         return scoreboard;
     }
 }
