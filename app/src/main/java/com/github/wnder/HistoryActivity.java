@@ -36,8 +36,8 @@ public class HistoryActivity extends AppCompatActivity {
     private int pictures_max_number = 0;
     private int picture_index = 0;
 
-    @Inject
-    private PicturesDatabase picDB;
+    //@Inject
+    //private PicturesDatabase picDB;
     private List<ExistingPicture> pictureList; //To be filled with the appropriate function (from either the local or online database)
     private ExistingPicture pictureDisplayed; //To be used to recover the image we clicked on
 
