@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessLocationActivityInstrumentedTest  {
+    //Intent with extras that the activity with start with
     static Intent intent;
     static {
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);

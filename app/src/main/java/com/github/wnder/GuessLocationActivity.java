@@ -151,7 +151,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                                     PropertyFactory.iconAllowOverlap(true)
                             ));
 
-
                     mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
                 }
         });

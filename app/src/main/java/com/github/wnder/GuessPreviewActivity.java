@@ -92,7 +92,6 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Open guessing activity
      */
     private void openGuessActivity() {
-        // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
 
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getLocation().getLatitude());
