@@ -27,7 +27,6 @@ public class GuessLocationActivityInstrumentedTest  {
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, 5);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
     }
 

@@ -38,7 +38,6 @@ public class GuessPreviewActivityTest {
     static Intent intent;
     static {
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessPreviewActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, distanceTest);
     }
 
     @Rule
@@ -81,7 +80,7 @@ public class GuessPreviewActivityTest {
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
         //Test of one of the extras
-        int distanceDiameter = Intents.getIntents().get(0).getExtras().getInt(GuessLocationActivity.EXTRA_DISTANCE);
+        int distanceDiameter = GlobalUser.getUser().getRadius();
         assertEquals(distanceDiameter, distanceTest);
 
         GlobalUser.resetUser();
