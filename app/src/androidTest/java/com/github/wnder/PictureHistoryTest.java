@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -9,6 +10,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,12 +43,13 @@ import static org.mockito.Mockito.when;
 public class PictureHistoryTest {
 
     private static Map<String, Double> dummyMap;
+    private static Intent intent;
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
-            .around(new ActivityScenarioRule<>(PictureHistoryActivity.class));
+            .around(new ActivityScenarioRule<>(intent));
 
     // We do this statically to have the mock available before creating the intent
     @BindValue
@@ -55,9 +59,10 @@ public class PictureHistoryTest {
     public static void classSetUp(){
         dummyMap = new HashMap<>();
         when(picturesDatabase.getScoreboard(anyString())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        intent = new Intent(ApplicationProvider.getApplicationContext(), PictureHistoryActivity.class);
+        intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, "picture1");
     }
 
-    //For activities that we did ourself otherwise need to use mockito
     @Before
     //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
     public void setUp() {
@@ -70,9 +75,11 @@ public class PictureHistoryTest {
     }
 
     @Test
-    public void testScoreboardButton(){
-        //placeholder test. Change this later
+    public void testScoreboardButton() {
+        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        GlobalUser.setUser(u);
         onView(withId(R.id.pictureHistoryToScoreboardButton)).perform(click());
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
+        GlobalUser.resetUser();
     }
 }

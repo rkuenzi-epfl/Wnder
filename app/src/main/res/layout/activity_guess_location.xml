@@ -13,8 +13,7 @@
         android:layout_height="577dp"
         app:layout_constrainedHeight="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:mapbox_cameraZoom="4.5" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/distanceText"
