@@ -16,11 +16,11 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 
 public class InternalCachePictureDatabase implements PicturesDatabase{
-//uniqueId, bitmap, realLocation, guessLocation, scoreboard
-    private FirebasePicturesDatabase remoteDatabase;
-    private LocalPictureDatabase localDatabase;
+    private final FirebasePicturesDatabase remoteDatabase;
+    private final LocalPictureDatabase localDatabase;
 
-    private boolean IS_ONLINE = true;
+    //The field exists only because there is still not way to know if we are online
+    private final boolean IS_ONLINE = true;
 
     @Inject
     public InternalCachePictureDatabase(Context context){
@@ -42,42 +42,86 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Location> getApproximateLocation(String uniqueId) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.getApproximateLocation(uniqueId);
+        }
+        else {
+            throw new IllegalStateException("The approximate location is not available locally");
+        }
     }
 
     @Override
     public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.getUserGuesses(uniqueId);
+        }
+        else {
+            throw new IllegalStateException("This method is not available on offline mode");
+        }
     }
 
     @Override
     public CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.getScoreboard(uniqueId);
+        }
+        else {
+            CompletableFuture<Map<String, Double>> cf = new CompletableFuture<>();
+            cf.complete(localDatabase.getScoreboard(uniqueId));
+            return cf;
+        }
     }
 
     @Override
     public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
+        }
+        else {
+            throw new IllegalStateException("This method is not available on offline mode");
+        }
     }
 
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.getBitmap(uniqueId);
+        }
+        else {
+            CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+            cf.complete(localDatabase.getPicture(uniqueId));
+            return cf;
+        }
     }
 
     @Override
     public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
+        }
+        else {
+            throw new IllegalStateException("This method is not available on offline mode");
+        }
     }
 
     @Override
     public CompletableFuture<Long> getKarma(String uniqueId) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.getKarma(uniqueId);
+        }
+        else {
+            throw new IllegalStateException("The karma is not available locally");
+        }
     }
 
     @Override
     public CompletableFuture<Void> updateKarma(String uniqueId, int delta) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.updateKarma(uniqueId, delta);
+        }
+        else {
+            throw new IllegalStateException("The karma is not stored locally");
+        }
     }
 
     /**
@@ -88,7 +132,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      * @param guessedLocation location that the user guessed
      * @param scoreboard scoreboard of the image
      */
-    public void storePictureLocally(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) throws IOException {
+    public void storePictureLocally(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) {
         localDatabase.storePictureAndMetadata(uniqueId, bmp, realLocation, guessedLocation, scoreboard);
     }
 
@@ -101,9 +145,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     /**
-     *
-     * @param uniqueId
-     * @return
+     * Get the location of the image the user guessed
+     * @param uniqueId id of the image
+     * @return the location the user guessed
      */
     public Location getGuessedLocation(String uniqueId){
         return localDatabase.getGuessedLocation(uniqueId);

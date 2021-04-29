@@ -65,7 +65,7 @@ public class LocalPictureDatabaseTest {
     @Test
     public void storeAndOpenPictureWorks() throws IOException {
         LPD.storePictureFile(bmp, uniqueId);
-        Bitmap readFile = LPD.openPictureFile(uniqueId);
+        Bitmap readFile = LPD.getPicture(uniqueId);
         int w1 = bmp.getWidth();
         int w2 = readFile.getWidth();
         assertThat(w1, is(w2));

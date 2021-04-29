@@ -27,7 +27,8 @@ public final class LocalPictureSerializer {
             json.put("realLatitude", realLocation.getLatitude());
             json.put("guessedLongitude", guessedLocation.getLongitude());
             json.put("guessedLatitude", guessedLocation.getLatitude());
-            json.put("scoreboard", scoreboard);
+            String gson = new Gson().toJson(scoreboard);
+            json.put("scoreboard", gson);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

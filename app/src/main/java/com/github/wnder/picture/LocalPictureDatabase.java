@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,8 +66,6 @@ public class LocalPictureDatabase {
      * Get the location of the image from the local database
      * @param uniqueId id of the image
      * @return the actual location of the image
-     * @throws FileNotFoundException if the file does not exist
-     * @throws JSONException if Json fails
      */
     public Location getLocation(String uniqueId) {
         String serializedData = openMetadataFile(uniqueId);
@@ -85,8 +85,6 @@ public class LocalPictureDatabase {
      * Get the location of the image from the local database
      * @param uniqueId id of the image
      * @return the actual location of the image
-     * @throws FileNotFoundException if the file does not exist
-     * @throws JSONException if Json fails
      */
     public Location getGuessedLocation(String uniqueId) {
         String serializedData = openMetadataFile(uniqueId);
@@ -103,9 +101,25 @@ public class LocalPictureDatabase {
     }
 
     /**
+     * Get the scoreboard of the image from the local database
+     * @param uniqueId id of the image
+     * @return a map of the scoreboard
+     */
+    public Map<String, Double> getScoreboard(String uniqueId) {
+        String serializedData = openMetadataFile(uniqueId);
+        try {
+            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+            String scoreboard = json.getString("scoreboard");
+            return  new Gson().fromJson(scoreboard, Map.class);
+        } catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Reads the metadata file
      * @return content of file, empty if there is a problem
-     * @throws FileNotFoundException if the file does not exist
      */
     private String openMetadataFile(String filename) {
         String toReturn = "";
@@ -150,7 +164,12 @@ public class LocalPictureDatabase {
     }
 
 
-    public Bitmap openPictureFile(String filename) {
+    /**
+     * Read the pictur efrom a local file
+     * @param filename the id of the picture
+     * @return a bitmap of the picture
+     */
+    public Bitmap getPicture(String filename) {
         File directory = context.getDir("images", Context.MODE_PRIVATE);
         File file = new File(directory, filename);
         try {
