@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,11 +23,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class LocalPictureDatabase {
     private Context context;
-    private final File imagesFolderPath = new File(context.getFilesDir(), "images");
-    private final File metadataFolder = new File(context.getFilesDir(), "metadata");
+    private final File metadataFolder;
 
     public LocalPictureDatabase(Context context){
         this.context = context;
+        metadataFolder = new File(context.getFilesDir(), "metadata");
     }
 
     /**
@@ -148,8 +149,10 @@ public class LocalPictureDatabase {
         }
     }
 
-    private Bitmap openPictureFile(String filename) {
-        File file = new File(imagesFolderPath, filename);
+
+    public Bitmap openPictureFile(String filename) {
+        File directory = context.getDir("images", Context.MODE_PRIVATE);
+        File file = new File(directory, filename);
         try {
             FileInputStream fis = context.openFileInput(file.getPath());
             byte[] bytes = new byte[(int) file.length()];
@@ -160,23 +163,32 @@ public class LocalPictureDatabase {
                 ioException.printStackTrace();
             }
             return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        } catch (FileNotFoundException e){
+        } catch (IOException e){
             e.printStackTrace();
             return null;
         }
     }
 
-    private void storePictureFile(Bitmap bmp, String filename) {
-        File file = new File(imagesFolderPath, filename);
-        try {
-            FileOutputStream fileobj = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            fileobj.write(stream.toByteArray()); //writing to file
-            fileobj.close(); //File closed
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+    public void storePictureFile(Bitmap bmp, String filename) {
+        // path to /data/data/yourapp/app_images
+        File directory = context.getDir("images", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory, filename);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

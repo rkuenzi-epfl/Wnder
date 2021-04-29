@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
 public class InternalCachePictureDatabase implements PicturesDatabase{
 //uniqueId, bitmap, realLocation, guessLocation, scoreboard
     private FirebasePicturesDatabase remoteDatabase;
@@ -20,6 +22,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     private boolean IS_ONLINE = true;
 
+    @Inject
     public InternalCachePictureDatabase(Context context){
         remoteDatabase = new FirebasePicturesDatabase();
         localDatabase = new LocalPictureDatabase(context);
