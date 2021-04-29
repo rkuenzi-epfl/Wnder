@@ -5,7 +5,10 @@ import android.net.Uri;
 
 import com.github.wnder.picture.NewPicture;
 import com.github.wnder.picture.ReportedPictures;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +46,17 @@ public class ReportedPicturesTest {
         } catch (Exception e){
 
         }
+    }
+
+    // Clean db
+    @AfterClass
+    public static void deleteTestPic() {
+        FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId())
+                .collection("userData").document("userGuesses").delete();
+        FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId())
+                .collection("userData").document("userScores").delete();
+        FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId()).delete();
+        FirebaseStorage.getInstance().getReference().child("pictures/"+pic.getUniqueId()+".jpg").delete();
     }
 
     @Test
