@@ -98,7 +98,6 @@ public class GuessPreviewActivity extends AppCompatActivity{
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLatitude());
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
-        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, getIntent().getExtras().getInt(GuessLocationActivity.EXTRA_DISTANCE));
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
 
         startActivity(intent);
@@ -114,7 +113,6 @@ public class GuessPreviewActivity extends AppCompatActivity{
         }
 
         Intent intent = new Intent(this, GuessPreviewActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, getIntent().getExtras().getInt(GuessLocationActivity.EXTRA_DISTANCE));
         startActivity(intent);
     }
 

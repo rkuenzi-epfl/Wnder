@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
+import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
@@ -45,7 +46,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
-    public static final String EXTRA_DISTANCE = "distance";
     public static final String EXTRA_PICTURE_ID = "picture_id";
 
     private static final String GUESS_SOURCE_ID = "guess-source-id";
@@ -98,7 +98,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         picturePosition = new LatLng(pictureLat, pictureLng);
 
         //Get distance
-        distanceDiameter = extras.getInt(EXTRA_DISTANCE);
+        distanceDiameter = GlobalUser.getUser().getRadius();
 
         //Get picture ID
         pictureID = extras.getString(EXTRA_PICTURE_ID);

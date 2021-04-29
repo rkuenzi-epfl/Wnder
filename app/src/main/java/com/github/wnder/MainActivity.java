@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void openPreviewActivity() {
         Intent intent = new Intent(this, GuessPreviewActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_DISTANCE, GlobalUser.getUser().getRadius());
         startActivity(intent);
     }
 
