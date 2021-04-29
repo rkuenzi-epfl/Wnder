@@ -24,6 +24,14 @@ public class LocalPictureDatabase {
     private String imagesFolderPath = new File(context.getFilesDir(), "images").getPath();
     private String metadataFolder = new File(context.getFilesDir(), "metadata").getPath();
 
+    public String getImagesFolderPath(){
+        return imagesFolderPath;
+    }
+
+    public String getMetadataFolder(){
+        return metadataFolder;
+    }
+
     public LocalPictureDatabase(Context context){
         this.context = context;
     }
@@ -97,7 +105,7 @@ public class LocalPictureDatabase {
         }
     }
 
-    private Bitmap openPictureFile(String uniqueId) throws FileNotFoundException {
+    public Bitmap openPictureFile(String uniqueId) throws FileNotFoundException {
         File file = new File(uniqueId);
         FileInputStream fis = context.openFileInput(uniqueId);
         byte[] bytes = new byte[(int) file.length()];
@@ -111,7 +119,7 @@ public class LocalPictureDatabase {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    private void storePictureFile(Bitmap bmp, String path) throws IOException {
+    public void storePictureFile(Bitmap bmp, String path) throws IOException {
         FileOutputStream fileobj = context.openFileOutput(path, Context.MODE_PRIVATE);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
