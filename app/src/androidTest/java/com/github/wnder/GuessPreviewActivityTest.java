@@ -1,9 +1,7 @@
 package com.github.wnder;
 
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -13,7 +11,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 
@@ -31,9 +28,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
