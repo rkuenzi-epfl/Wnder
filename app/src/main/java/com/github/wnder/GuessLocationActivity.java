@@ -5,18 +5,13 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
-import com.github.wnder.localDatabase.LocalDatabase;
-import com.github.wnder.localDatabase.LocalPicture;
-import com.github.wnder.localDatabase.LocalPictureDao;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.mapbox.geojson.Feature;
@@ -24,8 +19,8 @@ import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -65,10 +60,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private boolean guessConfirmed;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
-
-    //private LocalDatabase db = Room.databaseBuilder(getApplicationContext(), LocalDatabase.class, "localPictures").build();
-    //private LocalPictureDao localPictureDao = db.localPictureDao();
-
 
     /**
      * Executed on activity creation
@@ -270,10 +261,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             ExistingPicture pic = new ExistingPicture(pictureID);
             pic.addKarmaForGuess();
         }
-        /*Location location = new Location("");
-        location.setLongitude(picturePosition.getLongitude());
-        location.setLatitude(picturePosition.getLatitude());
-        localPictureDao.insert(new LocalPicture(pictureID, location));*/
 
         //Get real position
         Point point = Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude());
