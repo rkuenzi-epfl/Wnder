@@ -319,7 +319,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         double distanceFromPicture = guessPosition.distanceTo(picturePosition);
         TextView distanceText = findViewById(R.id.distanceText);
-        distanceText.setText("Distance: " + (int)distanceFromPicture + "m");
+        String dText = "Distance: " + (int)distanceFromPicture + "m";
+        if(distanceFromPicture > 10000){
+            dText = "Distance: " + (int)distanceFromPicture/1000 + "km";
+        }
+        distanceText.setText(dText);
 
         double score = Score.calculationScore(distanceFromPicture);
         TextView scoreText = findViewById(R.id.scoreText);

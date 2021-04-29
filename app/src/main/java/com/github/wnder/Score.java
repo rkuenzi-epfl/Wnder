@@ -1,6 +1,9 @@
 package com.github.wnder;
 
 import android.location.Location;
+import android.util.Log;
+
+import com.github.wnder.user.GlobalUser;
 
 /**
  * Class to manage scores
@@ -14,10 +17,15 @@ public final class Score {
     //Calculate score from a distance only
     public static double calculationScore(double distance){
 
-        return calculationScore(distance, MAX_DISTANCE);
+        return calculationScore(distance, GlobalUser.getUser().getRadius() * 1000);
     }
 
-    //Calculate score from a distance and a distance reference
+    /**
+     * Calculate a score
+     * @param distance Distance between real location and guess location
+     * @param distanceReference radius, "permitted error" in KM
+     * @return score
+     */
     public static double calculationScore(double distance, double distanceReference){
 
         if(distance > distanceReference){
