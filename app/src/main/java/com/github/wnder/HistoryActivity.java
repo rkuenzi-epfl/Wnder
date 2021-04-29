@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.PicturesDatabase;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +51,7 @@ public class HistoryActivity extends AppCompatActivity {
         //Set layout
         setContentView(R.layout.activity_history);
 
-        //TODO: fill pictureList with the local/online cache
-        pictureList = new ArrayList<>();
+        pictureList = getUserPictures();
 
         //Buttons to cycle between the images
         left_button = findViewById(R.id.left_history);
@@ -100,5 +102,23 @@ public class HistoryActivity extends AppCompatActivity {
 
         pictureList.get(index).onBitmapAvailable(bmp ->image.setImageBitmap(bmp));
         pictureDisplayed = pictureList.get(index);
+    }
+
+    private List<ExistingPicture> getUserPictures(){
+        List<ExistingPicture> picsList = new ArrayList<>();
+        User user = GlobalUser.getUser();
+
+        if(user instanceof SignedInUser) { //We can search for the pictures of the signed in user on the online database
+            ((SignedInUser) user).onGuessedPicturesAvailable(guessedPics -> {
+                for (String id : guessedPics) {
+                    picsList.add(new ExistingPicture(id));
+                }
+            });
+        }
+        else { //We have a guest user
+            //TODO: use the local cache of the phone to get potential images from the user
+        }
+
+        return picsList;
     }
 }
