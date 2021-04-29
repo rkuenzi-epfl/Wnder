@@ -66,6 +66,6 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     public void storePictureLocally(String uniqueId, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
-        
+
     }
 }
