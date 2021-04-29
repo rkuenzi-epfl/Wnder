@@ -36,9 +36,10 @@ public class LocalPictureDatabase {
      * @param guessedLocation location that the user guessed
      * @param scoreboard scoreboard of the image
      */
-    public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
+    public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) throws IOException {
         String serializedPicture = LocalPictureSerializer.seralizePicture(uniqueId, realLocation, guessedLocation, scoreboard);
         storeMetadataFile(serializedPicture, metadataFolder);
+        storePictureFile(bmp, imagesFolderPath);
     }
 
     /**
@@ -110,8 +111,8 @@ public class LocalPictureDatabase {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    private void storePictureFile(Bitmap bmp, String uniqueId) throws IOException {
-        FileOutputStream fileobj = context.openFileOutput(uniqueId, Context.MODE_PRIVATE);
+    private void storePictureFile(Bitmap bmp, String path) throws IOException {
+        FileOutputStream fileobj = context.openFileOutput(path, Context.MODE_PRIVATE);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
         fileobj.write(stream.toByteArray()); //writing to file
