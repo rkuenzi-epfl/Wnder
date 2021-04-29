@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.TextView;
 
@@ -325,7 +326,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         }
         distanceText.setText(dText);
 
-        double score = Score.calculationScore(distanceFromPicture);
+        double score = Score.calculationScore(distanceFromPicture, GlobalUser.getUser().getRadius() * 1000);
         TextView scoreText = findViewById(R.id.scoreText);
         scoreText.setText("Score: " + (int)score);
 

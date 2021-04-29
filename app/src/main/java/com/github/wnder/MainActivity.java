@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int[] distances = {5, 10, 20, 50, 100, 500, 1000};
     //Toolbar
     private Toolbar toolbar;
-    private SeekBar radiusSeekBar;
 
     /**
      * Executes on activity creation
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
 
         //SeekBar for radius
-        radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
+        SeekBar radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
 
         //Set radius seekbar depending on user selected radius

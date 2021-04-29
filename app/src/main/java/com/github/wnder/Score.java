@@ -12,13 +12,6 @@ public final class Score {
 
     //Max score and max distance
     private final static double MAX_SCORE = 200;
-    private final static double MAX_DISTANCE = 20015000; //in meter
-
-    //Calculate score from a distance only
-    public static double calculationScore(double distance){
-
-        return calculationScore(distance, GlobalUser.getUser().getRadius() * 1000);
-    }
 
     /**
      * Calculate a score
@@ -46,6 +39,6 @@ public final class Score {
      */
     public static double computeScore(Location realPos, Location guessedPos){
         double distance = guessedPos.distanceTo(realPos);
-        return calculationScore(distance);
+        return calculationScore(distance, GlobalUser.getUser().getRadius() * 1000);
     }
 }

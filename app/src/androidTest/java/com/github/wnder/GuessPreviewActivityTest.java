@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
-    static int distanceTest = 1000;
 
     //Intent with extra that the activity with start with
     static Intent intent;
@@ -78,10 +77,6 @@ public class GuessPreviewActivityTest {
         onView(withId(R.id.guessButton)).perform(click());
 
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
-
-        //Test of one of the extras
-        int distanceDiameter = GlobalUser.getUser().getRadius();
-        assertEquals(distanceDiameter, distanceTest);
 
         GlobalUser.resetUser();
     }

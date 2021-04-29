@@ -15,9 +15,7 @@ public class ScoreTest {
     public void scoreCalculatedIsWithinRange(){
         double dist1 = 100;
         double dist2 = 1000;
-        double dist3 = 1000000000;
 
-        assertEquals(0, Score.calculationScore(dist3), 1);
         assertEquals(135, Score.calculationScore(dist1, dist2), 5);
     }
 
