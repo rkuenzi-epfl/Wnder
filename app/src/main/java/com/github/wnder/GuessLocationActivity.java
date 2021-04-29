@@ -21,7 +21,6 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -102,7 +101,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //On confirm, show real picture location
         findViewById(R.id.confirmButton).setOnClickListener(id -> showActualLocation());
-        findViewById(R.id.scoreBoardButton).setOnClickListener(id -> openScoreBoardActivity());
+        findViewById(R.id.scoreBoardButton).setOnClickListener(id -> openScoreboardActivity());
     }
 
     /**
@@ -300,9 +299,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         scoreText.setText("Score: " + (int)score);
     }
 
-    private void openScoreBoardActivity() {
-        Intent intent = new Intent(this, ScoreBoardActivity.class);
+    private void openScoreboardActivity() {
+        Intent intent = new Intent(this, ScoreboardActivity.class);
+        intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
         startActivity(intent);
-        finish();
     }
 }

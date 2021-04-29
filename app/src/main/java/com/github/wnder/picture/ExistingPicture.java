@@ -159,6 +159,10 @@ public class ExistingPicture extends Picture{
         });
     }
 
+    public void skipPicture(){
+        updateKarma(-1);
+    }
+
     /**
      * Apply consumer function when the karma is available
      * @param karmaAvailable consumer function to call when the karma is available

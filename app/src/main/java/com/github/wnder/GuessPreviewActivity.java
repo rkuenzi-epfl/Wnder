@@ -26,11 +26,6 @@ import com.github.wnder.user.User;
 */
 public class GuessPreviewActivity extends AppCompatActivity{
 
-    public static final String EXTRA_GUESSLAT = "guessLat";
-    public static final String EXTRA_GUESSLNG = "guessLng";
-    public static final String EXTRA_CAMERALAT = "cameraLat";
-    public static final String EXTRA_CAMERALNG = "cameraLng";
-
     private static String pictureID = Picture.UNINITIALIZED_ID;
 
     /**
@@ -46,7 +41,12 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
-        findViewById(R.id.skipButton).setOnClickListener(id -> openPreviewActivity());
+        findViewById(R.id.skipButton).setOnClickListener(id -> {
+            if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+                new ExistingPicture(pictureID).skipPicture();
+            }
+            openPreviewActivity();
+        });
         findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
     }
 
@@ -71,7 +71,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     //If not, display default picture
                 } else{
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
-                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.ladiag);
+                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
                     setImageViewBitmap(bmp);
                 }
             }
