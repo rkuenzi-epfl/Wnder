@@ -23,6 +23,12 @@ The line between my task and Nicolas' tasks were blurry so next time, I will mak
 
 ## Romain 
 
+This week I had to create a scoreboard which went pretty well. I also had to apply some of the advices from the code review.
+
+However I knew I couldn't apply all the advices but still tried to do some of them that involved big architecture changes and therefore I spent too much time on it and the implementation is still incomplete.
+
+Next time, I will try to do refactoring task progressivly through the weeks so that I don't end up having to spend so much time on it at once.
+
 
 ## Overall team
 
