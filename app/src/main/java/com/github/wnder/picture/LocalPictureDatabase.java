@@ -2,12 +2,14 @@ package com.github.wnder.picture;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -58,7 +60,7 @@ public class LocalPictureDatabase {
     /**
      * Reads the metadata file
      * @return content of file, empty if there is a problem
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException if there file does not exist
      */
     public String openMetadataFile(String path) throws FileNotFoundException {
         String toReturn = "";
@@ -94,4 +96,25 @@ public class LocalPictureDatabase {
         }
     }
 
+    private Bitmap openPictureFile(String uniqueId) throws FileNotFoundException {
+        File file = new File(uniqueId);
+        FileInputStream fis = context.openFileInput(uniqueId);
+        byte[] bytes = new byte[(int) file.length()];
+        try {
+            fis.read(bytes, 0, bytes.length);
+            fis.close();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    private void storePictureFile(Bitmap bmp, String uniqueId) throws IOException {
+        FileOutputStream fileobj = context.openFileOutput(uniqueId, Context.MODE_PRIVATE);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        fileobj.write(stream.toByteArray()); //writing to file
+        fileobj.close(); //File closed
+    }
 }
