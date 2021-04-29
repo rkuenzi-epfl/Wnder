@@ -95,7 +95,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         Intent intent = new Intent(this, GuessLocationActivity.class);
 
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getLocation().getLatitude());
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLatitude());
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLongitude());
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
