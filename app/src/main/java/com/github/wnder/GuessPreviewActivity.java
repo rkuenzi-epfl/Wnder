@@ -1,19 +1,15 @@
 package com.github.wnder;
 
 import android.content.Context;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
@@ -21,10 +17,22 @@ import com.github.wnder.picture.Picture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
+import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
+
 /**
  * Preview activity class
 */
 public class GuessPreviewActivity extends AppCompatActivity{
+
+    //EPFL Location
+    public static final double DEFAULT_LAT = 46.5197;
+    public static final double DEFAULT_LNG = 6.5657;
+
+    private User user;
+    private double pictureLat = DEFAULT_LAT;
+    private double pictureLng = DEFAULT_LNG;
+    private ExistingPicture previewPicture;
+    private boolean reported = false;
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -41,12 +49,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
-        findViewById(R.id.skipButton).setOnClickListener(id -> {
-            if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
-                new ExistingPicture(pictureID).skipPicture();
-            }
-            openPreviewActivity();
-        });
+        findViewById(R.id.skipButton).setOnClickListener(id -> skipPicture());
         findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
     }
 
@@ -58,18 +61,22 @@ public class GuessPreviewActivity extends AppCompatActivity{
         super.onStart();
 
         //Get user
-        User user = GlobalUser.getUser();
+        user = GlobalUser.getUser();
 
         //Get a new picture to display
         try {
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
-                //If there is a picture, display it
-                if(!picId.equals(Picture.UNINITIALIZED_ID)){
-                    new ExistingPicture(picId).onBitmapAvailable((bmp)-> setImageViewBitmap(bmp));
+                if(!picId.equals("")){
+                    //If there is a picture, display it
+                    previewPicture = new ExistingPicture(picId);
+                    previewPicture.onBitmapAvailable((bmp) -> setImageViewBitmap(bmp));
                     pictureID = picId;
-
+                    previewPicture.onLocationAvailable((Lct) -> {
+                        pictureLat = Lct.getLatitude();
+                        pictureLng = Lct.getLongitude();
+                    });
+                } else {
                     //If not, display default picture
-                } else{
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
                     Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
                     setImageViewBitmap(bmp);
@@ -85,13 +92,14 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Open guessing activity
      */
     private void openGuessActivity() {
-        // TODO: Load actual camera and picture location
         Intent intent = new Intent(this, GuessLocationActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 5.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 5.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 46.5197);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 6.5657);
+
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getLocation().getLatitude());
+        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLatitude());
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
+
         startActivity(intent);
         finish();
     }
@@ -99,7 +107,11 @@ public class GuessPreviewActivity extends AppCompatActivity{
     /**
      * Opens guess preview activity
      */
-    private void openPreviewActivity() {
+    private void skipPicture() {
+        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+            new ExistingPicture(pictureID).skipPicture();
+        }
+
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
     }
@@ -117,10 +129,11 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //What to do when confirmed
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                        if (pictureID != Picture.UNINITIALIZED_ID) {
-                            new ExistingPicture(pictureID).subtractKarmaForReport();
-                            // TODO add it to the reported pictures
-                        }
+                    if(!reported && pictureID != Picture.UNINITIALIZED_ID){
+                        previewPicture.subtractKarmaForReport();
+                        addToReportedPictures(previewPicture.getUniqueId());
+                        reported = true;
+                    }
                 });
         //Cancellation possible
         builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});

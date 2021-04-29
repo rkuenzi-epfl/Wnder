@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.Manifest;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -30,6 +31,9 @@ public class GetUserPositionTest {
 
     @Rule
     public GrantPermissionRule permissionRule1 = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+    @Rule
+    public GrantPermissionRule permissionRule2 = GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION);
 
     @Before
     public void setup(){
