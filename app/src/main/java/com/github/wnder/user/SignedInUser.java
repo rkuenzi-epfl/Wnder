@@ -122,6 +122,7 @@ public class SignedInUser extends User{
         onUploadedPicturesAvailable(uploadedPics -> {
             allPictures.addAll(uploadedPics);
         });
+        uAGPA.accept(allPictures);
     }
 
     /**
