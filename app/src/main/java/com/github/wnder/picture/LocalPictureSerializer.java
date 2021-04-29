@@ -1,5 +1,6 @@
 package com.github.wnder.picture;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.google.gson.Gson;
@@ -27,15 +28,14 @@ public final class LocalPictureSerializer {
         return json.toString();
     }
 
-    public static String deserializePicture(String Json, String field){
-        String encodedField;
+    public static JSONObject deserializePicture(String Json){
+        JSONObject json;
         try {
-            JSONObject json = new JSONObject(Json);
-            encodedField = json.getString(field);
+            json = new JSONObject(Json);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return encodedField;
+        return json;
     }
 }
