@@ -16,6 +16,8 @@ import com.github.wnder.user.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.wnder.picture.Picture;
+
 /**
  * Defines activity for history
  */
@@ -32,7 +34,7 @@ public class HistoryActivity extends AppCompatActivity {
     private int pictureIndex = 0;
 
     private List<ExistingPicture> pictureList; //To be filled with the appropriate function (from either the local or online database)
-    private ExistingPicture pictureDisplayed; //To be used to recover the image we clicked on
+    private String pictureId = Picture.UNINITIALIZED_ID;
 
     /**
      * Executes when activity is created
@@ -59,8 +61,11 @@ public class HistoryActivity extends AppCompatActivity {
         getUserPictures();
         //When clicked open activity for specific picture history
         image.setOnClickListener((view) -> {
-            Intent intent = new Intent(this, PictureHistoryActivity.class);
-            startActivity(intent);
+            if (!(pictureId.equals(Picture.UNINITIALIZED_ID))) {
+                Intent intent = new Intent(this, PictureHistoryActivity.class);
+                intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
+                startActivity(intent);
+            }
         });
     }
 
@@ -100,8 +105,8 @@ public class HistoryActivity extends AppCompatActivity {
             throw new IllegalArgumentException();
         }
 
-        pictureList.get(index).onBitmapAvailable(bmp ->image.setImageBitmap(bmp));
-        pictureDisplayed = pictureList.get(index);
+        pictureList.get(index).onBitmapAvailable(bmp -> image.setImageBitmap(bmp));
+        pictureId = pictureList.get(index).getUniqueId();
     }
 
     private void getUserPictures(){

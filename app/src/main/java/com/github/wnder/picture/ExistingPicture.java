@@ -74,6 +74,33 @@ public class ExistingPicture extends Picture{
         }
     }
 
+    private void onUserLocationAvailable(String user, String variant, Consumer<Location> onUserLocationAvailable) {
+        String[] path = {"pictures", getUniqueId(), "userData", variant};
+        Storage.downloadFromFirestore(path).addOnSuccessListener((documentSnapshot) -> {
+            GeoPoint geoPoint = documentSnapshot.getGeoPoint(user);
+            Location location = new Location("");
+            location.setLatitude(geoPoint.getLatitude());
+            location.setLongitude(geoPoint.getLongitude());
+            onUserLocationAvailable.accept(location);
+        });
+    }
+
+    public void onUserPositionAvailable(String user, Consumer<Location> onUserPositionAvailable) {
+        onUserLocationAvailable(user, "userLocations", onUserPositionAvailable);
+    }
+
+    public void onUserGuessAvailable(String user, Consumer<Location> onUserGuessAvailable) {
+        onUserLocationAvailable(user, "userGuesses", onUserGuessAvailable);
+    }
+
+    public void onUserRadiusAvailable(String user, Consumer<Integer> onRadiusAvailable) {
+        String[] path = {"pictures", getUniqueId(), "userData", "userRadii"};
+        Storage.downloadFromFirestore(path).addOnSuccessListener((documentSnapshot) -> {
+            Integer radius = documentSnapshot.getLong(user).intValue();
+            onRadiusAvailable.accept(radius);
+        });
+    }
+
     /**
      * Send a user's guess to the database
      * @param user the user guessing
