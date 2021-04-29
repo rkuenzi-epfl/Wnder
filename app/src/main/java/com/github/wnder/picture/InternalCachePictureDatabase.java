@@ -5,7 +5,10 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 
+import org.json.JSONException;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +27,14 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Location> getLocation(String uniqueId) {
-        return null;
+        if (IS_ONLINE) {
+            return remoteDatabase.getLocation(uniqueId);
+        }
+        else {
+            CompletableFuture<Location> cf = new CompletableFuture<>();
+            cf.complete(localDatabase.getLocation(uniqueId));
+            return cf;
+        }
     }
 
     @Override
@@ -79,7 +89,20 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
         localDatabase.storePictureAndMetadata(uniqueId, bmp, realLocation, guessedLocation, scoreboard);
     }
 
-    public void updateLocalScoreboard(){
+    /**
+     * Update thescoreboard of the picture in the internal storage
+     * @param scoreboard updated scoreboard
+     */
+    public void updateLocalScoreboard(String uniqueId, Map<String, Double> scoreboard){
+        localDatabase.updateScoreboard(uniqueId, scoreboard);
+    }
 
+    /**
+     *
+     * @param uniqueId
+     * @return
+     */
+    public Location getGuessedLocation(String uniqueId){
+        return localDatabase.getGuessedLocation(uniqueId);
     }
 }

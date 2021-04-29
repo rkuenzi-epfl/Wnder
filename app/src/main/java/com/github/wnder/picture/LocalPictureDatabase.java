@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class LocalPictureDatabase {
     private Context context;
@@ -36,7 +37,7 @@ public class LocalPictureDatabase {
      * @param guessedLocation location that the user guessed
      * @param scoreboard scoreboard of the image
      */
-    public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) throws IOException {
+    public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) {
         String serializedPicture = LocalPictureSerializer.seralizePicture(realLocation, guessedLocation, scoreboard);
         storeMetadataFile(serializedPicture, uniqueId);
         storePictureFile(bmp, uniqueId);
@@ -53,35 +54,84 @@ public class LocalPictureDatabase {
             json.remove("scoreboard");
             json.put("scoreboard", scoreboard);
             storeMetadataFile(json.toString(), uniqueId);
-        } catch (FileNotFoundException | JSONException e){
+        } catch (JSONException e){
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get the location of the image from the local database
+     * @param uniqueId id of the image
+     * @return the actual location of the image
+     * @throws FileNotFoundException if the file does not exist
+     * @throws JSONException if Json fails
+     */
+    public Location getLocation(String uniqueId) {
+        String serializedData = openMetadataFile(uniqueId);
+        try {
+            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+            Location location = new Location("");
+            location.setLongitude(json.getDouble("realLongiture"));
+            location.setLatitude(json.getDouble("realLatitude"));
+            return location;
+        } catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Get the location of the image from the local database
+     * @param uniqueId id of the image
+     * @return the actual location of the image
+     * @throws FileNotFoundException if the file does not exist
+     * @throws JSONException if Json fails
+     */
+    public Location getGuessedLocation(String uniqueId) {
+        String serializedData = openMetadataFile(uniqueId);
+        try {
+            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+            Location location = new Location("");
+            location.setLongitude(json.getDouble("guessedLongitude"));
+            location.setLatitude(json.getDouble("guessedLatitude"));
+            return location;
+        } catch (JSONException e){
+            e.printStackTrace();
+            return null;
         }
     }
 
     /**
      * Reads the metadata file
      * @return content of file, empty if there is a problem
-     * @throws FileNotFoundException if there file does not exist
+     * @throws FileNotFoundException if the file does not exist
      */
-    private String openMetadataFile(String filename) throws FileNotFoundException {
+    private String openMetadataFile(String filename) {
         String toReturn = "";
         File file = new File(metadataFolder, filename);
-        FileInputStream fis = context.openFileInput(file.getPath());
-        InputStreamReader inputStreamReader =
-                new InputStreamReader(fis, StandardCharsets.UTF_8);
-        StringBuilder stringBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-            String line = reader.readLine();
-            while (line != null) {
-                stringBuilder.append(line).append('\n');
-                line = reader.readLine();
+        FileInputStream fis;
+        try {
+            fis = context.openFileInput(file.getPath());
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(fis, StandardCharsets.UTF_8);
+            StringBuilder stringBuilder = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                String line = reader.readLine();
+                while (line != null) {
+                    stringBuilder.append(line).append('\n');
+                    line = reader.readLine();
+                }
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                toReturn = stringBuilder.toString();
             }
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            toReturn = stringBuilder.toString();
         }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
+
         return toReturn;
     }
 
@@ -98,26 +148,35 @@ public class LocalPictureDatabase {
         }
     }
 
-    private Bitmap openPictureFile(String filename) throws FileNotFoundException {
+    private Bitmap openPictureFile(String filename) {
         File file = new File(imagesFolderPath, filename);
-        FileInputStream fis = context.openFileInput(file.getPath());
-        byte[] bytes = new byte[(int) file.length()];
         try {
-            fis.read(bytes, 0, bytes.length);
-            fis.close();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+            FileInputStream fis = context.openFileInput(file.getPath());
+            byte[] bytes = new byte[(int) file.length()];
+            try {
+                fis.read(bytes, 0, bytes.length);
+                fis.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+            return null;
         }
-
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    private void storePictureFile(Bitmap bmp, String filename) throws IOException {
+    private void storePictureFile(Bitmap bmp, String filename) {
         File file = new File(imagesFolderPath, filename);
-        FileOutputStream fileobj = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        fileobj.write(stream.toByteArray()); //writing to file
-        fileobj.close(); //File closed
+        try {
+            FileOutputStream fileobj = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            fileobj.write(stream.toByteArray()); //writing to file
+            fileobj.close(); //File closed
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
