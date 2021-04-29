@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,11 +22,11 @@ import java.util.Map;
 
 public class LocalPictureDatabase {
     private Context context;
-    private final File imagesFolderPath = new File(context.getFilesDir(), "images");
-    private final File metadataFolder = new File(context.getFilesDir(), "metadata");
+    private final File metadataFolder;
 
     public LocalPictureDatabase(Context context){
         this.context = context;
+        metadataFolder = new File(context.getFilesDir(), "metadata");
     }
 
     /**
@@ -99,8 +100,9 @@ public class LocalPictureDatabase {
     }
 
     public Bitmap openPictureFile(String filename) throws FileNotFoundException {
-        File file = new File(imagesFolderPath, filename);
-        FileInputStream fis = context.openFileInput(file.getPath());
+        File directory = context.getDir("images", Context.MODE_PRIVATE);
+        File file = new File(directory, filename);
+        FileInputStream fis = context.openFileInput(filename);
         byte[] bytes = new byte[(int) file.length()];
         try {
             fis.read(bytes, 0, bytes.length);
@@ -113,11 +115,24 @@ public class LocalPictureDatabase {
     }
 
     public void storePictureFile(Bitmap bmp, String filename) throws IOException {
-        File file = new File(imagesFolderPath, filename);
-        FileOutputStream fileobj = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        fileobj.write(stream.toByteArray()); //writing to file
-        fileobj.close(); //File closed
+        // path to /data/data/yourapp/app_images
+        File directory = context.getDir("images", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory, filename);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
