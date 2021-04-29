@@ -77,35 +77,50 @@ public class SignedInUser extends User{
     }
 
     /**
+     * Apply a function once the uploaded pictures of the user have been retrieved
+     * @param UPA Function to apply
+     */
+    public void onUploadedPicturesAvailable(Consumer<List<String>> UPA){
+        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
+
+        userData.addOnSuccessListener(documentSnapshot -> {
+            List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
+            if(uploadedPictures == null) {
+                uploadedPictures = new ArrayList<>();
+            }
+            UPA.accept(uploadedPictures);
+        });
+    }
+
+    /**
+     * Apply a function once the guessed pictures of the user have been retrieved
+     * @param GPA Function to apply
+     */
+    public void onGuessedPicturesAvailable(Consumer<List<String>> GPA){
+        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
+
+        userData.addOnSuccessListener(documentSnapshot -> {
+            List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
+            if(guessedPictures == null) {
+                guessedPictures = new ArrayList<>();
+            }
+            GPA.accept(guessedPictures);
+        });
+    }
+
+
+    /**
      * Apply a function once the uploaded and the guessed pictures of the user have been retrieved
      * @param uAGPA Function to apply
      */
     void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
-        //Get the user data
-        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
         Set<String> allPictures = new HashSet<>();
 
-        //When successful, fuse the guessed and the uploaded pictures and complete the future accordingly
-        userData.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-                List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-                if (guessedPictures == null) {
-                    guessedPictures = new ArrayList<>();
-                }
-                if (uploadedPictures == null) {
-                    uploadedPictures = new ArrayList<>();
-                }
-                allPictures.addAll(guessedPictures);
-                allPictures.addAll(uploadedPictures);
-                uAGPA.accept(allPictures);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                uAGPA.accept(new HashSet<>());
-            }
+        onGuessedPicturesAvailable(guessedPics -> {
+            allPictures.addAll(guessedPics);
+        });
+        onUploadedPicturesAvailable(uploadedPics -> {
+            allPictures.addAll(uploadedPics);
         });
     }
 

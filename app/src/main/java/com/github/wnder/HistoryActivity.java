@@ -1,7 +1,6 @@
 package com.github.wnder;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
@@ -10,13 +9,19 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.PicturesDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Defines activity for history
  */
+@AndroidEntryPoint
 public class HistoryActivity extends AppCompatActivity {
     //For now, a placeholder
     private ImageView image;
@@ -28,6 +33,8 @@ public class HistoryActivity extends AppCompatActivity {
     private int pictures_max_number = 0;
     private int picture_index = 0;
 
+    @Inject
+    private PicturesDatabase picDB;
     private List<ExistingPicture> pictureList; //To be filled with the appropriate function (from either the local or online database)
     private ExistingPicture pictureDisplayed; //To be used to recover the image we clicked on
 
