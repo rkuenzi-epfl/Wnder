@@ -21,8 +21,8 @@ import java.util.Map;
 
 public class LocalPictureDatabase {
     private Context context;
-    private String imagesFolderPath = new File(context.getFilesDir(), "images").getPath();
-    private String metadataFolder = new File(context.getFilesDir(), "metadata").getPath();
+    private final File imagesFolderPath = new File(context.getFilesDir(), "images");
+    private final File metadataFolder = new File(context.getFilesDir(), "metadata");
 
     public LocalPictureDatabase(Context context){
         this.context = context;
@@ -37,22 +37,22 @@ public class LocalPictureDatabase {
      * @param scoreboard scoreboard of the image
      */
     public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) throws IOException {
-        String serializedPicture = LocalPictureSerializer.seralizePicture(uniqueId, realLocation, guessedLocation, scoreboard);
-        storeMetadataFile(serializedPicture, metadataFolder);
-        storePictureFile(bmp, imagesFolderPath);
+        String serializedPicture = LocalPictureSerializer.seralizePicture(realLocation, guessedLocation, scoreboard);
+        storeMetadataFile(serializedPicture, uniqueId);
+        storePictureFile(bmp, uniqueId);
     }
 
     /**
      * Update thescoreboard of the picture in the internal storage
-     * @param scoreboard
+     * @param scoreboard updated scoreboard
      */
-    public void updateScoreboard(Map<String, Double> scoreboard){
+    public void updateScoreboard(String uniqueId, Map<String, Double> scoreboard){
         try {
-            String oldMetadata = openMetadataFile(metadataFolder);
+            String oldMetadata = openMetadataFile(uniqueId);
             JSONObject json = LocalPictureSerializer.deserializePicture(oldMetadata);
             json.remove("scoreboard");
             json.put("scoreboard", scoreboard);
-            storeMetadataFile(json.toString(), metadataFolder);
+            storeMetadataFile(json.toString(), uniqueId);
         } catch (FileNotFoundException | JSONException e){
             e.printStackTrace();
         }
@@ -63,9 +63,10 @@ public class LocalPictureDatabase {
      * @return content of file, empty if there is a problem
      * @throws FileNotFoundException if there file does not exist
      */
-    public String openMetadataFile(String path) throws FileNotFoundException {
+    private String openMetadataFile(String filename) throws FileNotFoundException {
         String toReturn = "";
-        FileInputStream fis = context.openFileInput(path);
+        File file = new File(metadataFolder, filename);
+        FileInputStream fis = context.openFileInput(file.getPath());
         InputStreamReader inputStreamReader =
                 new InputStreamReader(fis, StandardCharsets.UTF_8);
         StringBuilder stringBuilder = new StringBuilder();
@@ -88,18 +89,18 @@ public class LocalPictureDatabase {
      * Stores the updated metadata file
      * @param data the data to write
      */
-    private void storeMetadataFile(String data, String uniqueId){
-        String filename = uniqueId;
-        try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
+    private void storeMetadataFile(String data, String filename){
+        File file = new File(metadataFolder, filename);
+        try (FileOutputStream fos = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE)) {
             fos.write(data.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private Bitmap openPictureFile(String uniqueId) throws FileNotFoundException {
-        File file = new File(uniqueId);
-        FileInputStream fis = context.openFileInput(uniqueId);
+    private Bitmap openPictureFile(String filename) throws FileNotFoundException {
+        File file = new File(imagesFolderPath, filename);
+        FileInputStream fis = context.openFileInput(file.getPath());
         byte[] bytes = new byte[(int) file.length()];
         try {
             fis.read(bytes, 0, bytes.length);
@@ -111,8 +112,9 @@ public class LocalPictureDatabase {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    private void storePictureFile(Bitmap bmp, String path) throws IOException {
-        FileOutputStream fileobj = context.openFileOutput(path, Context.MODE_PRIVATE);
+    private void storePictureFile(Bitmap bmp, String filename) throws IOException {
+        File file = new File(imagesFolderPath, filename);
+        FileOutputStream fileobj = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
         fileobj.write(stream.toByteArray()); //writing to file

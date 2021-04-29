@@ -13,7 +13,14 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 public final class LocalPictureSerializer {
-    public static String seralizePicture(String uniqueId, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
+    /**
+     * Transforms attributes of the image to a string of a JSON
+     * @param realLocation real location of the image
+     * @param guessedLocation location that the user guessed
+     * @param scoreboard scoreboard of the image
+     * @return a string of the associated json object
+     */
+    public static String seralizePicture(Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
         JSONObject json = new JSONObject();
         try {
             json.put("realLongiture", realLocation.getLongitude());
@@ -28,6 +35,11 @@ public final class LocalPictureSerializer {
         return json.toString();
     }
 
+    /**
+     * Transforms a serialized picture into a JSONObject
+     * @param Json string to deserialize
+     * @return a json object of the image
+     */
     public static JSONObject deserializePicture(String Json){
         JSONObject json;
         try {

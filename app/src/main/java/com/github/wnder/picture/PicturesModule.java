@@ -1,8 +1,14 @@
 package com.github.wnder.picture;
 
+import android.content.Context;
+
+import java.io.File;
+
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
 @Module
@@ -10,6 +16,11 @@ import dagger.hilt.components.SingletonComponent;
 public abstract class PicturesModule {
 
     @Binds
-    public abstract PicturesDatabase bindPicturesDatabase(FirebasePicturesDatabase firebaseImpl);
+    public abstract PicturesDatabase bindPicturesDatabase(InternalCachePictureDatabase firebaseImpl);
+
+    @Provides
+    public static Context provideContext(@ApplicationContext Context context){
+        return context;
+    }
 
 }

@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -65,7 +67,19 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
         return null;
     }
 
-    public void storePictureLocally(String uniqueId, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
+    /**
+     * Stores the picture in the internal storage
+     * @param uniqueId id of the image
+     * @param bmp bitmap of the image
+     * @param realLocation real location of the image
+     * @param guessedLocation location that the user guessed
+     * @param scoreboard scoreboard of the image
+     */
+    public void storePictureLocally(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) throws IOException {
+        localDatabase.storePictureAndMetadata(uniqueId, bmp, realLocation, guessedLocation, scoreboard);
+    }
+
+    public void updateLocalScoreboard(){
 
     }
 }
