@@ -48,6 +48,7 @@ public class NewPictureTesting {
     // Clean db
     @AfterClass
     public static void deleteTestPic() {
+        sleep(2000);
         FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId())
                 .collection("userData").document("userGuesses").delete();
         FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId())
