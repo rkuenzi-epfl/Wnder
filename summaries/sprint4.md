@@ -29,9 +29,11 @@ However, I didn't have time to finish and to merge it correctly, because I may h
 
 Next time, I will make sure that I begin soon enough to be ready for the end of the sprint.
 
-
 ## Pablo (Scrum Master)
 
+This week, I worked on the feature to show the actual picture location after confirming a guess.
+
+However, I wasn't able able to get it merged because I had to rebase on top the main branch several times, and because the tests aren't passing for some reason.
 
 ## Romain 
 I moved the classes handling users and pictures to separate packages and I simplified and improved the picture classes.

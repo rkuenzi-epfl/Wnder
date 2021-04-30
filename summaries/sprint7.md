@@ -35,6 +35,11 @@ Next time, I will try to better estimate the time I need for a task and I will m
 
 ## Pablo 
 
+This week I had to implement an activity that shows information about previously guessed pictures.
+
+While the UI is mostly done, I wasn't able to integrate it with the rest of the app because it depends on some pull requests which are still pending.
+
+Next time, I will try to use placeholders more extensively so I can get my work merged independently from the rest.
 
 ## Romain 
 
@@ -49,6 +54,6 @@ Next time, I will try to do refactoring task progressivly through the weeks so t
 
 This week, we focused on completing the karma-related user story and the scoreboard one. We also began working on the local database and on the history one, which are closely related.
 
-However, not all tasks were completed: some are pending PRs that we just didn't have time to merge and some still need a few hours of work. Moreover, some of the tasks really looked alikesi it has been confusing for some members of the team.
+However, not all tasks were completed: some are pending PRs that we just didn't have time to merge and some still need a few hours of work. Moreover, some of the tasks really looked alike so it has been confusing for some members of the team.
 
 Next time, we will have to do a better planning if we want to complete all of our tasks, may it be when we estimate the time they will take us or more simply when we create them.
