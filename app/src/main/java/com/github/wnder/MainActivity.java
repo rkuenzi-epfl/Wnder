@@ -3,6 +3,7 @@ package com.github.wnder;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
         }
-        
+
         radiusSeekBar.setOnSeekBarChangeListener(this);
 
         //rights for location services
@@ -134,8 +136,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * To call when upload button is clicked
      */
     private void openUploadActivity() {
-        Intent intent = new Intent(this, TakePictureActivity.class);
-        startActivity(intent);
+        boolean IS_ONLINE = false;
+        if(IS_ONLINE){
+            Intent intent = new Intent(this, TakePictureActivity.class);
+            startActivity(intent);
+        }
+        else{
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("No internet connection !");
+            alertDialogBuilder.setMessage("You cannot upload pictures without an internect connection.");
+            alertDialogBuilder.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
     }
 
     /**
