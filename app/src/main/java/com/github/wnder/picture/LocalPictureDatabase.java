@@ -165,7 +165,7 @@ public class LocalPictureDatabase {
 
 
     /**
-     * Read the pictur efrom a local file
+     * Read the picture from a local file
      * @param filename the id of the picture
      * @return a bitmap of the picture
      */
