@@ -3,6 +3,11 @@
 
 ## Aloïs 
 
+This week I implemented the visualisation of the actual picture location on the map, finalise the flow between all the "guess a picture" routine and test it.
+
+This time I was able to merge my work which was important for the demo soon enough. However I ended up having to do the merge for it pretty late because I had to wait for the reviews and corrections. I also wasn't able to implement my second task of the week since it depended of other collegue's tasks that took longer than expected.
+
+Next time I should aim to merge one day earlier before the last stand up meeting (or we should do the meeting one day later) so that I don't end up merging so late into the week.
 
 ## Jeremy
 
