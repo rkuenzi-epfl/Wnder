@@ -34,6 +34,11 @@ Next time, I'll try to start the refractoring sooner, and I won't let the smells
 
 ## Pablo (Scrum Master)
 
+This week I did some refactoring to remove dependencies on Google Maps, and I implemented the feature to show the actual picture location after a guess.
+
+However, it took me a lot of time to get the tests to pass.
+
+Next time, I will try to make smaller changes to make it simpler to spot regressions w.r.t. the tests for instance.
 
 ## Romain 
 

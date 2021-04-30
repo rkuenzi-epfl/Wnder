@@ -31,9 +31,13 @@ However I wasn't able to finish making sure an image loses karma when it's skipp
 
 Next time, I will try to do a better work at testing my tasks.
 
+## Pablo
 
-## Pablo 
+This week I implemented the feature to show the distance and the score when confirming a guess. I also made the report button reduce the karma from the picture.
 
+I had some issues related to line endings when merging so I moved the whole project to LF.
+
+Next week, I will try to get my PRs merged sooner to make it simpler for people who depend on them.
 
 ## Romain 
 
