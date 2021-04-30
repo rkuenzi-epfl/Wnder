@@ -14,6 +14,11 @@ The line between my task and Nicolas' tasks were blurry so next time, I will mak
 
 ## Léonard 
 
+This week I almost finished my task which was to display the history of guess of a particular user.
+
+However I could finish it entirely because it relies on some functions from the database that I had to modify and are not working as expected.
+
+Next time, I will see with the team if they can help me on this particular issue because the initial functions were not done by me.
 
 ## Nicolas (Crum Master)
 
