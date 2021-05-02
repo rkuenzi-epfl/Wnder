@@ -41,7 +41,7 @@ public class LocalPictureDatabase {
      * @param scoreboard scoreboard of the image
      */
     public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) {
-        String serializedPicture = LocalPictureSerializer.seralizePicture(realLocation, guessedLocation, scoreboard);
+        String serializedPicture = LocalPictureSerializer.serializePicture(realLocation, guessedLocation, scoreboard);
         storeMetadataFile(serializedPicture, uniqueId);
         storePictureFile(bmp, uniqueId);
     }

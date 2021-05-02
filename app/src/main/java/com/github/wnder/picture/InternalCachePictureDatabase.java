@@ -20,7 +20,16 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     private final LocalPictureDatabase localDatabase;
 
     //The field exists only because there is still not way to know if we are online
-    private final boolean IS_ONLINE = true;
+    private boolean isOnline = true;
+
+    //Exists principally for testing for now.
+    /**
+     * Set online status
+     * @param newState new state
+     */
+    public void setOnlineStatus(boolean newState){
+        isOnline = newState;
+    }
 
     @Inject
     public InternalCachePictureDatabase(Context context){
@@ -30,7 +39,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Location> getLocation(String uniqueId) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.getLocation(uniqueId);
         }
         else {
@@ -42,7 +51,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Location> getApproximateLocation(String uniqueId) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.getApproximateLocation(uniqueId);
         }
         else {
@@ -52,7 +61,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.getUserGuesses(uniqueId);
         }
         else {
@@ -62,7 +71,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.getScoreboard(uniqueId);
         }
         else {
@@ -74,7 +83,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
         }
         else {
@@ -84,7 +93,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.getBitmap(uniqueId);
         }
         else {
@@ -100,7 +109,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
         }
         else {
@@ -110,7 +119,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Long> getKarma(String uniqueId) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.getKarma(uniqueId);
         }
         else {
@@ -120,7 +129,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> updateKarma(String uniqueId, int delta) {
-        if (IS_ONLINE) {
+        if (isOnline) {
             return remoteDatabase.updateKarma(uniqueId, delta);
         }
         else {
@@ -141,7 +150,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     /**
-     * Update thescoreboard of the picture in the internal storage
+     * Update the scoreboard of the picture in the internal storage
      * @param scoreboard updated scoreboard
      */
     public void updateLocalScoreboard(String uniqueId, Map<String, Double> scoreboard){
@@ -153,7 +162,15 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      * @param uniqueId id of the image
      * @return the location the user guessed
      */
-    public Location getGuessedLocation(String uniqueId){
+    public Location getLocalGuessedLocation(String uniqueId){
         return localDatabase.getGuessedLocation(uniqueId);
+    }
+
+    /**
+     * Deletes picture file AND metadata file
+     * @param uniqueId uniqueId of picture
+     */
+    public void deleteLocalPicture(String uniqueId){
+        localDatabase.deleteFile(uniqueId);
     }
 }
