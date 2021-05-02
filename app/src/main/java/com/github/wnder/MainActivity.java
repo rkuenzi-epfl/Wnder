@@ -23,7 +23,7 @@ import com.github.wnder.user.User;
 /**
  * Main activity
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
     //Different distances for the radius
     private int[] distances = {5, 10, 20, 50, 100, 500, 1000};
@@ -52,25 +52,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView.setImageURI(user.getProfilePicture());
 
         //Set the buttons: guess, upload, history
-        findViewById(R.id.getPictureButton).setOnClickListener(this);
-        findViewById(R.id.uploadPictureButton).setOnClickListener(this);
-        findViewById(R.id.menuToHistoryButton).setOnClickListener(this);
+        findViewById(R.id.uploadPictureButton).setOnClickListener(id -> {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
+            openUploadActivity();
+        });
+
+        findViewById(R.id.getPictureButton).setOnClickListener(id -> openPreviewActivity());
+        findViewById(R.id.menuToHistoryButton).setOnClickListener(id -> openHistoryActivity());
 
         //SeekBar for radius
         SeekBar radiusSeekBar = (SeekBar) findViewById(R.id.radiusSeekBar);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
 
-        //Set radius seekbar depending on user selected radius
-        int userRad = GlobalUser.getUser().getRadius();
-        for(int i = 0; i < distances.length; i++){
-            if(userRad == distances[i]){
-                radiusSeekBar.setProgress(i);
-                radiusTextView.setText("Radius: "+distances[i]+"km");
-                break;
-            }
-        }
-        
-        radiusSeekBar.setOnSeekBarChangeListener(this);
+        manageSeekBar(radiusSeekBar, radiusTextView);
 
         //rights for location services
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
@@ -105,31 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * Manages what happens when use clicks on buttons
-     * @param v button clicked
-     */
-    @Override
-    public void onClick(View v) {
-        //When a button is clicked, set the user's location
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
-        switch (v.getId()) {
-            case R.id.uploadPictureButton:
-                openUploadActivity();
-                break;
-            case R.id.getPictureButton:
-                openPreviewActivity();
-                break;
-            case R.id.menuToHistoryButton:
-                openHistoryActivity();
-                break;
-            default:
-                break;
-            // Other buttons can be setup in this switch
-        }
-    }
-
-    /**
      * To call when upload button is clicked
      */
     private void openUploadActivity() {
@@ -156,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         User u = GlobalUser.getUser();
         u.setRadius(distances[i]);
         TextView radiusTextView = findViewById(R.id.radiusTextView);
-        radiusTextView.setText("Radius: "+distances[i]+"km");
+        radiusTextView.setText(getString(R.string.set_radius, distances[i]));
     }
 
     /**
@@ -175,6 +145,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         //do nothing
+    }
+
+    /**
+     * Manage the SeekBar
+     */
+    private void manageSeekBar(SeekBar radiusSeekBar, TextView radiusTextView){
+        //Set radius seekbar depending on user selected radius
+        int userRad = GlobalUser.getUser().getRadius();
+        for(int i = 0; i < distances.length; i++){
+            if(userRad == distances[i]){
+                radiusSeekBar.setProgress(i);
+                radiusTextView.setText(getString(R.string.set_radius, distances[i]));
+                break;
+            }
+        }
+        radiusSeekBar.setOnSeekBarChangeListener(this);
     }
 
     /**

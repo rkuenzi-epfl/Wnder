@@ -1,19 +1,56 @@
 <resources>
     <string name="app_name">Wnder</string>
-    <string name="title_activity_score">ScoreActivity</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="report_confirm_title">You are about to report an image</string>
-    <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
 
-    //Guess Preview Strings
-    <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity"</string>
+    <!--Multiple usage-->
+    <string name="confirm">Confirm</string>
+    <string name="see_scoreboard">See scoreboard</string>
+
+    <!--Login Activity Strings-->
+    <string name="please_login">Please sign in.</string>
+    <string name="guest">Guest</string>
+
+    <!--Main Activity Strings -->
+    <string name="content_descr_profile_picture">Profile picture</string>
+    <string name="set_radius">Radius: %1$dkm</string>
+    <string name="upload_picture">Upload a picture</string>
+    <string name="guess_picture">Guess a new picture</string>
+    <string name="see_history">See History</string>
+
+    <!--Guess Preview Strings-->
+    <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
     <string name="guess_location">Guess Location</string>
     <string name="skip_location">Skip</string>
     <string name="report_location">Report</string>
 
-    // Scoreboard strings
+    <!--Guess Location Strings-->
+    <string name="report_confirm_title">You are about to report an image</string>
+    <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
+    <string name="distance_meter">Distance: %1$dm</string>
+    <string name="distance_kilometer">Distance: %1$dkm</string>
+    <string name="score">Score: %1$dm</string>
+
+    <!--History Strings-->
+    <string name="content_descr_history_image">Previously guessed picture</string>
+
+    <!--History Picture Strings-->
+    <string name="content_descr_history_display_picture">Previously guessed picture</string>
+    <string name="history_picture_description">Photo de l\'esplanade</string>
+
+    <!--Scoreboard strings-->
     <string name="leave_scoreboard">Leave Scoreboard</string>
+
+    <!--Take Picture Strings-->
+    <string name="content_descr_picture_taken">Your picture</string>
+    <string name="take_picture">Take a picture</string>
+
+    <!--Upload Activity Strings-->
+    <string name="success">Success</string>
+    <string name="failure">Failure</string>
+    <string name="back_to_menu">Back to menu</string>
+
+    <!--Image From Gallery Strings-->
+    <string name="select_picture">Please select an image</string>
+    <string name="find_picture">Find image</string>
+    <string name="no_image">imageUri == null AND extras == null</string>
+    
 </resources>
