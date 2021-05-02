@@ -69,8 +69,8 @@ public final class LocalPictureSerializer {
     public static Location getRealLocation(JSONObject json){
         Location toRet = new Location("");
         try {
-            toRet.setLongitude((Double) json.get("realLongitude"));
-            toRet.setLatitude((Double) json.get("realLatitude"));
+            toRet.setLongitude( json.getDouble("realLongitude"));
+            toRet.setLatitude( json.getDouble("realLatitude"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -86,8 +86,8 @@ public final class LocalPictureSerializer {
     public static Location getGuessLocation(JSONObject json){
         Location toRet = new Location("");
         try {
-            toRet.setLongitude((Double) json.get("guessedLongitude"));
-            toRet.setLatitude((Double) json.get("guessedLatitude"));
+            toRet.setLongitude( json.getDouble("guessedLongitude"));
+            toRet.setLatitude( json.getDouble("guessedLatitude"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
