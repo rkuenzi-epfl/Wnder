@@ -25,11 +25,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class LocalPictureDatabase {
     private Context context;
-    private final File metadataFolder;
+    private String IMAGE_DIR_NAME = "images";
+    private String METADATA_DIR_NAME = "metadata";
 
     public LocalPictureDatabase(Context context){
         this.context = context;
-        metadataFolder = new File(context.getFilesDir(), "metadata");
     }
 
     /**
@@ -121,19 +121,20 @@ public class LocalPictureDatabase {
      * Reads the metadata file
      * @return content of file, empty if there is a problem
      */
-    private String openMetadataFile(String filename) {
+    private String openMetadataFile(String filename){
         String toReturn = "";
-        File file = new File(metadataFolder, filename);
+        File directory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
+        File file = new File(directory, filename);
         FileInputStream fis;
         try {
-            fis = context.openFileInput(file.getPath());
+            fis = new FileInputStream(file);
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fis, StandardCharsets.UTF_8);
             StringBuilder stringBuilder = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
                 String line = reader.readLine();
                 while (line != null) {
-                    stringBuilder.append(line).append('\n');
+                    stringBuilder.append(line);
                     line = reader.readLine();
                 }
                 fis.close();
@@ -155,9 +156,14 @@ public class LocalPictureDatabase {
      * @param data the data to write
      */
     private void storeMetadataFile(String data, String filename){
-        File file = new File(metadataFolder, filename);
-        try (FileOutputStream fos = context.openFileOutput(file.getPath(), Context.MODE_PRIVATE)) {
+        File directory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
+        File file = new File(directory, filename);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            // Use the compress method on the BitMap object to write image to the OutputStream
             fos.write(data.getBytes());
+            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,49 +171,70 @@ public class LocalPictureDatabase {
 
 
     /**
-     * Read the pictur efrom a local file
+     * Read the picture from a local file
      * @param filename the id of the picture
      * @return a bitmap of the picture
      */
-    public Bitmap getPicture(String filename) {
-        File directory = context.getDir("images", Context.MODE_PRIVATE);
+    public Bitmap getPicture(String filename) throws FileNotFoundException {
+        File directory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
         File file = new File(directory, filename);
+        FileInputStream fis = new FileInputStream(file);
+        byte[] bytes = new byte[(int) file.length()];
         try {
-            FileInputStream fis = context.openFileInput(file.getPath());
-            byte[] bytes = new byte[(int) file.length()];
-            try {
-                fis.read(bytes, 0, bytes.length);
-                fis.close();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        } catch (IOException e){
-            e.printStackTrace();
-            return null;
+            fis.read(bytes, 0, bytes.length);
+            fis.close();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
         }
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-
-    public void storePictureFile(Bitmap bmp, String filename) {
+    /**
+     * Store a picture in a local file
+     * @param bmp picture
+     * @param filename uniqueId of the file
+     */
+    private void storePictureFile(Bitmap bmp, String filename) {
         // path to /data/data/yourapp/app_images
-        File directory = context.getDir("images", Context.MODE_PRIVATE);
+        File directory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
         // Create imageDir
-        File mypath=new File(directory, filename);
+        File myPath = new File(directory, filename);
 
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(mypath);
+            fos = new FileOutputStream(myPath);
             // Use the compress method on the BitMap object to write image to the OutputStream
             bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+    }
+
+    /**
+     * Delete a picture file
+     * @param filename uniqueId of picture
+     */
+    private void deletePictureFile(String filename){
+        File directory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
+        new File(directory, filename).delete();
+    }
+
+    /**
+     * Delete a metadata file
+     * @param filename uniqueId of picture
+     */
+    private void deleteMetadataFile(String filename){
+        File directory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
+        new File(directory, filename).delete();
+    }
+
+    /**
+     * Deletes picture file AND metadata file
+     * @param filename uniqueId of picture
+     */
+    public void deleteFile(String filename){
+        deletePictureFile(filename);
+        deleteMetadataFile(filename);
     }
 }

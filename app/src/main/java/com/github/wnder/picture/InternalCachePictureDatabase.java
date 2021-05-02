@@ -89,7 +89,11 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
         }
         else {
             CompletableFuture<Bitmap> cf = new CompletableFuture<>();
-            cf.complete(localDatabase.getPicture(uniqueId));
+            try {
+                cf.complete(localDatabase.getPicture(uniqueId));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             return cf;
         }
     }
