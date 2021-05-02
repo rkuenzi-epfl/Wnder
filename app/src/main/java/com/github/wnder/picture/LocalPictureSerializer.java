@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class LocalPictureSerializer {
@@ -31,7 +32,7 @@ public final class LocalPictureSerializer {
     public static String serializePicture(Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
         JSONObject json = new JSONObject();
         try {
-            json.put("realLongiture", realLocation.getLongitude());
+            json.put("realLongitude", realLocation.getLongitude());
             json.put("realLatitude", realLocation.getLatitude());
             json.put("guessedLongitude", guessedLocation.getLongitude());
             json.put("guessedLatitude", guessedLocation.getLatitude());
@@ -58,5 +59,56 @@ public final class LocalPictureSerializer {
             return null;
         }
         return json;
+    }
+
+    /**
+     * Get real location from deserialized JSONObject
+     * @param json deserialized JSONObject
+     * @return real location
+     */
+    public static Location getRealLocation(JSONObject json){
+        Location toRet = new Location("");
+        try {
+            toRet.setLongitude((Double) json.get("realLongitude"));
+            toRet.setLatitude((Double) json.get("realLatitude"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return toRet;
+    }
+
+    /**
+     * Get guessed location from deserialized JSONObject
+     * @param json deserialized JSONObject
+     * @return guessed location
+     */
+    public static Location getGuessLocation(JSONObject json){
+        Location toRet = new Location("");
+        try {
+            toRet.setLongitude((Double) json.get("guessedLongitude"));
+            toRet.setLatitude((Double) json.get("guessedLatitude"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return toRet;
+    }
+
+    /**
+     * Get scoreboard from deserialized JSONObject
+     * @param json deserialized JSONObject
+     * @return scoreboard
+     */
+    public static Map<String, Double> getScoreboard(JSONObject json){
+        Map<String, Double> scoreboard = new HashMap<>();
+        try {
+            String jsonScoreboard = (String)json.get("scoreboard");
+            Gson gson = new Gson();
+            scoreboard = gson.fromJson(jsonScoreboard, HashMap.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return scoreboard;
     }
 }

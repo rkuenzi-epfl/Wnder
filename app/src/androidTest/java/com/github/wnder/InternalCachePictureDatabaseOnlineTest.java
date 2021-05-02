@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-//Those tests are essentially the same as the ones is FirebasePicturesDatabaseTest, maybe deleting it would be better
+//Those tests are essentially the same as the ones in FirebasePicturesDatabaseTest, maybe deleting it would be better
 @RunWith(JUnit4.class)
 public class InternalCachePictureDatabaseOnlineTest {
 

@@ -28,6 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
+//Those tests are essentially the same as the ones in LocalPictureDatabaseTest, maybe deleting it would be better
 @RunWith(JUnit4.class)
 public class InternalCachePictureDatabaseOfflineTest {
     private static FirebasePicturesDatabase fdb = new FirebasePicturesDatabase();
