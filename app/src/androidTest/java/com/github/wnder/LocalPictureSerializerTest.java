@@ -22,7 +22,6 @@ import com.google.gson.JsonElement;
 
 @RunWith(JUnit4.class)
 public class LocalPictureSerializerTest {
-    private static LocalPictureSerializer LPS = new LocalPictureSerializer();
 
     private static Location realLoc;
     private static Location guessLoc;
@@ -44,30 +43,30 @@ public class LocalPictureSerializerTest {
         scoreboard = new HashMap<>();
         scoreboard.put("testUser", 200.);
 
-        serializedJSON = LPS.serializePicture(realLoc, guessLoc, scoreboard);
-        deserializedJSON = LPS.deserializePicture(serializedJSON);
+        serializedJSON = LocalPictureSerializer.serializePicture(realLoc, guessLoc, scoreboard);
+        deserializedJSON = LocalPictureSerializer.deserializePicture(serializedJSON);
     }
 
     @Test
     public void getRealLocationWorks() throws JSONException {
         //Real Location
-        assertThat(deserializedJSON.get("realLongitude"), is(realLoc.getLongitude()));
-        assertThat(deserializedJSON.get("realLatitude"), is(realLoc.getLatitude()));
+        Location rL = LocalPictureSerializer.getRealLocation(deserializedJSON);
+        assertThat(rL.getLongitude(), is(realLoc.getLongitude()));
+        assertThat(rL.getLatitude(), is(realLoc.getLatitude()));
     }
 
     @Test
     public void getGuessLocationWorks() throws JSONException{
         //Guess Location
-        assertThat(deserializedJSON.get("guessedLongitude"), is(guessLoc.getLongitude()));
-        assertThat(deserializedJSON.get("guessedLatitude"), is(guessLoc.getLatitude()));
+        Location gL = LocalPictureSerializer.getGuessLocation(deserializedJSON);
+        assertThat(gL.getLongitude(), is(guessLoc.getLongitude()));
+        assertThat(gL.getLatitude(), is(guessLoc.getLatitude()));
     }
 
     @Test
     public void getScoreboardWorks() throws JSONException{
         //Scoreboard
-        String json = (String)deserializedJSON.get("scoreboard");
-        Gson gson = new Gson();
-        Map<String, Double> newScoreboard = gson.fromJson(json, HashMap.class);
+        Map<String, Double> newScoreboard = LocalPictureSerializer.getScoreboard(deserializedJSON);
         assertThat(newScoreboard.get("testUser"), is(scoreboard.get("testUser")));
     }
 

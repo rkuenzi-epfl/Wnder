@@ -18,7 +18,7 @@ public final class LocalPictureSerializer {
     /**
      * Constructor, not instantiable
      */
-    public LocalPictureSerializer(){
+    private LocalPictureSerializer(){
         //not instantiable
     }
 
