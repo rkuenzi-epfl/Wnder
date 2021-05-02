@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.InternalCachePictureDatabase;
+import com.github.wnder.picture.LocalPicture;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -41,6 +42,8 @@ public class InternalCachePictureDatabaseOfflineTest {
     private static Location guessLoc;
     private static Map<String, Double> scoreboard;
 
+    private static LocalPicture picture;
+
     private static File iDirectory;
     private static File mDirectory;
 
@@ -65,7 +68,10 @@ public class InternalCachePictureDatabaseOfflineTest {
 
         int currILength = iDirectory.listFiles().length;
         int currDLength = mDirectory.listFiles().length;
-        ICPD.storePictureLocally(uniqueId, bmp, realLoc, guessLoc, scoreboard);
+
+        picture = new LocalPicture(uniqueId, bmp, realLoc, guessLoc, scoreboard);
+
+        ICPD.storePictureLocally(picture);
         //asserts ensuring both files were correctly created
         assertThat(iDirectory.listFiles().length, is(currILength + 1));
         assertThat(mDirectory.listFiles().length, is(currDLength + 1));

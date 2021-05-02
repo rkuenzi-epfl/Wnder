@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.github.wnder.picture.LocalPicture;
 import com.github.wnder.picture.LocalPictureDatabase;
 import com.github.wnder.picture.PicturesModule;
 
@@ -43,6 +44,8 @@ public class LocalPictureDatabaseTest {
     private static Location guessLoc;
     private static Map<String, Double> scoreboard;
 
+    private static LocalPicture picture;
+
     private static File iDirectory;
     private static File mDirectory;
 
@@ -64,7 +67,9 @@ public class LocalPictureDatabaseTest {
 
         int currILength = iDirectory.listFiles().length;
         int currDLength = mDirectory.listFiles().length;
-        LPD.storePictureAndMetadata(uniqueId, bmp, realLoc, guessLoc, scoreboard);
+
+        picture = new LocalPicture(uniqueId, bmp, realLoc, guessLoc, scoreboard);
+        LPD.storePictureAndMetadata(picture);
         //asserts ensuring both files were correctly created
         assertThat(iDirectory.listFiles().length, is(currILength + 1));
         assertThat(mDirectory.listFiles().length, is(currDLength + 1));
