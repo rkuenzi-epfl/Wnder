@@ -27,9 +27,13 @@ public class LocalPictureDatabase {
     private Context context;
     private String IMAGE_DIR_NAME = "images";
     private String METADATA_DIR_NAME = "metadata";
+    private File iDirectory;
+    private File mDirectory;
 
     public LocalPictureDatabase(Context context){
         this.context = context;
+        iDirectory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
+        mDirectory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
     }
 
     /**
@@ -63,21 +67,18 @@ public class LocalPictureDatabase {
     }
 
     /**
-     * Get the location of the image from the local database
-     * @param uniqueId id of the image
-     * @return the actual location of the image
+     * Tool method used to get real or guessed location using serialization
+     * @param uniqueId uniqueId of picture
+     * @param realOrGuess 0 for real, 1 for guess
+     * @return real or guessed location, depending on realOrGuess
      */
-    public Location getLocation(String uniqueId) {
+    private Location getRealOrGuessed(String uniqueId, int realOrGuess){
         String serializedData = openMetadataFile(uniqueId);
-        try {
-            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
-            Location location = new Location("");
-            location.setLongitude(json.getDouble("realLongiture"));
-            location.setLatitude(json.getDouble("realLatitude"));
-            return location;
-        } catch (JSONException e){
-            e.printStackTrace();
-            return null;
+        JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+        if (realOrGuess == 0) {
+            return LocalPictureSerializer.getRealLocation(json);
+        } else {
+            return LocalPictureSerializer.getGuessLocation(json);
         }
     }
 
@@ -86,18 +87,17 @@ public class LocalPictureDatabase {
      * @param uniqueId id of the image
      * @return the actual location of the image
      */
+    public Location getLocation(String uniqueId) {
+        return getRealOrGuessed(uniqueId, 0);
+    }
+
+    /**
+     * Get the location of the image from the local database
+     * @param uniqueId id of the image
+     * @return the actual location of the image
+     */
     public Location getGuessedLocation(String uniqueId) {
-        String serializedData = openMetadataFile(uniqueId);
-        try {
-            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
-            Location location = new Location("");
-            location.setLongitude(json.getDouble("guessedLongitude"));
-            location.setLatitude(json.getDouble("guessedLatitude"));
-            return location;
-        } catch (JSONException e){
-            e.printStackTrace();
-            return null;
-        }
+        return getRealOrGuessed(uniqueId, 1);
     }
 
     /**
@@ -123,8 +123,7 @@ public class LocalPictureDatabase {
      */
     private String openMetadataFile(String filename){
         String toReturn = "";
-        File directory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
-        File file = new File(directory, filename);
+        File file = new File(mDirectory, filename);
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
@@ -156,8 +155,7 @@ public class LocalPictureDatabase {
      * @param data the data to write
      */
     private void storeMetadataFile(String data, String filename){
-        File directory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
-        File file = new File(directory, filename);
+        File file = new File(mDirectory, filename);
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);
@@ -176,8 +174,7 @@ public class LocalPictureDatabase {
      * @return a bitmap of the picture
      */
     public Bitmap getPicture(String filename) throws FileNotFoundException {
-        File directory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
-        File file = new File(directory, filename);
+        File file = new File(iDirectory, filename);
         FileInputStream fis = new FileInputStream(file);
         byte[] bytes = new byte[(int) file.length()];
         try {
@@ -196,9 +193,8 @@ public class LocalPictureDatabase {
      */
     private void storePictureFile(Bitmap bmp, String filename) {
         // path to /data/data/yourapp/app_images
-        File directory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
         // Create imageDir
-        File myPath = new File(directory, filename);
+        File myPath = new File(iDirectory, filename);
 
         FileOutputStream fos = null;
         try {
@@ -216,8 +212,7 @@ public class LocalPictureDatabase {
      * @param filename uniqueId of picture
      */
     private void deletePictureFile(String filename){
-        File directory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
-        new File(directory, filename).delete();
+        new File(iDirectory, filename).delete();
     }
 
     /**
@@ -225,8 +220,7 @@ public class LocalPictureDatabase {
      * @param filename uniqueId of picture
      */
     private void deleteMetadataFile(String filename){
-        File directory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
-        new File(directory, filename).delete();
+        new File(mDirectory, filename).delete();
     }
 
     /**
