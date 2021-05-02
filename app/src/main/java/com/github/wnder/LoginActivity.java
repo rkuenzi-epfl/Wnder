@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.Task;
 /**
  * Activity for the login
  */
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity {
 
     //Setup buttons and google signin and texts
     private View signInButton;
@@ -44,10 +44,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         textLogin = findViewById(R.id.textLogin);
         signInButton = findViewById(R.id.signInButton);
         signInButton.setVisibility(View.INVISIBLE);  // Hide the button
-        signInButton.setOnClickListener(this);
-
+        signInButton.setOnClickListener(id -> signIn());
         //Set guest button
-        findViewById(R.id.guestButton).setOnClickListener(this);
+        findViewById(R.id.guestButton).setOnClickListener(id -> goToMain());
 
         //Setup google sign in
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -72,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             goToMain();
         } else {
             signInButton.setVisibility(View.VISIBLE);
-            textLogin.setText("Please sign in.");
+            textLogin.setText(R.string.please_login);
         }
 
     }
@@ -83,23 +82,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void goToMain() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-    }
-
-    /**
-     * Manages what happens when a user clicks on a button
-     * @param v button clicked
-     */
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.signInButton:
-                signIn();
-                break;
-            case R.id.guestButton:
-                goToMain();
-                break;
-            // Other buttons can be setup in this switch
-        }
     }
 
     /**
