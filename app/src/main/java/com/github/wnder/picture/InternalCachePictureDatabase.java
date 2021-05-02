@@ -59,7 +59,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Location> getApproximateLocation(String uniqueId) {
+    public CompletableFuture<Location> getApproximateLocation(String uniqueId) throws IllegalStateException{
         //If connection available, remote db
         if (isOnline) {
             return remoteDatabase.getApproximateLocation(uniqueId);
@@ -71,7 +71,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) {
+    public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) throws IllegalStateException{
         //If connection available, remote db
         if (isOnline) {
             return remoteDatabase.getUserGuesses(uniqueId);
@@ -97,7 +97,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) {
+    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) throws IllegalStateException{
         //If connection available, remote db
         if (isOnline) {
             return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
@@ -127,7 +127,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) {
+    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) throws IllegalStateException{
         //If connection available, remote db
         if (isOnline) {
             return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
@@ -139,7 +139,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Long> getKarma(String uniqueId) {
+    public CompletableFuture<Long> getKarma(String uniqueId) throws IllegalStateException{
         //If connection available, remote db
         if (isOnline) {
             return remoteDatabase.getKarma(uniqueId);
@@ -151,7 +151,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> updateKarma(String uniqueId, int delta) {
+    public CompletableFuture<Void> updateKarma(String uniqueId, int delta) throws IllegalStateException{
         //If connection available, remote db
         if (isOnline) {
             return remoteDatabase.updateKarma(uniqueId, delta);
