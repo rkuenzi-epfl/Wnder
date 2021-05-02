@@ -32,6 +32,7 @@ public final class LocalPictureSerializer {
     public static String serializePicture(Location realLocation, Location guessedLocation, Map<String, Double> scoreboard){
         JSONObject json = new JSONObject();
         try {
+            //Create json
             json.put("realLongitude", realLocation.getLongitude());
             json.put("realLatitude", realLocation.getLatitude());
             json.put("guessedLongitude", guessedLocation.getLongitude());
@@ -51,6 +52,7 @@ public final class LocalPictureSerializer {
      * @return a json object of the image
      */
     public static JSONObject deserializePicture(String Json){
+        //get json
         JSONObject json;
         try {
             json = new JSONObject(Json);
@@ -69,6 +71,7 @@ public final class LocalPictureSerializer {
     public static Location getRealLocation(JSONObject json){
         Location toRet = new Location("");
         try {
+            //get location from json
             toRet.setLongitude( json.getDouble("realLongitude"));
             toRet.setLatitude( json.getDouble("realLatitude"));
         } catch (JSONException e) {
@@ -86,6 +89,7 @@ public final class LocalPictureSerializer {
     public static Location getGuessLocation(JSONObject json){
         Location toRet = new Location("");
         try {
+            //get location from json
             toRet.setLongitude( json.getDouble("guessedLongitude"));
             toRet.setLatitude( json.getDouble("guessedLatitude"));
         } catch (JSONException e) {
@@ -103,6 +107,7 @@ public final class LocalPictureSerializer {
     public static Map<String, Double> getScoreboard(JSONObject json){
         Map<String, Double> scoreboard = new HashMap<>();
         try {
+            //get scoreboard from json, as hashmap thanks to Gson
             String jsonScoreboard = (String)json.get("scoreboard");
             Gson gson = new Gson();
             scoreboard = gson.fromJson(jsonScoreboard, HashMap.class);

@@ -5,6 +5,9 @@ import android.location.Location;
 
 import java.util.Map;
 
+/**
+ * Class describing a locally stored picture
+ */
 public class LocalPicture {
     String uniqueId;
     Bitmap bmp;
