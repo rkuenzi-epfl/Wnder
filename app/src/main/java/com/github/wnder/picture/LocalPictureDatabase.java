@@ -38,16 +38,12 @@ public class LocalPictureDatabase {
 
     /**
      * Stores the picture in the internal storage
-     * @param uniqueId id of the image
-     * @param bmp bitmap of the image
-     * @param realLocation real location of the image
-     * @param guessedLocation location that the user guessed
-     * @param scoreboard scoreboard of the image
+     * @param picture LocalPicture to store
      */
-    public void storePictureAndMetadata(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) {
-        String serializedPicture = LocalPictureSerializer.serializePicture(realLocation, guessedLocation, scoreboard);
-        storeMetadataFile(serializedPicture, uniqueId);
-        storePictureFile(bmp, uniqueId);
+    public void storePictureAndMetadata(LocalPicture picture) {
+        String serializedPicture = LocalPictureSerializer.serializePicture(picture.getRealLocation(), picture.getGuessLocation(), picture.getScoreboard());
+        storeMetadataFile(serializedPicture, picture.getUniqueId());
+        storePictureFile(picture.getBitmap(), picture.getUniqueId());
     }
 
     /**

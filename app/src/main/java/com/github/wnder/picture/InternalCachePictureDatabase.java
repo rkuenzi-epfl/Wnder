@@ -139,14 +139,10 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     /**
      * Stores the picture in the internal storage
-     * @param uniqueId id of the image
-     * @param bmp bitmap of the image
-     * @param realLocation real location of the image
-     * @param guessedLocation location that the user guessed
-     * @param scoreboard scoreboard of the image
+     * @param picture local picture to store
      */
-    public void storePictureLocally(String uniqueId, Bitmap bmp, Location realLocation, Location guessedLocation, Map<String, Double> scoreboard) {
-        localDatabase.storePictureAndMetadata(uniqueId, bmp, realLocation, guessedLocation, scoreboard);
+    public void storePictureLocally(LocalPicture picture) {
+        localDatabase.storePictureAndMetadata(picture);
     }
 
     /**
