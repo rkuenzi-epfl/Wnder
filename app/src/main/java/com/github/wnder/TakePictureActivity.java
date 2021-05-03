@@ -66,8 +66,7 @@ public class TakePictureActivity extends AppCompatActivity {
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
         pictureConfirmButton.setVisibility(View.INVISIBLE);
         pictureConfirmButton.setOnClickListener((view) -> {
-            boolean IS_ONLINE = false;
-            if (IS_ONLINE){
+            if (NetworkInformation.isNetworkAvailable(this)){
                 storeBitmapInGallery();
 
                 boolean hasSucceeded = storeBitmapInDB();
@@ -78,24 +77,10 @@ public class TakePictureActivity extends AppCompatActivity {
                 this.finish();
             }
             else{
-                openAlertDialogWhenNoConnection("Your internet connection was lost, please try again later");
+                AlertDialog alert = AlertBuilder.createAlert("No internet connection !", "Your internet connection was lost, please try again later", this);
+                alert.show();
             }
         });
-    }
-
-    private void openAlertDialogWhenNoConnection(String message){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("No internet connection !");
-        alertDialogBuilder.setMessage(message);
-        alertDialogBuilder.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
     }
 
     /**

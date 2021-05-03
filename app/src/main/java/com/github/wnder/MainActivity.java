@@ -103,35 +103,16 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 
     /**
-     * To call when there is no connection and the user wants to go to an activity that requires connection
-     */
-    private void openAlertDialogWhenNoConnection(String message){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("No internet connection !");
-        alertDialogBuilder.setMessage(message);
-        alertDialogBuilder.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
-    /**
      * To call when upload button is clicked
      */
     private void openUploadActivity() {
-        //TODO: change this when the function that tells if we are online is merged
-        boolean IS_ONLINE = true;
-        if(IS_ONLINE){
+        if(NetworkInformation.isNetworkAvailable(this)){
             Intent intent = new Intent(this, TakePictureActivity.class);
             startActivity(intent);
         }
         else{
-            openAlertDialogWhenNoConnection("You cannot upload pictures without an internet connection.");
+            AlertDialog alert = AlertBuilder.createAlert("No internet connection !", "You cannot upload pictures without an internet connection.", this);
+            alert.show();
         }
     }
 
@@ -139,14 +120,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      * To call when guess button is clicked
      */
     private void openPreviewActivity() {
-        //TODO: change this when the function that tells if we are online is merged
-        boolean IS_ONLINE = true;
-        if(IS_ONLINE){
+        if(NetworkInformation.isNetworkAvailable(this)){
             Intent intent = new Intent(this, GuessPreviewActivity.class);
             startActivity(intent);
         }
         else{
-            openAlertDialogWhenNoConnection("You cannot guess pictures without an internet connection.");
+            AlertDialog alert = AlertBuilder.createAlert("No internet connection !", "You cannot guess pictures without an internet connection.", this);
+            alert.show();
         }
     }
 
