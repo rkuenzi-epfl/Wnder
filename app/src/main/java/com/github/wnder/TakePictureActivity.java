@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -64,15 +66,36 @@ public class TakePictureActivity extends AppCompatActivity {
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
         pictureConfirmButton.setVisibility(View.INVISIBLE);
         pictureConfirmButton.setOnClickListener((view) -> {
-            storeBitmapInGallery();
+            boolean IS_ONLINE = false;
+            if (IS_ONLINE){
+                storeBitmapInGallery();
 
-            boolean hasSucceeded = storeBitmapInDB();
+                boolean hasSucceeded = storeBitmapInDB();
 
-            Intent intent = new Intent(this, UploadActivity.class);
-            intent.putExtra(HAS_SUCCEEDED, hasSucceeded);
-            startActivity(intent);
-            this.finish();
+                Intent intent = new Intent(this, UploadActivity.class);
+                intent.putExtra(HAS_SUCCEEDED, hasSucceeded);
+                startActivity(intent);
+                this.finish();
+            }
+            else{
+                openAlertDialogWhenNoConnection("Your internet connection was lost, please try again later");
+            }
         });
+    }
+
+    private void openAlertDialogWhenNoConnection(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("No internet connection !");
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     /**

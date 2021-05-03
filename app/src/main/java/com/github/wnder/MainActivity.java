@@ -133,27 +133,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * To call when there is no connection and the user wants to go to an activity that requires connection
+     */
+    private void openAlertDialogWhenNoConnection(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("No internet connection !");
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    /**
      * To call when upload button is clicked
      */
     private void openUploadActivity() {
-        boolean IS_ONLINE = false;
+        //TODO: change this when the function that tells if we are online is merged
+        boolean IS_ONLINE = true;
         if(IS_ONLINE){
             Intent intent = new Intent(this, TakePictureActivity.class);
             startActivity(intent);
         }
         else{
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle("No internet connection !");
-            alertDialogBuilder.setMessage("You cannot upload pictures without an internect connection.");
-            alertDialogBuilder.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+            openAlertDialogWhenNoConnection("You cannot upload pictures without an internet connection.");
         }
     }
 
@@ -161,8 +169,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * To call when guess button is clicked
      */
     private void openPreviewActivity() {
-        Intent intent = new Intent(this, GuessPreviewActivity.class);
-        startActivity(intent);
+        //TODO: change this when the function that tells if we are online is merged
+        boolean IS_ONLINE = true;
+        if(IS_ONLINE){
+            Intent intent = new Intent(this, GuessPreviewActivity.class);
+            startActivity(intent);
+        }
+        else{
+            openAlertDialogWhenNoConnection("You cannot guess pictures without an internet connection.");
+        }
     }
 
     /**
