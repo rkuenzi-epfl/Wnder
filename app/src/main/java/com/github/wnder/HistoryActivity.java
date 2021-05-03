@@ -1,23 +1,20 @@
 package com.github.wnder;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
-import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -51,21 +48,20 @@ public class HistoryActivity extends AppCompatActivity {
         //Set layout
         setContentView(R.layout.activity_history);
 
-        pictureList = getUserPictures();
-
         //Buttons to cycle between the images
         left_button = findViewById(R.id.left_history);
         right_button = findViewById(R.id.right_history);
-        setupButtons();
 
         //set placeholder
         image = findViewById(R.id.historyImage);
-        image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        //image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         //When clicked open activity for specific picture history
         image.setOnClickListener((view) -> {
             Intent intent = new Intent(this, PictureHistoryActivity.class);
             startActivity(intent);
         });
+
+        getUserPictures();
     }
 
     private void setupButtons() {
@@ -104,7 +100,7 @@ public class HistoryActivity extends AppCompatActivity {
         pictureDisplayed = pictureList.get(index);
     }
 
-    private List<ExistingPicture> getUserPictures(){
+    private void getUserPictures(){
         List<ExistingPicture> picsList = new ArrayList<>();
         User user = GlobalUser.getUser();
 
@@ -113,12 +109,12 @@ public class HistoryActivity extends AppCompatActivity {
                 for (String id : guessedPics) {
                     picsList.add(new ExistingPicture(id));
                 }
+                pictureList = picsList;
+                setupButtons();
             });
         }
         else { //We have a guest user
             //TODO: use the local cache of the phone to get potential images from the user
         }
-
-        return picsList;
     }
 }
