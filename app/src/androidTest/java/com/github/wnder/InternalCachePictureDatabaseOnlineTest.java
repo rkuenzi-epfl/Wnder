@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -17,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mockito;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -40,8 +42,9 @@ public class InternalCachePictureDatabaseOnlineTest {
 
     @BeforeClass
     public static void setup(){
-        ICPD = new InternalCachePictureDatabase(context);
-        ICPD.setOnlineStatus(true);
+        //Mock online check
+        ICPD = Mockito.spy(new InternalCachePictureDatabase(context));
+        Mockito.doReturn(true).when(ICPD).isOnline();
 
         location = new Location("");
         location.setLatitude(10);

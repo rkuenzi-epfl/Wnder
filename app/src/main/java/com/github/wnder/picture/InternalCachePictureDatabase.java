@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 
+import com.github.wnder.NetworkInformation;
+import com.github.wnder.WnderApplication;
+
 import org.json.JSONException;
 
 import java.io.File;
@@ -21,18 +24,7 @@ import javax.inject.Inject;
 public class InternalCachePictureDatabase implements PicturesDatabase{
     private final FirebasePicturesDatabase remoteDatabase;
     private final LocalPictureDatabase localDatabase;
-
-    //The field exists only because there is still not way to know if we are online
-    private boolean isOnline = true;
-
-    //Exists principally for testing for now.
-    /**
-     * Set online status
-     * @param newState new state
-     */
-    public void setOnlineStatus(boolean newState){
-        isOnline = newState;
-    }
+    private Context context;
 
     /**
      * Constructor
@@ -42,12 +34,21 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     public InternalCachePictureDatabase(Context context){
         remoteDatabase = new FirebasePicturesDatabase();
         localDatabase = new LocalPictureDatabase(context);
+        this.context = context;
+    }
+
+    /**
+     * Checks if app is online or not
+     * @return true if available internet connection, false o/w
+     */
+    public boolean isOnline(){
+        return NetworkInformation.isNetworkAvailable(context);
     }
 
     @Override
     public CompletableFuture<Location> getLocation(String uniqueId) {
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.getLocation(uniqueId);
         }
         //else, local db
@@ -61,7 +62,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Location> getApproximateLocation(String uniqueId) throws IllegalStateException{
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.getApproximateLocation(uniqueId);
         }
         //Not available when no internet
@@ -73,7 +74,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) throws IllegalStateException{
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.getUserGuesses(uniqueId);
         }
         //Not available when no internet
@@ -85,7 +86,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId) {
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.getScoreboard(uniqueId);
         }
         //else, local db
@@ -99,7 +100,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) throws IllegalStateException{
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
         }
         //Not available when no internet
@@ -111,7 +112,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.getBitmap(uniqueId);
         }
         //else, local db
@@ -129,7 +130,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) throws IllegalStateException{
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
         }
         //Not available when no internet
@@ -141,7 +142,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Long> getKarma(String uniqueId) throws IllegalStateException{
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.getKarma(uniqueId);
         }
         //Not available when no internet
@@ -153,7 +154,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Void> updateKarma(String uniqueId, int delta) throws IllegalStateException{
         //If connection available, remote db
-        if (isOnline) {
+        if (isOnline()) {
             return remoteDatabase.updateKarma(uniqueId, delta);
         }
         //Not available when no internet

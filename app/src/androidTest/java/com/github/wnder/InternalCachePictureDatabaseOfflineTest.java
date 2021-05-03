@@ -1,9 +1,13 @@
 package com.github.wnder;
 
+import android.app.ActivityGroup;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -16,25 +20,29 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import okhttp3.internal.cache.InternalCache;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
+
 
 //Those tests are essentially the same as the ones in LocalPictureDatabaseTest, maybe deleting it would be better
 @RunWith(JUnit4.class)
 public class InternalCachePictureDatabaseOfflineTest {
     private static FirebasePicturesDatabase fdb = new FirebasePicturesDatabase();
     private static Context context = ApplicationProvider.getApplicationContext();
-    private static InternalCachePictureDatabase ICPD;
 
     private static String uniqueId;
     private static Bitmap bmp;
@@ -47,10 +55,13 @@ public class InternalCachePictureDatabaseOfflineTest {
     private static File iDirectory;
     private static File mDirectory;
 
+    private static InternalCachePictureDatabase ICPD;
+
     @BeforeClass
     public static void setup() throws ExecutionException, InterruptedException {
-        ICPD = new InternalCachePictureDatabase(context);
-        ICPD.setOnlineStatus(false);
+        //Mock offline check
+        ICPD = Mockito.spy(new InternalCachePictureDatabase(context));
+        Mockito.doReturn(false).when(ICPD).isOnline();
 
         //SETUP TEST IMAGE
         uniqueId = "testPicDontRm";
@@ -78,7 +89,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     }
 
     @AfterClass
-    public static void delete(){
+    public static void teardown(){
         int currILength = iDirectory.listFiles().length;
         int currDLength = mDirectory.listFiles().length;
         ICPD.deleteLocalPicture(uniqueId);
