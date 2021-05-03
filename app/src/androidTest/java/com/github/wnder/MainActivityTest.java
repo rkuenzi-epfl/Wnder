@@ -36,6 +36,7 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -82,7 +83,7 @@ public class MainActivityTest {
         Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
         onView(withId(R.id.getPictureButton)).perform(click());
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
-
+        onView(withText(R.string.no_connection)).perform(pressBack());
         Intents.release();
     }
 
@@ -106,6 +107,7 @@ public class MainActivityTest {
         Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
         onView(withId(R.id.uploadPictureButton)).perform(click());
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
+        onView(withText(R.string.no_connection)).perform(pressBack());
 
         Intents.release();
     }

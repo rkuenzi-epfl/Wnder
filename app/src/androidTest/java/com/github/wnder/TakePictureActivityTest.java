@@ -25,6 +25,7 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
@@ -40,7 +41,7 @@ public class TakePictureActivityTest {
 
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
-            .around(new ActivityScenarioRule<>(MainActivity.class));
+            .around(new ActivityScenarioRule<>(TakePictureActivity.class));
 
     @BindValue
     public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
@@ -65,8 +66,16 @@ public class TakePictureActivityTest {
     @Test
     public void testTakePhotoButtonWhenNoInternet(){
         Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
+        Intent resultData = new Intent();
+
+        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
+
+        intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
+
         onView(withId(R.id.takePictureButton)).perform(click());
+        onView(withId(R.id.pictureConfirmButton)).perform(click());
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
+        onView(withText(R.string.no_connection)).perform(pressBack());
     }
 
     @Test
