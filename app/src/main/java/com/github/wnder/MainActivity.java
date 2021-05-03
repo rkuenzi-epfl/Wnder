@@ -61,11 +61,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         imageView.setImageURI(user.getProfilePicture());
 
         //Set the buttons: guess, upload, history
-        findViewById(R.id.uploadPictureButton).setOnClickListener(id -> {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            GlobalUser.getUser().setLocation(GlobalUser.getUser().getPositionFromGPS(locationManager, getApplicationContext()));
-            openUploadActivity();
-        });
+        findViewById(R.id.uploadPictureButton).setOnClickListener(id -> openUploadActivity());
 
         findViewById(R.id.getPictureButton).setOnClickListener(id -> openPreviewActivity());
         findViewById(R.id.menuToHistoryButton).setOnClickListener(id -> openHistoryActivity());
@@ -101,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 }
 
                 LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, location -> {
+                LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, location -> {
                     //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
                 });
             }
