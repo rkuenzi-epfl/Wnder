@@ -91,8 +91,6 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButton(){
-        User user = GlobalUser.getUser();
-
         onView(withId(R.id.guessButton)).perform(click());
 
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
@@ -103,8 +101,6 @@ public class GuessPreviewActivityTest {
     @Test
     public void testGuessLocationButtonWhenNoInternet(){
         Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
-        User user = GlobalUser.getUser();
-        user.setLocation(new Location("defaultLocation"));
 
         onView(withId(R.id.guessButton)).perform(click());
 
