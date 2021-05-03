@@ -27,8 +27,9 @@
                 android:id="@+id/profile_picture"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:contentDescription="@string/content_descr_profile_picture"
                 android:scaleType="fitXY"
                 android:src="@mipmap/ic_launcher" />
 
@@ -37,9 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/profile_picture"
+                android:layout_toEndOf="@id/profile_picture"
                 android:padding="10dp"
-                android:text="Username"
                 android:textAppearance="@android:style/TextAppearance.WindowTitle"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -48,8 +48,7 @@
     <TextView
         android:id="@+id/radiusTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Radius:" />
+        android:layout_height="wrap_content" />
 
     <SeekBar
         android:id="@+id/radiusSeekBar"
@@ -63,18 +62,18 @@
         android:id="@+id/uploadPictureButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload a picture" />
+        android:text="@string/upload_picture" />
 
     <Button
         android:id="@+id/getPictureButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guess a new picture" />
+        android:text="@string/guess_picture" />
 
     <Button
         android:id="@+id/menuToHistoryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SEE HISTORY" />
+        android:text="@string/see_history" />
 
 </LinearLayout>

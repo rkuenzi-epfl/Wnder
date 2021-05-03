@@ -11,6 +11,7 @@
         android:layout_width="288dp"
         android:layout_height="188dp"
         android:layout_marginTop="103dp"
+        android:contentDescription="@string/content_descr_history_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
