@@ -1,7 +1,6 @@
 package com.github.wnder;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +18,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.NewPicture;
 import com.github.wnder.user.GlobalUser;
 
@@ -28,9 +29,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Activity to take a picture
  */
+@AndroidEntryPoint
 public class TakePictureActivity extends AppCompatActivity {
     //Buttons
     private Button takePictureButton;
@@ -44,6 +50,10 @@ public class TakePictureActivity extends AppCompatActivity {
     //Image
     private Uri imageUri;
     private Bitmap currentBitmap;
+
+    @Inject
+    public NetworkService networkInfo;
+
     public static final String HAS_SUCCEEDED = "success";
 
     /**
@@ -66,7 +76,7 @@ public class TakePictureActivity extends AppCompatActivity {
         pictureConfirmButton = findViewById(R.id.pictureConfirmButton);
         pictureConfirmButton.setVisibility(View.INVISIBLE);
         pictureConfirmButton.setOnClickListener((view) -> {
-            if (NetworkInformation.isNetworkAvailable(this)){
+            if (networkInfo.isNetworkAvailable()){
                 storeBitmapInGallery();
 
                 boolean hasSucceeded = storeBitmapInDB();
@@ -77,7 +87,7 @@ public class TakePictureActivity extends AppCompatActivity {
                 this.finish();
             }
             else{
-                AlertDialog alert = AlertBuilder.createAlert("No internet connection !", "Your internet connection was lost, please try again later", this);
+                AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload_confirm), this);
                 alert.show();
             }
         });

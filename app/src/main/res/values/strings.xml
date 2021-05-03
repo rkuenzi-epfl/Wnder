@@ -4,6 +4,7 @@
     <!--Multiple usage-->
     <string name="confirm">Confirm</string>
     <string name="see_scoreboard">See scoreboard</string>
+    <string name="no_connection">No internet connection !</string>
 
     <!--Login Activity Strings-->
     <string name="please_login">Please sign in.</string>
@@ -15,6 +16,8 @@
     <string name="upload_picture">Upload a picture</string>
     <string name="guess_picture">Guess a new picture</string>
     <string name="see_history">See History</string>
+    <string name="no_internet_upload">You cannot upload pictures without an internet connection.</string>
+    <string name="no_internet_guess">You cannot guess pictures without an internet connection.</string>
 
     <!--Guess Preview Strings-->
     <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
@@ -42,6 +45,7 @@
     <!--Take Picture Strings-->
     <string name="content_descr_picture_taken">Your picture</string>
     <string name="take_picture">Take a picture</string>
+    <string name="no_internet_upload_confirm">Your internet connection was lost, please try again later</string>
 
     <!--Upload Activity Strings-->
     <string name="success">Success</string>

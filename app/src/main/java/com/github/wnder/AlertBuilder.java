@@ -12,16 +12,11 @@ public final class AlertBuilder {
     }
 
     public static AlertDialog createAlert(String title, String body, Context ctx){
-        AlertDialog.Builder alertDialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(ctx);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(body);
         alertDialogBuilder.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                (dialog, which) -> dialog.cancel());
         AlertDialog alertDialog = alertDialogBuilder.create();
 
         return alertDialog;

@@ -3,48 +3,64 @@ package com.github.wnder;
 import android.content.Intent;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.matcher.*;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.picture.PicturesDatabase;
+import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
+@UninstallModules({NetworkModule.class})
 public class MainActivityTest {
+    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
-    public ActivityScenarioRule<MainActivity> testRule = new ActivityScenarioRule<>(MainActivity.class);
+    public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(new ActivityScenarioRule<>(MainActivity.class));
 
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
 
-    // Open the activity as a test because there is nothing in the activity yet
-    @Test
-    public void testEmptyMain(){
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), MainActivity.class);
-        ActivityScenario scenario = ActivityScenario.launch(intent);
-        scenario.close();
+    @Before
+    public void before(){
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
 
     @Test
@@ -53,7 +69,19 @@ public class MainActivityTest {
         onView(withId(R.id.getPictureButton)).perform(click());
 
         GlobalUser.resetUser();
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        intended(hasComponent(GuessPreviewActivity.class.getName()));
+
+        Intents.release();
+    }
+
+    @Test
+    public void testGetPictureButtonWhenNoInternet(){
+        Intents.init();
+
+
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
+        onView(withId(R.id.getPictureButton)).perform(click());
+        onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
 
         Intents.release();
     }
@@ -64,8 +92,20 @@ public class MainActivityTest {
         onView(withId(R.id.uploadPictureButton)).perform(click());
 
 
-        Intents.intended(hasComponent(TakePictureActivity.class.getName()));
+        intended(hasComponent(TakePictureActivity.class.getName()));
         assertTrue(GlobalUser.getUser().getLocation() != null);
+
+        Intents.release();
+    }
+
+    @Test
+    public void testUploadButtonWhenNoInternet(){
+        Intents.init();
+
+
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
+        onView(withId(R.id.uploadPictureButton)).perform(click());
+        onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
 
         Intents.release();
     }
@@ -109,7 +149,7 @@ public class MainActivityTest {
         Intents.init();
         onView(withId(R.id.menuToHistoryButton)).perform(click());
 
-        Intents.intended(hasComponent(HistoryActivity.class.getName()));
+        intended(hasComponent(HistoryActivity.class.getName()));
 
         Intents.release();
     }

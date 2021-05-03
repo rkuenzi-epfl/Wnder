@@ -3,12 +3,10 @@ package com.github.wnder;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -18,19 +16,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 
 /**
  * Main activity
  */
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
     //Different distances for the radius
     private int[] distances = {5, 10, 20, 50, 100, 500, 1000};
     //Toolbar
     private Toolbar toolbar;
+    @Inject
+    public NetworkService networkInfo;
 
     /**
      * Executes on activity creation
@@ -69,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         manageSeekBar(radiusSeekBar, radiusTextView);
 
-
         //rights for location services
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
@@ -106,12 +112,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      * To call when upload button is clicked
      */
     private void openUploadActivity() {
-        if(NetworkInformation.isNetworkAvailable(this)){
+        if(networkInfo.isNetworkAvailable()){
             Intent intent = new Intent(this, TakePictureActivity.class);
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.createAlert("No internet connection !", "You cannot upload pictures without an internet connection.", this);
+            AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this);
             alert.show();
         }
     }
@@ -120,12 +126,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      * To call when guess button is clicked
      */
     private void openPreviewActivity() {
-        if(NetworkInformation.isNetworkAvailable(this)){
+        if(networkInfo.isNetworkAvailable()){
             Intent intent = new Intent(this, GuessPreviewActivity.class);
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.createAlert("No internet connection !", "You cannot guess pictures without an internet connection.", this);
+            AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), this);
             alert.show();
         }
     }
