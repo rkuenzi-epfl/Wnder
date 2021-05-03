@@ -25,9 +25,6 @@ public abstract class User {
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     protected int radius = 5;
 
-    //location, null if non-valid
-    protected Location location;
-
     protected String name;
     protected Uri profilePicture;
 
@@ -76,18 +73,6 @@ public abstract class User {
      * @param pictureIdAvailable function to apply
      */
     public abstract void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable);
-
-    /**
-     * Get location of user
-     * @return location of user
-     */
-    public abstract Location getLocation();
-
-    /**
-     * Set location of user
-     * @param location location of user
-     */
-    public abstract void setLocation(Location location);
 
     /**
      * returns a map with only the ids of the photos in the radius of the user
