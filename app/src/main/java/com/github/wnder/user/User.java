@@ -25,9 +25,6 @@ public abstract class User {
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     protected int radius = 5;
 
-    //location, null if non-valid
-    protected Location location;
-
     protected String name;
     protected Uri profilePicture;
 
@@ -50,13 +47,17 @@ public abstract class User {
      * @return last known location of user
      */
     public Location getPositionFromGPS(LocationManager manager, Context context){
-
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         //TODO:
         //throw new IllegalStateException();
         }
-
-        return manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(loc == null){ //To avoid unexpected result from the GPS, we set it to 0, 0.
+            loc = new Location(LocationManager.GPS_PROVIDER);
+            loc.setLongitude(0);
+            loc.setLatitude(0);
+        }
+        return loc;
     }
 
     /**
@@ -76,18 +77,6 @@ public abstract class User {
      * @param pictureIdAvailable function to apply
      */
     public abstract void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable);
-
-    /**
-     * Get location of user
-     * @return location of user
-     */
-    public abstract Location getLocation();
-
-    /**
-     * Set location of user
-     * @param location location of user
-     */
-    public abstract void setLocation(Location location);
 
     /**
      * returns a map with only the ids of the photos in the radius of the user

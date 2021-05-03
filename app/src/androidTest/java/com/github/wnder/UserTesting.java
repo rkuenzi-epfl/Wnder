@@ -95,7 +95,6 @@ public class UserTesting {
         Location loc = new Location("");
         loc.setLatitude(0);
         loc.setLongitude(0);
-        u.setLocation(loc);
         GlobalUser.setUser(u);
         Set<String> allIds = new HashSet<>();
         allIds.add("testPicDontRm");
@@ -195,27 +194,5 @@ public class UserTesting {
             }
             GlobalUser.resetUser();
         });
-    }
-
-    @Test
-    public void getAndSetLocationWorks(){
-
-        Location loc = new Location("");
-        loc.setLatitude(10);
-        loc.setLongitude(10);
-
-        //Guest user
-        User u = GlobalUser.getUser();
-        u.setLocation(loc);
-        assertThat(u.getLocation().getLatitude(), is(10.0));
-        assertThat(u.getLocation().getLongitude(), is(10.0));
-        GlobalUser.resetUser();
-
-        //signed in user
-        SignedInUser u1 = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        u1.setLocation(loc);
-        assertThat(u1.getLocation().getLatitude(), is(10.0));
-        assertThat(u1.getLocation().getLongitude(), is(10.0));
-
     }
 }

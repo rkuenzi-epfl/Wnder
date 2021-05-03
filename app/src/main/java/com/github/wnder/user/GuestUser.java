@@ -69,19 +69,4 @@ public class GuestUser extends User{
         this.radius = rad;
     }
 
-    /**
-     * get user location
-     * @return last known location
-     */
-    public Location getLocation(){
-        return location;
-    }
-
-    /**
-     * set user location
-     * @param loc location, null if non-valid
-     */
-    public void setLocation(Location loc){
-        this.location = loc;
-    }
 }

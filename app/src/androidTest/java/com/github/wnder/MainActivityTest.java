@@ -65,7 +65,7 @@ public class MainActivityTest {
 
 
         Intents.intended(hasComponent(TakePictureActivity.class.getName()));
-        assertTrue(GlobalUser.getUser().getLocation() != null);
+
 
         Intents.release();
     }

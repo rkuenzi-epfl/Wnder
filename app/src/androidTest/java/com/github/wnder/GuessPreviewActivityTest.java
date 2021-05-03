@@ -72,7 +72,6 @@ public class GuessPreviewActivityTest {
     @Test
     public void testGuessLocationButton(){
         User user = GlobalUser.getUser();
-        user.setLocation(new Location("defaultLocation"));
 
         onView(withId(R.id.guessButton)).perform(click());
 
