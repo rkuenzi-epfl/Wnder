@@ -12,16 +12,23 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
 
 /**
  * Preview activity class
 */
+@AndroidEntryPoint
 public class GuessPreviewActivity extends AppCompatActivity{
 
     //EPFL Location
@@ -33,6 +40,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private double pictureLng = DEFAULT_LNG;
     private ExistingPicture previewPicture;
     private boolean reported = false;
+    @Inject
+    public NetworkService networkInfo;
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -51,6 +60,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
         findViewById(R.id.skipButton).setOnClickListener(id -> skipPicture());
         findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
+
     }
 
     /**
@@ -92,16 +102,22 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Open guessing activity
      */
     private void openGuessActivity() {
-        Intent intent = new Intent(this, GuessLocationActivity.class);
+        if (networkInfo.isNetworkAvailable()){
+            Intent intent = new Intent(this, GuessLocationActivity.class);
 
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getLocation().getLatitude());
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLongitude());
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
+            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getLocation().getLatitude());
+            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getLocation().getLongitude());
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
 
-        startActivity(intent);
-        finish();
+            startActivity(intent);
+            finish();
+        }
+        else{
+            AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+            alert.show();
+        }
     }
 
     /**

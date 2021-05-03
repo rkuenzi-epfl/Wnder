@@ -87,7 +87,7 @@ public class TakePictureActivity extends AppCompatActivity {
                 this.finish();
             }
             else{
-                AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload_confirm), this);
+                AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
                 alert.show();
             }
         });

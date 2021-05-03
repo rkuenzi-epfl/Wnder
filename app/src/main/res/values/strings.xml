@@ -5,6 +5,7 @@
     <string name="confirm">Confirm</string>
     <string name="see_scoreboard">See scoreboard</string>
     <string name="no_connection">No internet connection !</string>
+    <string name="no_internet_body">Your internet connection was lost, please try again later</string>
 
     <!--Login Activity Strings-->
     <string name="please_login">Please sign in.</string>
@@ -45,7 +46,7 @@
     <!--Take Picture Strings-->
     <string name="content_descr_picture_taken">Your picture</string>
     <string name="take_picture">Take a picture</string>
-    <string name="no_internet_upload_confirm">Your internet connection was lost, please try again later</string>
+
 
     <!--Upload Activity Strings-->
     <string name="success">Success</string>
