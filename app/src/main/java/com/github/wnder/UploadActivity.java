@@ -30,10 +30,10 @@ public class UploadActivity extends AppCompatActivity {
         boolean success = getIntent().getBooleanExtra(TakePictureActivity.HAS_SUCCEEDED, false);
         textOfSuccess = findViewById(R.id.textView4);
         if(success){
-            textOfSuccess.setText("Success");
+            textOfSuccess.setText(R.string.success);
         }
         else{
-            textOfSuccess.setText("Failure");
+            textOfSuccess.setText(R.string.failure);
         }
 
         //Back to menu button
