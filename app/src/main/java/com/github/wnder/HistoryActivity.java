@@ -2,9 +2,10 @@ package com.github.wnder;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,20 +22,18 @@ import dagger.hilt.android.AndroidEntryPoint;
 /**
  * Defines activity for history
  */
-@AndroidEntryPoint
 public class HistoryActivity extends AppCompatActivity {
-    //For now, a placeholder
+    //Displayed image
     private ImageView image;
+    //Text displayed in case of no image available
+    private TextView text;
 
-    private Button left_button;
-    private Button right_button;
+    private Button leftButton;
+    private Button rightButton;
 
-    //Cyclic variables to display picture
-    private int pictures_max_number = 0;
-    private int picture_index = 0;
+    //Cyclic variable to display picture
+    private int pictureIndex = 0;
 
-    //@Inject
-    //private PicturesDatabase picDB;
     private List<ExistingPicture> pictureList; //To be filled with the appropriate function (from either the local or online database)
     private ExistingPicture pictureDisplayed; //To be used to recover the image we clicked on
 
@@ -49,19 +48,23 @@ public class HistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_history);
 
         //Buttons to cycle between the images
-        left_button = findViewById(R.id.left_history);
-        right_button = findViewById(R.id.right_history);
+        leftButton = findViewById(R.id.leftHistory);
+        rightButton = findViewById(R.id.rightHistory);
 
-        //set placeholder
         image = findViewById(R.id.historyImage);
-        //image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        text = findViewById(R.id.noPicturesGuessed);
+
+        text.setVisibility(View.INVISIBLE);
+        leftButton.setVisibility(View.INVISIBLE);
+        rightButton.setVisibility(View.INVISIBLE);
+        image.setVisibility(View.INVISIBLE);
+
+        getUserPictures();
         //When clicked open activity for specific picture history
         image.setOnClickListener((view) -> {
             Intent intent = new Intent(this, PictureHistoryActivity.class);
             startActivity(intent);
         });
-
-        getUserPictures();
     }
 
     private void setupButtons() {
@@ -69,30 +72,34 @@ public class HistoryActivity extends AppCompatActivity {
             throw new IllegalArgumentException();
         }
         if(pictureList.isEmpty()){
-            //TODO: add default image or just nothing
+            text.setVisibility(View.VISIBLE);
         }
         else{
-            pictures_max_number = pictureList.size() - 1;
-            picture_index = 0;
+
+            pictureIndex = 0;
 
             //Set the first image to be displayed
-            setImage(0);
+            setImage(pictureIndex);
+            image.setVisibility(View.VISIBLE);
 
-            left_button.setOnClickListener(view ->{
-                picture_index = picture_index == 0 ? pictures_max_number : picture_index - 1;
-                setImage(picture_index);
+            leftButton.setOnClickListener(view ->{
+                pictureIndex = Math.floorMod(pictureIndex - 1, pictureList.size());
+                setImage(pictureIndex);
             });
 
-            right_button.setOnClickListener(view ->{
-                picture_index = picture_index == pictures_max_number ? 0 : picture_index + 1;
-                setImage(picture_index);
+            rightButton.setOnClickListener(view ->{
+                pictureIndex = Math.floorMod(pictureIndex + 1, pictureList.size());
+                setImage(pictureIndex);
             });
+
+            leftButton.setVisibility(View.VISIBLE);
+            rightButton.setVisibility(View.VISIBLE);
         }
     }
 
     //Set the image, both for imageView and for the existingPicture
     private void setImage(int index){
-        if(index < 0 || index > pictures_max_number){
+        if(index < 0 || index >= pictureList.size()){
             throw new IllegalArgumentException();
         }
 
