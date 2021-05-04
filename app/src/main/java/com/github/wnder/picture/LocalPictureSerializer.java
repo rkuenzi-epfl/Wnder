@@ -69,16 +69,7 @@ public final class LocalPictureSerializer {
      * @return real location
      */
     public static Location getRealLocation(JSONObject json){
-        Location toRet = new Location("");
-        try {
-            //get location from json
-            toRet.setLongitude( json.getDouble("realLongitude"));
-            toRet.setLatitude( json.getDouble("realLatitude"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return toRet;
+        return getLocation(json, LocationType.REAL);
     }
 
     /**
@@ -87,15 +78,23 @@ public final class LocalPictureSerializer {
      * @return guessed location
      */
     public static Location getGuessLocation(JSONObject json){
+        return getLocation(json, LocationType.GUESSED);
+    }
+
+    private static Location getLocation(JSONObject json, LocationType type){
         Location toRet = new Location("");
         try {
-            //get location from json
-            toRet.setLongitude( json.getDouble("guessedLongitude"));
-            toRet.setLatitude( json.getDouble("guessedLatitude"));
+            if (type == LocationType.GUESSED){
+                toRet.setLongitude( json.getDouble("guessedLongitude"));
+                toRet.setLatitude( json.getDouble("guessedLatitude"));
+            }
+            else{
+                toRet.setLongitude( json.getDouble("realLongitude"));
+                toRet.setLatitude( json.getDouble("realLatitude"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return toRet;
     }
 
@@ -115,5 +114,9 @@ public final class LocalPictureSerializer {
             e.printStackTrace();
         }
         return scoreboard;
+    }
+
+    private enum LocationType{
+        GUESSED, REAL
     }
 }
