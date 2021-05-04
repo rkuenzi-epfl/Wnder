@@ -1,15 +1,11 @@
 package com.github.wnder.user;
 
 import android.content.Context;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-
+import com.github.wnder.NetworkInformation;
 import com.github.wnder.Storage;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -17,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -81,29 +76,35 @@ public class SignedInUser extends User{
      * @param picturesListName The name of the list of pictures to get from firestore (ex.: guessedPics, uploadedPics)
      * @param PicsAv Function to apply
      */
-    public void onPicturesAvailable(String picturesListName, Consumer<List<String>> PicsAv){
-        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
+    @Override
+    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
+        if(NetworkInformation.isNetworkAvailable(ctx)){
+            Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
 
-        userData.addOnSuccessListener(documentSnapshot -> {
-           List<String> pictures =  (List<String>) documentSnapshot.get(picturesListName);
-           if(pictures == null){
-               pictures = new ArrayList<>();
-           }
-           PicsAv.accept(pictures);
-        });
+            userData.addOnSuccessListener(documentSnapshot -> {
+                List<String> pictures =  (List<String>) documentSnapshot.get(picturesListName);
+                if(pictures == null){
+                    pictures = new ArrayList<>();
+                }
+                PicsAv.accept(pictures);
+            });
+        }
+        else{
+            super.onPicturesAvailable(picturesListName, ctx, PicsAv);
+        }
     }
 
     /**
      * Apply a function once the uploaded and the guessed pictures of the user have been retrieved
      * @param uAGPA Function to apply
      */
-    void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
+    void onUploadedAndGuessedPicturesAvailable(Context ctx, Consumer<Set<String>> uAGPA){
         Set<String> allPictures = new HashSet<>();
 
-        onPicturesAvailable(Storage.GUESSED_PICS, guessedPics -> {
+        onPicturesAvailable(Storage.GUESSED_PICS, ctx, guessedPics -> {
             allPictures.addAll(guessedPics);
 
-            onPicturesAvailable(Storage.UPLOADED_PICS, uploadedPics -> {
+            onPicturesAvailable(Storage.UPLOADED_PICS, ctx, uploadedPics -> {
                 allPictures.addAll(uploadedPics);
 
                 uAGPA.accept(allPictures);
@@ -122,7 +123,7 @@ public class SignedInUser extends User{
 
         Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
             //Get the ids of all the pictures linked with the user (guessed or uploaded)
-            onUploadedAndGuessedPicturesAvailable((upAndGuessedPics) -> {
+            onUploadedAndGuessedPicturesAvailable(context, (upAndGuessedPics) -> {
 
                 for (String id : upAndGuessedPics) {
                     if (allIdsAndLocs.containsKey(id)) {

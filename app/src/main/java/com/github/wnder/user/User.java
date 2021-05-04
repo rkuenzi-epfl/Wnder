@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -77,6 +78,15 @@ public abstract class User {
      * @param pictureIdAvailable function to apply
      */
     public abstract void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable);
+
+    /**
+     * Apply a function once the designated list of pictures of the user have been retrieved
+     * @param picturesListName The name of the list of pictures to get from the databse (ex.: guessedPics, uploadedPics)
+     * @param PicsAv Function to apply
+     */
+    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
+        //TODO: add local database implementation
+    }
 
     /**
      * returns a map with only the ids of the photos in the radius of the user

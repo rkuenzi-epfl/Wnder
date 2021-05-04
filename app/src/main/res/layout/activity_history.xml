@@ -42,7 +42,7 @@
         android:layout_marginStart="176dp"
         android:layout_marginEnd="176dp"
         android:layout_marginBottom="356dp"
-        android:text="No pictures guessed."
+        android:text="@string/no_guessed_pictures"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

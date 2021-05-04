@@ -17,8 +17,6 @@ import com.github.wnder.user.User;
 import java.util.ArrayList;
 import java.util.List;
 
-import dagger.hilt.android.AndroidEntryPoint;
-
 /**
  * Defines activity for history
  */
@@ -109,19 +107,13 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void getUserPictures(){
         List<ExistingPicture> picsList = new ArrayList<>();
-        User user = GlobalUser.getUser();
 
-        if(user instanceof SignedInUser) { //We can search for the pictures of the signed in user on the online database
-            ((SignedInUser) user).onPicturesAvailable(Storage.GUESSED_PICS, guessedPics -> {
-                for (String id : guessedPics) {
-                    picsList.add(new ExistingPicture(id));
-                }
-                pictureList = picsList;
-                setupButtons();
-            });
-        }
-        else { //We have a guest user
-            //TODO: use the local cache of the phone to get potential images from the user
-        }
+        GlobalUser.getUser().onPicturesAvailable(Storage.GUESSED_PICS, this, guessedPics -> {
+            for (String id : guessedPics) {
+                picsList.add(new ExistingPicture(id));
+            }
+            pictureList = picsList;
+            setupButtons();
+        });
     }
 }
