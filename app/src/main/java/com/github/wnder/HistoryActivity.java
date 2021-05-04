@@ -112,7 +112,7 @@ public class HistoryActivity extends AppCompatActivity {
         User user = GlobalUser.getUser();
 
         if(user instanceof SignedInUser) { //We can search for the pictures of the signed in user on the online database
-            ((SignedInUser) user).onGuessedPicturesAvailable(guessedPics -> {
+            ((SignedInUser) user).onPicturesAvailable(Storage.GUESSED_PICS, guessedPics -> {
                 for (String id : guessedPics) {
                     picsList.add(new ExistingPicture(id));
                 }

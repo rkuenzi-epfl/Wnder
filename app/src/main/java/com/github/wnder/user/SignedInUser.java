@@ -77,37 +77,21 @@ public class SignedInUser extends User{
     }
 
     /**
-     * Apply a function once the uploaded pictures of the user have been retrieved
-     * @param UPA Function to apply
+     * Apply a function once the designated list of pictures of the user have been retrieved
+     * @param picturesListName The name of the list of pictures to get from firestore (ex.: guessedPics, uploadedPics)
+     * @param PicsAv Function to apply
      */
-    public void onUploadedPicturesAvailable(Consumer<List<String>> UPA){
+    public void onPicturesAvailable(String picturesListName, Consumer<List<String>> PicsAv){
         Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
 
         userData.addOnSuccessListener(documentSnapshot -> {
-            List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-            if(uploadedPictures == null) {
-                uploadedPictures = new ArrayList<>();
-            }
-            UPA.accept(uploadedPictures);
+           List<String> pictures =  (List<String>) documentSnapshot.get(picturesListName);
+           if(pictures == null){
+               pictures = new ArrayList<>();
+           }
+           PicsAv.accept(pictures);
         });
     }
-
-    /**
-     * Apply a function once the guessed pictures of the user have been retrieved
-     * @param GPA Function to apply
-     */
-    public void onGuessedPicturesAvailable(Consumer<List<String>> GPA){
-        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
-
-        userData.addOnSuccessListener(documentSnapshot -> {
-            List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-            if(guessedPictures == null) {
-                guessedPictures = new ArrayList<>();
-            }
-            GPA.accept(guessedPictures);
-        });
-    }
-
 
     /**
      * Apply a function once the uploaded and the guessed pictures of the user have been retrieved
@@ -116,13 +100,16 @@ public class SignedInUser extends User{
     void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
         Set<String> allPictures = new HashSet<>();
 
-        onGuessedPicturesAvailable(guessedPics -> {
+        onPicturesAvailable(Storage.GUESSED_PICS, guessedPics -> {
             allPictures.addAll(guessedPics);
+
+            onPicturesAvailable(Storage.UPLOADED_PICS, uploadedPics -> {
+                allPictures.addAll(uploadedPics);
+
+                uAGPA.accept(allPictures);
+            });
         });
-        onUploadedPicturesAvailable(uploadedPics -> {
-            allPictures.addAll(uploadedPics);
-        });
-        uAGPA.accept(allPictures);
+
     }
 
     /**
