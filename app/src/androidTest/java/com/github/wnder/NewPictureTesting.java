@@ -5,7 +5,10 @@ import android.net.Uri;
 
 import com.github.wnder.picture.NewPicture;
 import com.github.wnder.picture.Picture;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +43,22 @@ public class NewPictureTesting {
         } catch (Exception e){
 
         }
+    }
+
+    // Clean db
+    @AfterClass
+    public static void deleteTestPic() {
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId())
+                .collection("userData").document("userGuesses").delete();
+        FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId())
+                .collection("userData").document("userScores").delete();
+        FirebaseFirestore.getInstance().collection("pictures").document(pic.getUniqueId()).delete();
+        FirebaseStorage.getInstance().getReference().child("pictures/"+pic.getUniqueId()+".jpg").delete();
     }
 
     @Test

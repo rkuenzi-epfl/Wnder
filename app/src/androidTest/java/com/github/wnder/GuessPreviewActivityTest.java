@@ -1,7 +1,10 @@
 package com.github.wnder;
 
+import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -9,7 +12,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,14 +28,19 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessPreviewActivityTest {
 
+    //Intent with extra that the activity with start with
+    static Intent intent;
+    static {
+        intent = new Intent(ApplicationProvider.getApplicationContext(), GuessPreviewActivity.class);
+    }
+
     @Rule
-    public ActivityScenarioRule<GuessPreviewActivity> testRule = new ActivityScenarioRule<>(GuessPreviewActivity.class);
+    public ActivityScenarioRule<GuessPreviewActivity> testRule = new ActivityScenarioRule<>(intent);
 
     @BeforeClass
     public static void setup(){
@@ -47,47 +58,51 @@ public class GuessPreviewActivityTest {
         GlobalUser.resetUser();
     }
 
-    @Test
-    public void testGuessLocationButton(){
+    @Before
+    //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
+    public void setUp() {
         Intents.init();
-        onView(withId(R.id.guessButton)).perform(click());
+    }
 
-        // TODO: Check openGuessActivity() correct execution, probably that the activity to make a guess is actually launched and maybe that it sends the image identifier with it
-        // Intents.intended(hasComponent(GuessActivity.class.getName()));
-
+    @After //Clears Intents state. Must be called after each test case.
+    public void tearDown() {
         Intents.release();
     }
 
     @Test
-    public void testSkipButton(){
-        Intents.init();
-        onView(withId(R.id.skipButton)).perform(click());
+    public void testGuessLocationButton(){
+        User user = GlobalUser.getUser();
 
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        onView(withId(R.id.guessButton)).perform(click());
 
-        Intents.release();
+        Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
-        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        GlobalUser.setUser(u);
-
-        Intents.init();
-        onView(withId(R.id.skipButton)).perform(click());
-
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
-
-        Intents.release();
         GlobalUser.resetUser();
     }
 
     @Test
-    public void testReportButton(){
+    public void testSkipButton(){
+        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        GlobalUser.setUser(u);
+
+        onView(withId(R.id.skipButton)).perform(click());
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+
+        Intents.release();
+
+        GlobalUser.resetUser();
+
         Intents.init();
+
+        onView(withId(R.id.skipButton)).perform(click());
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+    }
+
+    @Test
+    public void testReportButton(){
         onView(withId(R.id.reportButton)).perform(click());
 
         onView(withText("Confirm")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
-
-        Intents.release();
     }
-
 }
