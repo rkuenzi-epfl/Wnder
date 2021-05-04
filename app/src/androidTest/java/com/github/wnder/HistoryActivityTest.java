@@ -34,8 +34,6 @@ public class HistoryActivityTest {
 
     @Test
     public void testClickImage(){
-        //placeholder test. Change this later
-        //onView(withId(R.id.historyImage)).perform(click());
-        //Intents.intended(hasComponent(PictureHistoryActivity.class.getName()));
+
     }
 }
