@@ -47,11 +47,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Location> getLocation(String uniqueId) {
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.getLocation(uniqueId);
         }
-        //else, local db
         else {
             CompletableFuture<Location> cf = new CompletableFuture<>();
             cf.complete(localDatabase.getLocation(uniqueId));
@@ -61,11 +59,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Location> getApproximateLocation(String uniqueId) throws IllegalStateException{
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.getApproximateLocation(uniqueId);
         }
-        //Not available when no internet
         else {
             throw new IllegalStateException("The approximate location is not available locally");
         }
@@ -73,11 +69,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) throws IllegalStateException{
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.getUserGuesses(uniqueId);
         }
-        //Not available when no internet
         else {
             throw new IllegalStateException("This method is not available on offline mode");
         }
@@ -85,11 +79,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId) {
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.getScoreboard(uniqueId);
         }
-        //else, local db
         else {
             CompletableFuture<Map<String, Double>> cf = new CompletableFuture<>();
             cf.complete(localDatabase.getScoreboard(uniqueId));
@@ -99,11 +91,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) throws IllegalStateException{
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
         }
-        //Not available when no internet
         else {
             throw new IllegalStateException("This method is not available on offline mode");
         }
@@ -111,11 +101,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.getBitmap(uniqueId);
         }
-        //else, local db
         else {
             CompletableFuture<Bitmap> cf = new CompletableFuture<>();
             try {
@@ -129,11 +117,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) throws IllegalStateException{
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
         }
-        //Not available when no internet
         else {
             throw new IllegalStateException("This method is not available on offline mode");
         }
@@ -141,11 +127,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Long> getKarma(String uniqueId) throws IllegalStateException{
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.getKarma(uniqueId);
         }
-        //Not available when no internet
         else {
             throw new IllegalStateException("The karma is not available locally");
         }
@@ -153,11 +137,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> updateKarma(String uniqueId, int delta) throws IllegalStateException{
-        //If connection available, remote db
         if (isOnline()) {
             return remoteDatabase.updateKarma(uniqueId, delta);
         }
-        //Not available when no internet
         else {
             throw new IllegalStateException("The karma is not stored locally");
         }

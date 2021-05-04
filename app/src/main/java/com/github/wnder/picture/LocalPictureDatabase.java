@@ -33,6 +33,9 @@ public class LocalPictureDatabase {
     private File iDirectory;
     private File mDirectory;
 
+    private final int REAL_LOCATION = 0;
+    private final int GUESS_LOCATION = 1;
+
     /**
      * Constructor
      * @param context app context
@@ -103,7 +106,7 @@ public class LocalPictureDatabase {
      * @return the actual location of the image
      */
     public Location getLocation(String uniqueId) {
-        return getRealOrGuessed(uniqueId, 0);
+        return getRealOrGuessed(uniqueId, REAL_LOCATION);
     }
 
     /**
@@ -112,7 +115,7 @@ public class LocalPictureDatabase {
      * @return the actual location of the image
      */
     public Location getGuessedLocation(String uniqueId) {
-        return getRealOrGuessed(uniqueId, 1);
+        return getRealOrGuessed(uniqueId, GUESS_LOCATION);
     }
 
     /**
@@ -136,14 +139,14 @@ public class LocalPictureDatabase {
 
     /**
      * Reads the metadata file
-     * @param filename uniqueId of picture
+     * @param uniqueId uniqueId of picture
      * @return content of file, empty if there is a problem
      */
-    private String openMetadataFile(String filename){
+    private String openMetadataFile(String uniqueId){
         String toReturn = "";
 
         //setup file input stream
-        File file = new File(mDirectory, filename);
+        File file = new File(mDirectory, uniqueId);
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
@@ -180,11 +183,11 @@ public class LocalPictureDatabase {
     /**
      * Stores the updated metadata file
      * @param data the data to write
-     * @param filename unique id of picture
+     * @param uniqueId unique id of picture
      */
-    private void storeMetadataFile(String data, String filename){
+    private void storeMetadataFile(String data, String uniqueId){
         //setup file output stream
-        File file = new File(mDirectory, filename);
+        File file = new File(mDirectory, uniqueId);
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);
@@ -200,12 +203,12 @@ public class LocalPictureDatabase {
 
     /**
      * Read the picture from a local file
-     * @param filename the id of the picture
+     * @param uniqueId the id of the picture
      * @return a bitmap of the picture
      */
-    public Bitmap getPicture(String filename) throws FileNotFoundException {
+    public Bitmap getPicture(String uniqueId) throws FileNotFoundException {
         //setup file input stream and byte array
-        File file = new File(iDirectory, filename);
+        File file = new File(iDirectory, uniqueId);
         FileInputStream fis = new FileInputStream(file);
         byte[] bytes = new byte[(int) file.length()];
         try {
@@ -223,11 +226,11 @@ public class LocalPictureDatabase {
     /**
      * Store a picture in a local file
      * @param bmp picture
-     * @param filename uniqueId of the file
+     * @param uniqueId uniqueId of the file
      */
-    private void storePictureFile(Bitmap bmp, String filename) {
+    private void storePictureFile(Bitmap bmp, String uniqueId) {
         //setup file output stream
-        File myPath = new File(iDirectory, filename);
+        File myPath = new File(iDirectory, uniqueId);
 
         FileOutputStream fos = null;
         try {
@@ -243,28 +246,28 @@ public class LocalPictureDatabase {
 
     /**
      * Delete a picture file
-     * @param filename uniqueId of picture
+     * @param uniqueId uniqueId of picture
      */
-    private void deletePictureFile(String filename){
-        new File(iDirectory, filename).delete();
+    private void deletePictureFile(String uniqueId){
+        new File(iDirectory, uniqueId).delete();
     }
 
     /**
      * Delete a metadata file
-     * @param filename uniqueId of picture
+     * @param uniqueId uniqueId of picture
      */
-    private void deleteMetadataFile(String filename){
-        new File(mDirectory, filename).delete();
+    private void deleteMetadataFile(String uniqueId){
+        new File(mDirectory, uniqueId).delete();
     }
 
     /**
      * Deletes picture file AND metadata file
-     * @param filename uniqueId of picture
+     * @param uniqueId uniqueId of picture
      */
-    public void deleteFile(String filename){
+    public void deleteFile(String uniqueId){
         //delete picture
-        deletePictureFile(filename);
+        deletePictureFile(uniqueId);
         //delete metadata
-        deleteMetadataFile(filename);
+        deleteMetadataFile(uniqueId);
     }
 }
