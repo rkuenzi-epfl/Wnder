@@ -17,8 +17,13 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public abstract class NetworkModule {
     @Binds
-    public abstract NetworkService bindPicturesDatabase(NetworkInformation networkInformationImpl);
+    public abstract NetworkService bindNetworkService(NetworkInformation networkInformationImpl);
 
+    /**
+     * Gives a connectivity manager
+     * @param ctx Context of the application
+     * @return a connectivity manager
+     */
     @Provides
     public static ConnectivityManager provideConnectivityManager(@ApplicationContext Context ctx){
         return (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);

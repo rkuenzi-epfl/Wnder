@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this);
+            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this);
             alert.show();
         }
     }
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), this);
+            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), this);
             alert.show();
         }
     }

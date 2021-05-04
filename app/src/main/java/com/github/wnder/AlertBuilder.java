@@ -11,13 +11,14 @@ public final class AlertBuilder {
         //Non instanciable class
     }
 
-    public static AlertDialog createAlert(String title, String body, Context ctx){
+    public static AlertDialog noConnectionAlert(String title, String body, Context ctx){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(body);
         alertDialogBuilder.setPositiveButton("Ok",
                 (dialog, which) -> dialog.cancel());
         AlertDialog alertDialog = alertDialogBuilder.create();
+
 
         return alertDialog;
     }

@@ -105,18 +105,18 @@ public class GuessPreviewActivity extends AppCompatActivity{
         if (networkInfo.isNetworkAvailable()){
             Intent intent = new Intent(this, GuessLocationActivity.class);
 
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
+            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
+            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
 
 
             startActivity(intent);
             finish();
         }
         else{
-            AlertDialog alert = AlertBuilder.createAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
             alert.show();
         }
     }
