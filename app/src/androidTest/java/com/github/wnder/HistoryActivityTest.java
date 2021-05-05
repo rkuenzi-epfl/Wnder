@@ -4,6 +4,9 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,7 +15,9 @@ import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 @RunWith(AndroidJUnit4.class)
@@ -24,6 +29,7 @@ public class HistoryActivityTest {
     @Before
     //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
     public void setUp() {
+        GlobalUser.setUser(new GuestUser());
         Intents.init();
     }
 
@@ -32,4 +38,8 @@ public class HistoryActivityTest {
         Intents.release();
     }
 
+    @Test
+    public void textIsDisplayed(){
+        onView(withId(R.id.noPicturesGuessed)).check(matches(isDisplayed()));
+    }
 }
