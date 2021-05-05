@@ -3,9 +3,12 @@ package com.github.wnder;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -34,6 +37,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
+import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -41,7 +45,11 @@ import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
 import java.util.Timer;
+import java.util.TimerTask;
 
+import static com.github.wnder.mapboxHelper.drawCircle;
+import static com.github.wnder.mapboxHelper.updatePositionByLineAnimation;
+import static com.github.wnder.mapboxHelper.zoomFromKilometers;
 import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
 
 /**
@@ -58,12 +66,15 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final String GUESS_SOURCE_ID = "guess-source-id";
     private static final String GUESS_LAYER_ID = "guess-layer-id";
     private static final String GUESS_ICON_ID = "guess-icon-id";
-    private static final String PICTURE_SOURCE_ID = "picture-source-id";
-    private static final String PICTURE_LAYER_ID = "picture-layer-id";
+    private static final String ARROW_SOURCE_ID = "arrow-source-id";
+    private static final String ARROW_LAYER_ID = "arrow-layer-id";
+    private static final String ARROW_ICON_ID = "arrow-icon-id";
+
     private static final String ICONS_SOURCE_ID = "icons-source-id";
     private static final String ICONS_LAYER_ID = "icons-layer-id";
 
     private static final long ANIMATION_DURATION = 200;
+    private static final long GET_POSITION_FROM_GPS_PERIOD = 1*1000;
 
     //Defines necessary mapBox setup
     private MapView mapView;
@@ -71,12 +82,15 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private LatLng cameraPosition;
     private LatLng guessPosition;
     private LatLng picturePosition;
-    private int distanceDiameter;
     private GeoJsonSource guessSource;
+    private GeoJsonSource guessSource1;
     private ValueAnimator animator;
+    private ValueAnimator animator1;
     private boolean compassMode;
     private boolean mapClickOnCompassMode;
     private boolean guessConfirmed;
+    private Timer timer;
+    private TimerTask updateGuessPositionFromGPS;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -105,9 +119,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
         picturePosition = new LatLng(pictureLat, pictureLng);
 
-        //Get distance
-        distanceDiameter = GlobalUser.getUser().getRadius();
-
         //Get picture ID
         pictureID = extras.getString(EXTRA_PICTURE_ID);
 
@@ -129,8 +140,26 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         findViewById(R.id.compassMode).setOnClickListener(id -> switchMode());
 
         //On confirm, show real picture location
-        findViewById(R.id.confirmButton).setOnClickListener(id -> showActualLocation());
-        findViewById(R.id.scoreBoardButton).setOnClickListener(id -> openScoreboardActivity());
+        findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
+
+        //Timer setup
+        final Handler handler = new Handler();
+        updateGuessPositionFromGPS = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
+                        if (compassMode) {
+                            LatLng destinationPoint = new LatLng(loc.getLatitude(), loc.getLongitude());
+                            updatePositionByLineAnimation(animator, guessPosition, destinationPoint, guessSource, ANIMATION_DURATION);
+                            guessPosition = updatePositionByLineAnimation(animator1, guessPosition, destinationPoint, guessSource1,  ANIMATION_DURATION);
+                        }
+                    }
+                });
+            }
+        };
+        timer = new Timer(true);
     }
 
     /**
@@ -144,7 +173,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //Set camera position
         CameraPosition position = new CameraPosition.Builder()
                 .target(cameraPosition)
-                .zoom(zoomFromKilometers(distanceDiameter))
+                .zoom(zoomFromKilometers(cameraPosition, GlobalUser.getUser().getRadius()))
                 .build();
         this.mapboxMap.setCameraPosition(position);
 
@@ -155,7 +184,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
-                    drawCircle(cameraPosition);
+                    mapboxMap.getUiSettings().setCompassEnabled(false); //Hide the default mapbox compass because we use our compass
+
+                    drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
 
                     style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
                     style.addSource(guessSource);
@@ -166,8 +197,22 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                                     PropertyFactory.iconAllowOverlap(true)
                             ));
 
+                    style.addImage((ARROW_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.fleche_orange));
+                    guessSource1 = new GeoJsonSource(ARROW_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
+                    style.addSource(guessSource1);
+                    style.addLayer(new SymbolLayer(ARROW_LAYER_ID, ARROW_SOURCE_ID)
+                            .withProperties(
+                                    PropertyFactory.visibility(Property.NONE),
+                                    PropertyFactory.iconImage(ARROW_ICON_ID),
+                                    PropertyFactory.iconRotate((float) mapboxMap.getCameraPosition().bearing),
+                                    PropertyFactory.iconIgnorePlacement(true),
+                                    PropertyFactory.iconAllowOverlap(true)
+                            ));
+
                     mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
                     mapboxMap.addOnCameraMoveListener(GuessLocationActivity.this);
+
+                    timer.scheduleAtFixedRate(updateGuessPositionFromGPS, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
                 }
         });
     }
@@ -195,8 +240,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
                     mapClickOnCompassMode = true;
                 });
-                //Cancellation possible
-                //builder.setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int which) -> {});
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
@@ -204,43 +247,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return true;
         }
 
-        // When the user clicks on the map, we want to animate the marker to that location.
-        if (animator != null && animator.isStarted()) {
-            guessPosition = (LatLng) animator.getAnimatedValue();
-            animator.cancel();
-        }
-
-        animator = ObjectAnimator
-                .ofObject(latLngEvaluator, guessPosition, point)
-                .setDuration(ANIMATION_DURATION);
-        animator.addUpdateListener(animatorUpdateListener);
-        animator.start();
-
-        guessPosition = point;
+        updatePositionByLineAnimation(animator, guessPosition, point, guessSource, ANIMATION_DURATION);
+        guessPosition = updatePositionByLineAnimation(animator1, guessPosition, point, guessSource1,  ANIMATION_DURATION);
         return true;
     }
 
-    //Animator update listener
-    private final ValueAnimator.AnimatorUpdateListener animatorUpdateListener =
-            new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    LatLng animatedPosition = (LatLng) valueAnimator.getAnimatedValue();
-                    guessSource.setGeoJson(Point.fromLngLat(animatedPosition.getLongitude(), animatedPosition.getLatitude()));
-                }
-            };
-
-    // Class is used to interpolate the marker animation.
-    private static final TypeEvaluator<LatLng> latLngEvaluator = new TypeEvaluator<LatLng>() {
-        private final LatLng latLng = new LatLng();
-
-        @Override
-        public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
-            latLng.setLatitude(startValue.getLatitude() + ((endValue.getLatitude() - startValue.getLatitude()) * fraction));
-            latLng.setLongitude(startValue.getLongitude() + ((endValue.getLongitude() - startValue.getLongitude()) * fraction));
-            return latLng;
-        }
-    };
 
     /**
      * To execute when a map is Moved
@@ -254,24 +265,27 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      *  Update the compass and the hotbar according to the mode and distance between the current guess and picture location
      */
     private void updateCompassMode(){
+        SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(ARROW_LAYER_ID);
+        View hotbarView = findViewById(R.id.hotbarView);
+
         if (!compassMode) {
-            findViewById(R.id.compassView).setVisibility(View.INVISIBLE);
-            findViewById(R.id.hotbarView).setVisibility(View.INVISIBLE);
+            layer.setProperties(PropertyFactory.visibility(Property.NONE));
+            hotbarView.setVisibility(View.INVISIBLE);
 
         } else {
             if (!guessIsClose()) { //compass update
                 double mapRotation = mapboxMap.getCameraPosition().bearing; //rotation of the map
                 float pictureRotation = 0; //TODO rotation of the picture location from the current position
-                findViewById(R.id.compassView).setRotation((float) - mapRotation + pictureRotation);
+                layer.setProperties(PropertyFactory.iconRotate((float) -mapRotation));
 
-                findViewById(R.id.compassView).setVisibility(View.VISIBLE);
-                findViewById(R.id.hotbarView).setVisibility(View.INVISIBLE);
+                layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
+                hotbarView.setVisibility(View.INVISIBLE);
 
             } else { //hotbar update
                 //TODO update hotbar
 
-                findViewById(R.id.compassView).setVisibility(View.INVISIBLE);
-                findViewById(R.id.hotbarView).setVisibility(View.VISIBLE);
+                layer.setProperties(PropertyFactory.visibility(Property.NONE));
+                hotbarView.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -287,14 +301,39 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Switch between compass mode and normal mode
      */
     private void switchMode() {
+        if (guessConfirmed) {
+            return;
+        }
+
         TextView compassModeButtonView = (TextView) findViewById(R.id.compassMode);
 
         compassMode = !compassMode;
         updateCompassMode();
         if(compassMode) {
+            updateGuessPositionFromGPS.run();
             compassModeButtonView.setText("Exit Compass Mode");
         } else {
             compassModeButtonView.setText("Compass Mode");
+        }
+    }
+
+    /**
+     * Confirm button
+     */
+    private void confirmButton() {
+        if (!guessConfirmed) {
+            if (compassMode) switchMode();
+            guessConfirmed = true;
+
+            TextView confirmButtonView = (TextView) findViewById(R.id.confirmButton);
+            confirmButtonView.setText("See Scoreboard");
+
+            showActualLocation();
+        } else {
+            //Open the scoreboard activity
+            Intent intent = new Intent(this, ScoreboardActivity.class);
+            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
+            startActivity(intent);
         }
     }
 
@@ -339,11 +378,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 .build();
         mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,100), 200);
 
-        findViewById(R.id.confirmButton).setVisibility(View.INVISIBLE);
-        findViewById(R.id.scoreBoardButton).setVisibility(View.VISIBLE);
-
-        guessConfirmed = true;
-
         double distanceFromPicture = guessPosition.distanceTo(picturePosition);
         TextView distanceText = findViewById(R.id.distanceText);
         String dText = getString(R.string.distance_meter,(int)distanceFromPicture);
@@ -355,59 +389,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double score = Score.calculationScore(distanceFromPicture, GlobalUser.getUser().getRadius() * 1000);
         TextView scoreText = findViewById(R.id.scoreText);
         scoreText.setText(getString(R.string.score,(int)score));
-    }
-
-    /**
-     * Open the scoreboard activity
-     */
-    private void openScoreboardActivity() {
-        Intent intent = new Intent(this, ScoreboardActivity.class);
-        intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
-        startActivity(intent);
-    }
-
-    /**
-     * Draw the red circle that indicate where to guess
-     * @param position of the center of the circle
-     */
-    private void drawCircle(LatLng position) {
-        //Create circles
-        Point center = Point.fromLngLat(position.getLongitude(), position.getLatitude());
-        Polygon outerCirclePolygon = TurfTransformation.circle(center,  distanceDiameter + distanceDiameter/15.0, "kilometers");
-        Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distanceDiameter, "kilometers");
-
-        GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
-
-        //Create hollow circle
-        if (outerCircleSource != null) {
-            outerCircleSource.setGeoJson(Polygon.fromOuterInner(
-                    LineString.fromLngLats(TurfMeta.coordAll(outerCirclePolygon, false)),
-                    LineString.fromLngLats(TurfMeta.coordAll(innerCirclePolygon, false))
-            ));
-        }
-
-        //Set mapbox style
-        Style style = mapboxMap.getStyle();
-        style.addSource(outerCircleSource);
-        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
-                PropertyFactory.fillColor(ContextCompat.getColor(this, R.color.red)),
-                PropertyFactory.fillOpacity(0.4f)
-        ));
-    }
-
-    /**
-     * Compute the zoom to use on mapbox knowing how far away at maximum we want to guess
-     * @param kilometers radius of the circle in which to guess a picture location
-     * @return the zoom to use on mapbox
-     */
-    private double zoomFromKilometers(int kilometers) {
-        int absLat = Math.abs((int) cameraPosition.getLatitude());
-
-        //The latitude deformation taken care manually because of the lack of a good function (https://docs.mapbox.com/help/glossary/zoom-level/)
-        double latDeformation = 0.00046*Math.pow(absLat, 2);
-        double offset = 13.6 - latDeformation;
-
-        return - Math.log((double) kilometers)/Math.log(2) + offset;
     }
 
     //Necessary overwrites for MapView lifecycle methods
@@ -445,6 +426,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     protected void onStop() {
         super.onStop();
         mapView.onStop();
+        //timer.cancel();
+        //timer.purge();
     }
 
     /**

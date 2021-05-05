@@ -9,12 +9,11 @@
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/confirmButton"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="413dp"
+        android:layout_height="577dp"
         app:layout_constrainedHeight="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:mapbox_cameraZoom="4.5" />
 
     <TextView
@@ -39,37 +38,18 @@
         android:text="@string/confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mapView" />
-
-    <Button
-        android:id="@+id/scoreBoardButton"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/see_scoreboard"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mapView" />
-
-    <ImageView
-        android:id="@+id/compassView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="200dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/mapbox_compass_icon" />
+        app:layout_constraintTop_toTopOf="@+id/compassMode"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/compassMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Compass Mode"
-        app:layout_constraintBottom_toTopOf="@+id/confirmButton"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/confirmButton"
+        app:layout_constraintTop_toBottomOf="@+id/mapView"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/hotbarView"
