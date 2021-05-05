@@ -3,9 +3,11 @@ package com.github.wnder.picture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 
-import com.github.wnder.NetworkInformation;
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkService;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -20,6 +22,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     private final FirebasePicturesDatabase remoteDatabase;
     private final LocalPictureDatabase localDatabase;
     private final Context context;
+    public NetworkService networkInfo;
 
     /**
      * Constructor
@@ -30,6 +33,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
         remoteDatabase = new FirebasePicturesDatabase();
         localDatabase = new LocalPictureDatabase(context);
         this.context = context;
+        networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
     }
 
     /**
@@ -37,7 +41,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      * @return true if available internet connection, false o/w
      */
     public boolean isOnline(){
-        return NetworkInformation.isNetworkAvailable(context);
+        return networkInfo.isNetworkAvailable();
     }
 
     @Override

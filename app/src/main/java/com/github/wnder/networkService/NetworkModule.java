@@ -3,9 +3,6 @@ package com.github.wnder.networkService;
 import android.content.Context;
 import android.net.ConnectivityManager;
 
-import com.github.wnder.picture.FirebasePicturesDatabase;
-import com.github.wnder.picture.PicturesDatabase;
-
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
