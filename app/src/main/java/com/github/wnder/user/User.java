@@ -9,9 +9,11 @@ import android.net.Uri;
 
 import androidx.core.app.ActivityCompat;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -21,6 +23,9 @@ import java.util.function.Consumer;
  * abstract class defining a user
  */
 public abstract class User {
+
+    public static final String GUESSED_PICS = "guessedPics";
+    public static final String UPLOADED_PICS = "uploadedPics";
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     protected int radius = 5;
@@ -77,6 +82,17 @@ public abstract class User {
      * @param pictureIdAvailable function to apply
      */
     public abstract void onNewPictureAvailable(LocationManager manager, Context context, Consumer<String> pictureIdAvailable);
+
+    /**
+     * Apply a function once the designated list of pictures of the user have been retrieved
+     * @param picturesListName The name of the list of pictures to get from the databse (ex.: guessedPics, uploadedPics)
+     * @param PicsAv Function to apply
+     */
+    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
+        //TODO: add local database implementation
+        List<String> list = new ArrayList<>();
+        PicsAv.accept(list);
+    }
 
     /**
      * returns a map with only the ids of the photos in the radius of the user
