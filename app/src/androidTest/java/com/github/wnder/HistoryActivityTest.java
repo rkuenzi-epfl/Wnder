@@ -32,8 +32,4 @@ public class HistoryActivityTest {
         Intents.release();
     }
 
-    @Test
-    public void testClickImage(){
-
-    }
 }

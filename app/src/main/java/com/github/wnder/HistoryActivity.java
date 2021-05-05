@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 
 import java.util.ArrayList;
@@ -108,7 +107,7 @@ public class HistoryActivity extends AppCompatActivity {
     private void getUserPictures(){
         List<ExistingPicture> picsList = new ArrayList<>();
 
-        GlobalUser.getUser().onPicturesAvailable(Storage.GUESSED_PICS, this, guessedPics -> {
+        GlobalUser.getUser().onPicturesAvailable(User.GUESSED_PICS, this, guessedPics -> {
             for (String id : guessedPics) {
                 picsList.add(new ExistingPicture(id));
             }

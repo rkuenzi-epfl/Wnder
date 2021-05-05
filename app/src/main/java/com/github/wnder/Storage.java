@@ -25,9 +25,6 @@ import java.util.function.Consumer;
  */
 public final class Storage{
 
-    public static final String GUESSED_PICS = "guessedPics";
-    public static final String UPLOADED_PICS = "uploadedPics";
-
     private Storage(){
         //Non-instanciable class
     }

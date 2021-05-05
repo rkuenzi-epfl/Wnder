@@ -101,10 +101,10 @@ public class SignedInUser extends User{
     void onUploadedAndGuessedPicturesAvailable(Context ctx, Consumer<Set<String>> uAGPA){
         Set<String> allPictures = new HashSet<>();
 
-        onPicturesAvailable(Storage.GUESSED_PICS, ctx, guessedPics -> {
+        onPicturesAvailable(User.GUESSED_PICS, ctx, guessedPics -> {
             allPictures.addAll(guessedPics);
 
-            onPicturesAvailable(Storage.UPLOADED_PICS, ctx, uploadedPics -> {
+            onPicturesAvailable(User.UPLOADED_PICS, ctx, uploadedPics -> {
                 allPictures.addAll(uploadedPics);
 
                 uAGPA.accept(allPictures);

@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import androidx.core.app.ActivityCompat;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,9 @@ import java.util.function.Consumer;
  * abstract class defining a user
  */
 public abstract class User {
+
+    public static final String GUESSED_PICS = "guessedPics";
+    public static final String UPLOADED_PICS = "uploadedPics";
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     protected int radius = 5;
@@ -86,6 +90,8 @@ public abstract class User {
      */
     public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
         //TODO: add local database implementation
+        List<String> list = new ArrayList<>();
+        PicsAv.accept(list);
     }
 
     /**
