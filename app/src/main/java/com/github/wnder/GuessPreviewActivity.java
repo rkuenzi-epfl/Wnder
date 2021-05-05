@@ -44,7 +44,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
     public NetworkService networkInfo;
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
-
+    
     /**
      * executed on activity creation
      * @param savedInstanceState saved instance state
