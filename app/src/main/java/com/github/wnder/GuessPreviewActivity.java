@@ -35,7 +35,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private boolean reported = false;
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
-
+    
     /**
      * executed on activity creation
      * @param savedInstanceState saved instance state
