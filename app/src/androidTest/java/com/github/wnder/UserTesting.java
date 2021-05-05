@@ -6,6 +6,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.networkService.NetworkInformation;
@@ -118,7 +119,7 @@ public class UserTesting {
         allIds.add("testPicDontRm");
         doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
 
-        u.onNewPictureAvailable(null, null,(pic) -> {
+        u.onNewPictureAvailable(null, InstrumentationRegistry.getInstrumentation().getTargetContext(),(pic) -> {
             //Check that it is not in user's uploaded and guessed pictures
             Set<String> upAdownPics = new HashSet<>();
 
