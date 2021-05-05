@@ -2,8 +2,6 @@ package com.github.wnder.picture;
 
 import android.content.Context;
 
-import java.io.File;
-
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;

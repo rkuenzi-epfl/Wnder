@@ -9,6 +9,9 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -20,9 +23,16 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.concurrent.TimeUnit;
+
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -35,15 +45,23 @@ import static com.google.android.gms.tasks.Tasks.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
+@UninstallModules({NetworkModule.class})
 public class LoginActivityTest {
 
+    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
     @Rule
-    public ActivityScenarioRule<LoginActivity> testRule = new ActivityScenarioRule<>(LoginActivity.class);
+    public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(new ActivityScenarioRule<>(LoginActivity.class));
+
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
 
     @Before
     public void setUp() {
         Intents.init();
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
 
     @After

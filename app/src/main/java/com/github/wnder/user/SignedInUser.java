@@ -2,10 +2,11 @@ package com.github.wnder.user;
 
 import android.content.Context;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 
-import com.github.wnder.NetworkInformation;
 import com.github.wnder.Storage;
+import com.github.wnder.networkService.NetworkInformation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -78,7 +79,7 @@ public class SignedInUser extends User{
      */
     @Override
     public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
-        if(NetworkInformation.isNetworkAvailable(ctx)){
+        if(new NetworkInformation((ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE)).isNetworkAvailable()){
             Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
 
             userData.addOnSuccessListener(documentSnapshot -> {

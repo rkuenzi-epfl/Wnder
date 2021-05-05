@@ -13,21 +13,38 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.SignedInUser;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
+@UninstallModules({NetworkModule.class})
 public class GetUserPositionTest {
 
+    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
     @Rule
-    public ActivityScenarioRule<MainActivity> testRule = new ActivityScenarioRule<>(MainActivity.class);
+    public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(new ActivityScenarioRule<>(MainActivity.class));
+
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
 
     @Rule
     public GrantPermissionRule permissionRule1 = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -45,6 +62,7 @@ public class GetUserPositionTest {
                 e.printStackTrace();
             }
         }
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
 
     @Test
