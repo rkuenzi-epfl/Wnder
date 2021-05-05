@@ -1,15 +1,12 @@
 package com.github.wnder.user;
 
 import android.content.Context;
-import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-
 import com.github.wnder.Storage;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.github.wnder.networkService.NetworkInformation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -17,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -77,36 +73,45 @@ public class SignedInUser extends User{
     }
 
     /**
+     * Apply a function once the designated list of pictures of the user have been retrieved
+     * @param picturesListName The name of the list of pictures to get from firestore (ex.: guessedPics, uploadedPics)
+     * @param PicsAv Function to apply
+     */
+    @Override
+    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
+        if(new NetworkInformation((ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE)).isNetworkAvailable()){
+            Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
+
+            userData.addOnSuccessListener(documentSnapshot -> {
+                List<String> pictures =  (List<String>) documentSnapshot.get(picturesListName);
+                if(pictures == null){
+                    pictures = new ArrayList<>();
+                }
+                PicsAv.accept(pictures);
+            });
+        }
+        else{
+            super.onPicturesAvailable(picturesListName, ctx, PicsAv);
+        }
+    }
+
+    /**
      * Apply a function once the uploaded and the guessed pictures of the user have been retrieved
      * @param uAGPA Function to apply
      */
-    void onUploadedAndGuessedPicturesAvailable(Consumer<Set<String>> uAGPA){
-        //Get the user data
-        Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
+    void onUploadedAndGuessedPicturesAvailable(Context ctx, Consumer<Set<String>> uAGPA){
         Set<String> allPictures = new HashSet<>();
 
-        //When successful, fuse the guessed and the uploaded pictures and complete the future accordingly
-        userData.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-                List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-                if (guessedPictures == null) {
-                    guessedPictures = new ArrayList<>();
-                }
-                if (uploadedPictures == null) {
-                    uploadedPictures = new ArrayList<>();
-                }
-                allPictures.addAll(guessedPictures);
-                allPictures.addAll(uploadedPictures);
+        onPicturesAvailable(User.GUESSED_PICS, ctx, guessedPics -> {
+            allPictures.addAll(guessedPics);
+
+            onPicturesAvailable(User.UPLOADED_PICS, ctx, uploadedPics -> {
+                allPictures.addAll(uploadedPics);
+
                 uAGPA.accept(allPictures);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                uAGPA.accept(new HashSet<>());
-            }
+            });
         });
+
     }
 
     /**
@@ -119,7 +124,7 @@ public class SignedInUser extends User{
 
         Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
             //Get the ids of all the pictures linked with the user (guessed or uploaded)
-            onUploadedAndGuessedPicturesAvailable((upAndGuessedPics) -> {
+            onUploadedAndGuessedPicturesAvailable(context, (upAndGuessedPics) -> {
 
                 for (String id : upAndGuessedPics) {
                     if (allIdsAndLocs.containsKey(id)) {

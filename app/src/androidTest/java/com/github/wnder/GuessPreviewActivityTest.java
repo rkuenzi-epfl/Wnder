@@ -9,6 +9,9 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
@@ -19,10 +22,18 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -30,7 +41,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
+@UninstallModules({NetworkModule.class})
 public class GuessPreviewActivityTest {
 
     //Intent with extra that the activity with start with
@@ -39,8 +51,14 @@ public class GuessPreviewActivityTest {
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessPreviewActivity.class);
     }
 
+    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
     @Rule
-    public ActivityScenarioRule<GuessPreviewActivity> testRule = new ActivityScenarioRule<>(intent);
+    public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(new ActivityScenarioRule<>(GuessPreviewActivity.class));
+
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
 
     @BeforeClass
     public static void setup(){
@@ -56,12 +74,14 @@ public class GuessPreviewActivityTest {
         });
         while(!isDone[0]);
         GlobalUser.resetUser();
+
     }
 
     @Before
     //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
     public void setUp() {
         Intents.init();
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
 
     @After //Clears Intents state. Must be called after each test case.
@@ -71,13 +91,21 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButton(){
-        User user = GlobalUser.getUser();
-
         onView(withId(R.id.guessButton)).perform(click());
 
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
         GlobalUser.resetUser();
+    }
+
+    @Test
+    public void testGuessLocationButtonWhenNoInternet(){
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
+
+        onView(withId(R.id.guessButton)).perform(click());
+
+        onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
+        onView(withText(R.string.no_connection)).perform(pressBack());
     }
 
     @Test

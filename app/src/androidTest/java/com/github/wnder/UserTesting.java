@@ -6,8 +6,12 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
@@ -21,8 +25,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +36,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -41,11 +52,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-@RunWith(JUnit4.class)
+@HiltAndroidTest
+@UninstallModules({NetworkModule.class})
 public class UserTesting {
 
+    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
     @Rule
-    public ActivityScenarioRule<MainActivity> testRule = new ActivityScenarioRule<>(MainActivity.class);
+    public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(new ActivityScenarioRule<>(MainActivity.class));
+
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
 
     @Rule
     public GrantPermissionRule permissionRule1 = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -53,6 +71,7 @@ public class UserTesting {
     @Before
     public void initLoc(){
         Intents.init();
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
         onView(withId(R.id.getPictureButton)).perform(click());
     }
 
@@ -100,7 +119,7 @@ public class UserTesting {
         allIds.add("testPicDontRm");
         doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
 
-        u.onNewPictureAvailable(null, null,(pic) -> {
+        u.onNewPictureAvailable(null, InstrumentationRegistry.getInstrumentation().getTargetContext(),(pic) -> {
             //Check that it is not in user's uploaded and guessed pictures
             Set<String> upAdownPics = new HashSet<>();
 

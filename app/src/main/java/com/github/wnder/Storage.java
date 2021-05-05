@@ -24,6 +24,7 @@ import java.util.function.Consumer;
  * Class managing the storage and communication with firestore
  */
 public final class Storage{
+
     private Storage(){
         //Non-instanciable class
     }

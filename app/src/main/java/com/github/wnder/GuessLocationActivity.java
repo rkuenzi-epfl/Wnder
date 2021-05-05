@@ -94,7 +94,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
-
     /**
      * Executed on activity creation
      * @param savedInstanceState instance state

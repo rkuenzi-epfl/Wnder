@@ -2,11 +2,10 @@ package com.github.wnder;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
-import android.provider.Settings;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.github.wnder.networkService.NetworkInformation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -20,7 +19,7 @@ public class NetworkInformationTest {
     @Test
     public void isNetworkAvailableWorksWhenThereIsConnection(){
         Context context = ApplicationProvider.getApplicationContext();
-
-        assertThat(NetworkInformation.isNetworkAvailable(context), Matchers.is(true));
+        NetworkInformation networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        assertThat(networkInfo.isNetworkAvailable(), Matchers.is(true));
     }
 }
