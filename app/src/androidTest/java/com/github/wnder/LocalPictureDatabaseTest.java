@@ -96,7 +96,7 @@ public class LocalPictureDatabaseTest {
         LPD.updateScoreboard(uniqueId, scoreboard);
 
         Map<String, Double> newScoreboard = LPD.getScoreboard(uniqueId);
-        assertThat(scoreboard.get("testUser"), is(150.));
+        assertThat(newScoreboard.get("testUser"), is(150.));
     }
 
     @Test

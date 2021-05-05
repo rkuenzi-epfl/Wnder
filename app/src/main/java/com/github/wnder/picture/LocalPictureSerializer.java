@@ -1,15 +1,12 @@
 package com.github.wnder.picture;
 
-import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,12 +50,11 @@ public final class LocalPictureSerializer {
      */
     public static JSONObject deserializePicture(String Json){
         //get json
-        JSONObject json;
+        JSONObject json = null;
         try {
             json = new JSONObject(Json);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
         return json;
     }
@@ -114,9 +110,5 @@ public final class LocalPictureSerializer {
             e.printStackTrace();
         }
         return scoreboard;
-    }
-
-    private enum LocationType{
-        GUESSED, REAL
     }
 }

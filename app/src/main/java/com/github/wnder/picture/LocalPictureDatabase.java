@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -12,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,20 +19,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Class serving the interaction with the local db
  */
 public class LocalPictureDatabase {
     private Context context;
-    private String IMAGE_DIR_NAME = "images";
-    private String METADATA_DIR_NAME = "metadata";
+    private final String IMAGE_DIR_NAME = "images";
+    private final String METADATA_DIR_NAME = "metadata";
     private File iDirectory;
     private File mDirectory;
+    private final String SCOREBOARD = "scoreboard";
 
-    private final int REAL_LOCATION = 0;
-    private final int GUESS_LOCATION = 1;
 
     /**
      * Constructor
@@ -69,10 +65,10 @@ public class LocalPictureDatabase {
             //Get and remove old scoreboard
             String oldMetadata = openMetadataFile(uniqueId);
             JSONObject json = LocalPictureSerializer.deserializePicture(oldMetadata);
-            json.remove("scoreboard");
+            json.remove(SCOREBOARD);
 
             //put in new scoreboard
-            json.put("scoreboard", scoreboard);
+            json.put(SCOREBOARD, scoreboard);
             storeMetadataFile(json.toString(), uniqueId);
         } catch (JSONException e){
             e.printStackTrace();
@@ -82,16 +78,16 @@ public class LocalPictureDatabase {
     /**
      * Tool method used to get real or guessed location using serialization
      * @param uniqueId uniqueId of picture
-     * @param realOrGuess 0 for real, 1 for guess
+     * @param type real or guess
      * @return real or guessed location, depending on realOrGuess
      */
-    private Location getRealOrGuessed(String uniqueId, int realOrGuess){
+    private Location getRealOrGuessed(String uniqueId, LocationType type){
         //get metadata
         String serializedData = openMetadataFile(uniqueId);
         JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
 
         //get real pic
-        if (realOrGuess == 0) {
+        if (type == LocationType.REAL) {
             return LocalPictureSerializer.getRealLocation(json);
         }
         //get guess pic
@@ -106,7 +102,7 @@ public class LocalPictureDatabase {
      * @return the actual location of the image
      */
     public Location getLocation(String uniqueId) {
-        return getRealOrGuessed(uniqueId, REAL_LOCATION);
+        return getRealOrGuessed(uniqueId, LocationType.REAL);
     }
 
     /**
@@ -115,7 +111,7 @@ public class LocalPictureDatabase {
      * @return the actual location of the image
      */
     public Location getGuessedLocation(String uniqueId) {
-        return getRealOrGuessed(uniqueId, GUESS_LOCATION);
+        return getRealOrGuessed(uniqueId, LocationType.GUESSED);
     }
 
     /**
@@ -129,7 +125,7 @@ public class LocalPictureDatabase {
         try {
             //deserialize and go back to hashmap
             JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
-            String scoreboard = json.getString("scoreboard");
+            String scoreboard = json.getString(SCOREBOARD);
             return new Gson().fromJson(scoreboard, Map.class);
         } catch (JSONException e){
             e.printStackTrace();

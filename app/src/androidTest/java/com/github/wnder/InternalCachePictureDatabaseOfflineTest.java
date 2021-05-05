@@ -36,9 +36,11 @@ import okhttp3.internal.cache.InternalCache;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 //Those tests are essentially the same as the ones in LocalPictureDatabaseTest, maybe deleting it would be better
+//TODO delete this later
 @RunWith(JUnit4.class)
 public class InternalCachePictureDatabaseOfflineTest {
     private static FirebasePicturesDatabase fdb = new FirebasePicturesDatabase();
@@ -107,7 +109,7 @@ public class InternalCachePictureDatabaseOfflineTest {
         ICPD.updateLocalScoreboard(uniqueId, scoreboard);
 
         Map<String, Double> newScoreboard = ICPD.getScoreboard(uniqueId).get();
-        assertThat(scoreboard.get("testUser"), is(150.));
+        assertThat(newScoreboard.get("testUser"), is(150.));
     }
 
     @Test
@@ -136,7 +138,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     public void getApproximateLocationThrows(){
         try {
             ICPD.getApproximateLocation(uniqueId);
-            assertTrue(false);
+            fail();
         }
         catch(IllegalStateException e){
             assertTrue(true);

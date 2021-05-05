@@ -9,11 +9,11 @@ import java.util.Map;
  * Class describing a locally stored picture
  */
 public class LocalPicture {
-    String uniqueId;
-    Bitmap bmp;
-    Location realLocation;
-    Location guessLocation;
-    Map<String, Double> scoreboard;
+    private final String uniqueId;
+    private final Bitmap bmp;
+    private final Location realLocation;
+    private final Location guessLocation;
+    private final Map<String, Double> scoreboard;
 
     /**
      * Constructor for a locally stored picture

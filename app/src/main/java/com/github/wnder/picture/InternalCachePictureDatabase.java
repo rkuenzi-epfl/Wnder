@@ -6,13 +6,8 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.github.wnder.NetworkInformation;
-import com.github.wnder.WnderApplication;
 
-import org.json.JSONException;
-
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,7 +19,7 @@ import javax.inject.Inject;
 public class InternalCachePictureDatabase implements PicturesDatabase{
     private final FirebasePicturesDatabase remoteDatabase;
     private final LocalPictureDatabase localDatabase;
-    private Context context;
+    private final Context context;
 
     /**
      * Constructor

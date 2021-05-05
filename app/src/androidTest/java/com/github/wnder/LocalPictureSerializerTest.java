@@ -48,7 +48,7 @@ public class LocalPictureSerializerTest {
     }
 
     @Test
-    public void getRealLocationWorks() throws JSONException {
+    public void getRealLocationWorks() {
         //Real Location
         Location rL = LocalPictureSerializer.getRealLocation(deserializedJSON);
         assertThat(rL.getLongitude(), is(realLoc.getLongitude()));
@@ -56,7 +56,7 @@ public class LocalPictureSerializerTest {
     }
 
     @Test
-    public void getGuessLocationWorks() throws JSONException{
+    public void getGuessLocationWorks(){
         //Guess Location
         Location gL = LocalPictureSerializer.getGuessLocation(deserializedJSON);
         assertThat(gL.getLongitude(), is(guessLoc.getLongitude()));
@@ -64,7 +64,7 @@ public class LocalPictureSerializerTest {
     }
 
     @Test
-    public void getScoreboardWorks() throws JSONException{
+    public void getScoreboardWorks(){
         //Scoreboard
         Map<String, Double> newScoreboard = LocalPictureSerializer.getScoreboard(deserializedJSON);
         assertThat(newScoreboard.get("testUser"), is(scoreboard.get("testUser")));

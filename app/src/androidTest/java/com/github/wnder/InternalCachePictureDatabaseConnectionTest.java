@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(JUnit4.class)
-public class InternalCachePictureDatabaseHybridTest {
+public class InternalCachePictureDatabaseConnectionTest {
     private static Context context = ApplicationProvider.getApplicationContext();
 
     private static InternalCachePictureDatabase ICPD;
