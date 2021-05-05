@@ -149,7 +149,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     public void getUserGuessesThrows(){
         try {
             ICPD.getUserGuesses(uniqueId);
-            assertTrue(false);
+            fail();
         }
         catch(IllegalStateException e){
             assertTrue(true);
@@ -160,7 +160,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     public void sendUserGuessesThrows(){
         try {
             ICPD.sendUserGuess(uniqueId, "testUser", realLoc);
-            assertTrue(false);
+            fail();
         }
         catch(IllegalStateException e){
             assertTrue(true);
@@ -171,7 +171,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     public void uploadPictureThrows(){
         try {
             ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-            assertTrue(false);
+            fail();
         }
         catch(IllegalStateException e){
             assertTrue(true);
@@ -182,7 +182,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     public void getKarmaThrows(){
         try {
             ICPD.getKarma(uniqueId);
-            assertTrue(false);
+            fail();
         }
         catch(IllegalStateException e){
             assertTrue(true);
@@ -193,7 +193,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     public void updateKarmaThrows(){
         try{
             ICPD.updateKarma(uniqueId, 0);
-            assertTrue(false);
+            fail();
         }
         catch(IllegalStateException e){
             assertTrue(true);

@@ -24,7 +24,6 @@ import java.util.Map;
  * Class serving the interaction with the local db
  */
 public class LocalPictureDatabase {
-    private Context context;
     private final String IMAGE_DIR_NAME = "images";
     private final String METADATA_DIR_NAME = "metadata";
     private File iDirectory;
@@ -37,7 +36,6 @@ public class LocalPictureDatabase {
      * @param context app context
      */
     public LocalPictureDatabase(Context context){
-        this.context = context;
         //Will be used many times in this class, so init now
         iDirectory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
         mDirectory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
