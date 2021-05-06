@@ -16,6 +16,7 @@ import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
@@ -38,10 +39,13 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private User user;
     private double pictureLat = DEFAULT_LAT;
     private double pictureLng = DEFAULT_LNG;
-    private ExistingPicture previewPicture;
+    private String pictureId;
     private boolean reported = false;
+
     @Inject
     public NetworkService networkInfo;
+    @Inject
+    public PicturesDatabase picturesDb;
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
     
@@ -78,10 +82,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 if(!picId.equals("")){
                     //If there is a picture, display it
-                    previewPicture = new ExistingPicture(picId);
-                    previewPicture.onBitmapAvailable((bmp) -> setImageViewBitmap(bmp));
+                    pictureId = picId;
+                    picturesDb.getBitmap(pictureId).thenAccept((bmp) -> setImageViewBitmap(bmp));
                     pictureID = picId;
-                    previewPicture.onLocationAvailable((Lct) -> {
+                    picturesDb.getLocation(pictureId).thenAccept((Lct) -> {
                         pictureLat = Lct.getLatitude();
                         pictureLng = Lct.getLongitude();
                     });
@@ -147,8 +151,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
                     if(!reported && pictureID != Picture.UNINITIALIZED_ID){
-                        previewPicture.subtractKarmaForReport();
-                        addToReportedPictures(previewPicture.getUniqueId());
+                        picturesDb.updateKarma(pictureId,-10);
+                        addToReportedPictures(pictureId);
                         reported = true;
                     }
                 });
