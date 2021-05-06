@@ -1,7 +1,5 @@
 package com.github.wnder;
 
-import android.animation.ObjectAnimator;
-import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,16 +15,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
-import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -36,13 +31,10 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.turf.TurfMeta;
-import com.mapbox.turf.TurfTransformation;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,7 +42,6 @@ import java.util.TimerTask;
 import static com.github.wnder.mapboxHelper.drawCircle;
 import static com.github.wnder.mapboxHelper.updatePositionByLineAnimation;
 import static com.github.wnder.mapboxHelper.zoomFromKilometers;
-import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
 
 /**
  * Location activity
@@ -73,7 +64,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final String ICONS_SOURCE_ID = "icons-source-id";
     private static final String ICONS_LAYER_ID = "icons-layer-id";
 
-    private static final long GET_POSITION_FROM_GPS_PERIOD = 1*1000;
+    private static final long GET_POSITION_FROM_GPS_PERIOD = 1*1000; //10 secondes
 
     //Defines necessary mapBox setup
     private MapView mapView;
@@ -179,16 +170,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //Set mapbox style
         mapboxMap.setStyle(Style.SATELLITE_STREETS, style -> onStyleLoaded(style));
-
-                /*
-                new Style.OnStyleLoaded() {
-                @Override
-                public void onStyleLoaded(@NonNull Style style) {
-
-                }
-        });*/
     }
 
+    /**
+     * To be executed when the style has loaded
+     * @param style on the mapbox map
+     */
     private void onStyleLoaded(Style style){
         mapboxMap.getUiSettings().setCompassEnabled(false); //Hide the default mapbox compass because we use our compass
 
@@ -304,7 +291,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Switch between compass mode and normal mode
      */
     private void switchMode() {
-        if (guessConfirmed) {
+        //If the guess has already been done or that the map didn't load yet do not switch mode
+        if (guessConfirmed || mapboxMap.getStyle() == null) {
             return;
         }
 
@@ -324,6 +312,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Confirm button
      */
     private void confirmButton() {
+        //If the map style didn't load yet, wait.
+        if (mapboxMap.getStyle() == null) {
+            return;
+        }
+
         if (!guessConfirmed) {
             if (compassMode) switchMode();
             guessConfirmed = true;

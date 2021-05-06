@@ -15,11 +15,15 @@ import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 public class GuessLocationActivityInstrumentedTest  {
-    //Intent with extras that the activity with start with
+    //Intent with extras that the activity will start with
     static Intent intent;
     static {
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
@@ -47,18 +51,53 @@ public class GuessLocationActivityInstrumentedTest  {
     @Test
     public void testConfirmButtonPress() {
         onView(withId(R.id.confirmButton)).perform(click());
-    }
 
-    @Test
-    public void testMapPress() {
-        onView(withId(R.id.mapView)).perform(click());
-    }
+        Intents.assertNoUnverifiedIntents();
 
-    @Test
-    public void testGuessLock() {
-        onView(withId(R.id.mapView)).perform(click());
         onView(withId(R.id.confirmButton)).perform(click());
+
+        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
+    }
+
+    @Test
+    public void testCompassModePopUp(){
         onView(withId(R.id.mapView)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.mapView)).perform(click());
+
+        onView(withText("Ok")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testConfirmInCompassMode(){
+        onView(withId(R.id.mapView)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        Intents.assertNoUnverifiedIntents();
+
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
+    }
+
+    @Test
+    public void testSwitchMode(){
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
 }
 
