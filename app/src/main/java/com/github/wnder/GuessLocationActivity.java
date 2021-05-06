@@ -492,8 +492,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     protected void onStop() {
         super.onStop();
         mapView.onStop();
-        //timer.cancel();
-        //timer.purge();
     }
 
     /**
