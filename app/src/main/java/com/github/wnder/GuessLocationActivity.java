@@ -349,11 +349,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if(list.isEmpty()){
             //We can't use the sensor, so we inform the user
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setCancelable(true);
-            builder.setTitle(R.string.SensorNotAvailableTitle);
-            builder.setMessage(R.string.SensorNotAvailable);
-
-            builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
+            builder.setCancelable(true).setTitle(R.string.SensorNotAvailableTitle).setMessage(R.string.SensorNotAvailable)
+            .setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
                 compassMode = false;
             });
             AlertDialog dialog = builder.create();
