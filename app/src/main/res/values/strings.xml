@@ -64,5 +64,7 @@
     <string name="find_picture">Find image</string>
     <string name="no_image">imageUri == null AND extras == null</string>
     <string name="no_guessed_pictures">No guessed pictures</string>
+    <string name="SensorNotAvailableTitle">Sensor not available</string>
+    <string name="SensorNotAvailable">The sensor to get information about the phone 3D position is not available. You can\'t access the compass mode.</string>
 
 </resources>

@@ -13,7 +13,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -169,7 +168,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
                 CameraPosition position = new CameraPosition.Builder()
                         .target(guessPosition)
-                        .zoom(mapboxMap.getCameraPosition().zoom)
                         .bearing(angleAroundZ)
                         .build();
                 mapboxMap.setCameraPosition(position);
@@ -355,29 +353,36 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         TextView compassModeButtonView = (TextView) findViewById(R.id.compassMode);
 
         compassMode = !compassMode;
-        updateCompassMode();
         if(compassMode) {
             List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
             if(list.isEmpty()){
-                //We can't use the sensor
+                //We can't use the sensor, so we inform the user
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setCancelable(true);
+                builder.setTitle(R.string.SensorNotAvailableTitle);
+                builder.setMessage(R.string.SensorNotAvailable);
+
+                builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
+                    compassMode = false;
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+                return;
             }
             else{
                 sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+                updateGuessPositionFromGPS.run();
+                mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
+                compassModeButtonView.setText(R.string.switchCompassModeText);
             }
-            updateGuessPositionFromGPS.run();
-            mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
-            compassModeButtonView.setText(R.string.switchCompassModeText);
         } else {
-            List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
-            if(list.isEmpty()){
-                //We can't use the sensor
-            }
-            else{
-                sensorManager.unregisterListener(listener);
-            }
+            sensorManager.unregisterListener(listener);
+
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
             compassModeButtonView.setText(R.string.switchNormalModeText);
         }
+        updateCompassMode();
     }
 
     /**
