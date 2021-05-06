@@ -141,6 +141,7 @@ public class MapBoxHelper {
         final int THREE_QUARTER = 75;
 
         bar.setProgress(barValue);
+        bar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
         if (barValue > THREE_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.RED));
         }
@@ -149,9 +150,6 @@ public class MapBoxHelper {
         }
         else if (barValue > ONE_QUARTER && barValue <= TWO_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
-        }
-        else if (barValue <= ONE_QUARTER){
-            bar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
         }
     }
 }
