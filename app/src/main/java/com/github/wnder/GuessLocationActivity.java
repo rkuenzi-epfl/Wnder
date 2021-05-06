@@ -341,6 +341,33 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         return referencePosition > guessPosition.distanceTo(picturePosition);
     }
 
+    private void compassModeSetup(){
+        TextView compassModeButtonView = (TextView) findViewById(R.id.compassMode);
+
+        List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+
+        if(list.isEmpty()){
+            //We can't use the sensor, so we inform the user
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(true);
+            builder.setTitle(R.string.SensorNotAvailableTitle);
+            builder.setMessage(R.string.SensorNotAvailable);
+
+            builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
+                compassMode = false;
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        else{
+            updateCompassMode();
+            sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+            updateGuessPositionFromGPS.run();
+            mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
+            compassModeButtonView.setText(R.string.switchCompassModeText);
+        }
+    }
+
     /**
      * Switch between compass mode and normal mode
      */
@@ -354,35 +381,13 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         compassMode = !compassMode;
         if(compassMode) {
-            List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
-            if(list.isEmpty()){
-                //We can't use the sensor, so we inform the user
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setCancelable(true);
-                builder.setTitle(R.string.SensorNotAvailableTitle);
-                builder.setMessage(R.string.SensorNotAvailable);
-
-                builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
-                    compassMode = false;
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-                return;
-            }
-            else{
-                sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
-                updateGuessPositionFromGPS.run();
-                mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
-                compassModeButtonView.setText(R.string.switchCompassModeText);
-            }
+            compassModeSetup();
         } else {
+            updateCompassMode();
             sensorManager.unregisterListener(listener);
-
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
             compassModeButtonView.setText(R.string.switchNormalModeText);
         }
-        updateCompassMode();
     }
 
     /**
