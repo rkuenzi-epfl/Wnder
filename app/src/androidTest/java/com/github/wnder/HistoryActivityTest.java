@@ -13,6 +13,7 @@ import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.LocalPicture;
 import com.github.wnder.picture.LocalPictureDatabase;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
@@ -38,6 +39,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static java.lang.Thread.sleep;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -85,6 +87,12 @@ public class HistoryActivityTest {
         Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
         localPicDb.storePictureAndMetadata(pic);
+
+        try {
+            sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // Verifiy that we can click the button
         onView(withId(R.id.leftHistory)).perform(click());
         localPicDb.deleteFile("testPic");
