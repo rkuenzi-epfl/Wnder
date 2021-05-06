@@ -335,14 +335,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     /**
-     * The new compassed angle based on the "rotation vector" sensor with respect to the vector pointing from
-     * the user position to the real position of the picture
-     */
-    private void newCompassAngle(){
-
-    }
-
-    /**
      * Return true if the guess is close enough to display the hotbar instead of the compass
      */
     private boolean guessIsClose() {
