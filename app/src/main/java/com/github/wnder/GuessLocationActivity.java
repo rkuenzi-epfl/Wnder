@@ -87,6 +87,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private boolean guessConfirmed;
     private Timer timer;
     private TimerTask updateGuessPositionFromGPS;
+    private SensorManager sensorManager;
+    private SensorEventListener listener;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -123,6 +125,59 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //MapBox creation
         guessConfirmed = false;
+
+        //Sensor initialization
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        listener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float[] vectorPosition = event.values;
+                float[] quat = new float[4];
+                float[] rotMat = new float[9];
+                float[] result = new float[3];
+                SensorManager.getQuaternionFromVector(quat, vectorPosition);
+                SensorManager.getRotationMatrixFromVector(rotMat, quat);
+                SensorManager.getOrientation(rotMat, result);
+
+                double guessY = mapboxMap.getProjection().getProjectedMetersForLatLng(guessPosition).getNorthing();
+                double guessX = mapboxMap.getProjection().getProjectedMetersForLatLng(guessPosition).getEasting();
+
+                double imageY = mapboxMap.getProjection().getProjectedMetersForLatLng(picturePosition).getNorthing();
+                double imageX = mapboxMap.getProjection().getProjectedMetersForLatLng(picturePosition).getEasting();
+
+                double vectorX = imageX - guessX;
+                double vectorY = imageY - guessY;
+                double vectorLength = Math.sqrt(vectorX*vectorX + vectorY*vectorY);
+
+                //This is the vector going from the position of the phone to a random position in the north
+                double vectorReferenceX = 0;
+                double vectorReferenceY = 5;
+                double vectorReferenceLength = Math.sqrt(vectorReferenceX*vectorReferenceX + vectorReferenceY*vectorReferenceY);
+
+                double numerator = (vectorX*vectorReferenceX + vectorY*vectorReferenceY);
+                double denominator = vectorLength*vectorReferenceLength;
+
+                double cosValue = numerator / denominator;
+
+                float angleFromNorthToImagePosition = (float) (Math.acos(cosValue)*180/Math.PI);
+                angleFromNorthToImagePosition = vectorX < 0 ? -angleFromNorthToImagePosition : angleFromNorthToImagePosition; //To take account of the sign
+
+                float angleAroundZ = (float) (result[2]*180/Math.PI + 180); //Value of the sensor
+
+                SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(ARROW_LAYER_ID);
+                layer.setProperties(PropertyFactory.iconRotate(angleFromNorthToImagePosition - angleAroundZ)); //Arrow angle
+
+                CameraPosition position = new CameraPosition.Builder()
+                        .target(guessPosition)
+                        .zoom(mapboxMap.getCameraPosition().zoom)
+                        .bearing(angleAroundZ)
+                        .build();
+                mapboxMap.setCameraPosition(position);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy){}
+        };
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
@@ -284,65 +339,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * the user position to the real position of the picture
      */
     private void newCompassAngle(){
-        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
 
-        SensorEventListener listener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                float[] vectorPosition = event.values;
-                float[] quat = new float[4];
-                float[] rotMat = new float[9];
-                float[] result = new float[3];
-                SensorManager.getQuaternionFromVector(quat, vectorPosition);
-                SensorManager.getRotationMatrixFromVector(rotMat, quat);
-                SensorManager.getOrientation(rotMat, result);
-
-                double guessY = mapboxMap.getProjection().getProjectedMetersForLatLng(guessPosition).getNorthing();
-                double guessX = mapboxMap.getProjection().getProjectedMetersForLatLng(guessPosition).getEasting();
-
-                double imageY = mapboxMap.getProjection().getProjectedMetersForLatLng(picturePosition).getNorthing();
-                double imageX = mapboxMap.getProjection().getProjectedMetersForLatLng(picturePosition).getEasting();
-
-                double vectorX = imageX - guessX;
-                double vectorY = imageY - guessY;
-                double vectorLength = Math.sqrt(vectorX*vectorX + vectorY*vectorY);
-
-                //This is the vector going from the position of the phone to a random position in the north
-                double vectorReferenceX = 0;
-                double vectorReferenceY = 5;
-                double vectorReferenceLength = Math.sqrt(vectorReferenceX*vectorReferenceX + vectorReferenceY*vectorReferenceY);
-
-                double numerator = (vectorX*vectorReferenceX + vectorY*vectorReferenceY);
-                double denominator = vectorLength*vectorReferenceLength;
-
-                double cosValue = numerator / denominator;
-
-                float angleFromNorthToImagePosition = (float) (Math.acos(cosValue)*180/Math.PI);
-                angleFromNorthToImagePosition = vectorX < 0 ? -angleFromNorthToImagePosition : angleFromNorthToImagePosition; //To take account of the sign
-
-                float angleAroundZ = (float) (result[2]*180/Math.PI + 180); //Value of the sensor
-
-                SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(ARROW_LAYER_ID);
-                layer.setProperties(PropertyFactory.iconRotate(angleFromNorthToImagePosition - angleAroundZ)); //Arrow angle
-
-                CameraPosition position = new CameraPosition.Builder()
-                        .target(guessPosition)
-                        .zoom(mapboxMap.getCameraPosition().zoom)
-                        .bearing(angleAroundZ)
-                        .build();
-                mapboxMap.setCameraPosition(position);
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy){}
-        };
-        if(list.isEmpty()){
-            //We can't use the sensor
-        }
-        else{
-            sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
-        }
     }
 
     /**
@@ -368,11 +365,24 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         compassMode = !compassMode;
         updateCompassMode();
         if(compassMode) {
-            newCompassAngle();
+            List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+            if(list.isEmpty()){
+                //We can't use the sensor
+            }
+            else{
+                sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+            }
             updateGuessPositionFromGPS.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
             compassModeButtonView.setText(R.string.switchCompassModeText);
         } else {
+            List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+            if(list.isEmpty()){
+                //We can't use the sensor
+            }
+            else{
+                sensorManager.unregisterListener(listener);
+            }
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
             compassModeButtonView.setText(R.string.switchNormalModeText);
         }
@@ -391,6 +401,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             if (compassMode) switchMode();
             guessConfirmed = true;
 
+            findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
             TextView confirmButtonView = (TextView) findViewById(R.id.confirmButton);
             confirmButtonView.setText(R.string.confirmButtonPressedOnce);
 
