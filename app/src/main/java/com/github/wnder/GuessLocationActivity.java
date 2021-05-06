@@ -73,7 +73,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final String ICONS_SOURCE_ID = "icons-source-id";
     private static final String ICONS_LAYER_ID = "icons-layer-id";
 
-    private static final long ANIMATION_DURATION = 200;
     private static final long GET_POSITION_FROM_GPS_PERIOD = 1*1000;
 
     //Defines necessary mapBox setup
@@ -83,7 +82,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private LatLng guessPosition;
     private LatLng picturePosition;
     private GeoJsonSource guessSource;
-    private GeoJsonSource guessSource1;
+    private GeoJsonSource arrowSource;
     private ValueAnimator animator;
     private ValueAnimator animator1;
     private boolean compassMode;
@@ -135,10 +134,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        //Enter and exit compass mode
+        //Buttons
         findViewById(R.id.compassMode).setOnClickListener(id -> switchMode());
-
-        //On confirm, show real picture location
         findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
 
         //Timer setup
@@ -151,8 +148,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                         Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
                         if (compassMode) {
                             LatLng destinationPoint = new LatLng(loc.getLatitude(), loc.getLongitude());
-                            updatePositionByLineAnimation(animator, guessPosition, destinationPoint, guessSource, ANIMATION_DURATION);
-                            guessPosition = updatePositionByLineAnimation(animator1, guessPosition, destinationPoint, guessSource1,  ANIMATION_DURATION);
+                            updatePositionByLineAnimation(animator, guessPosition, destinationPoint, guessSource);
+                            guessPosition = updatePositionByLineAnimation(animator1, guessPosition, destinationPoint, arrowSource);
                         }
                     }
                 });
@@ -178,42 +175,49 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //Get guess source
         guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
+        arrowSource = new GeoJsonSource(ARROW_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
 
         //Set mapbox style
-        mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
+        mapboxMap.setStyle(Style.SATELLITE_STREETS, style -> onStyleLoaded(style));
+
+                /*
+                new Style.OnStyleLoaded() {
                 @Override
                 public void onStyleLoaded(@NonNull Style style) {
-                    mapboxMap.getUiSettings().setCompassEnabled(false); //Hide the default mapbox compass because we use our compass
 
-                    drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
-
-                    style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
-                    style.addSource(guessSource);
-                    style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
-                            .withProperties(
-                                    PropertyFactory.iconImage(GUESS_ICON_ID),
-                                    PropertyFactory.iconIgnorePlacement(true),
-                                    PropertyFactory.iconAllowOverlap(true)
-                            ));
-
-                    style.addImage((ARROW_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.fleche_orange));
-                    guessSource1 = new GeoJsonSource(ARROW_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
-                    style.addSource(guessSource1);
-                    style.addLayer(new SymbolLayer(ARROW_LAYER_ID, ARROW_SOURCE_ID)
-                            .withProperties(
-                                    PropertyFactory.visibility(Property.NONE),
-                                    PropertyFactory.iconImage(ARROW_ICON_ID),
-                                    PropertyFactory.iconRotate((float) mapboxMap.getCameraPosition().bearing),
-                                    PropertyFactory.iconIgnorePlacement(true),
-                                    PropertyFactory.iconAllowOverlap(true)
-                            ));
-
-                    mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
-                    mapboxMap.addOnCameraMoveListener(GuessLocationActivity.this);
-
-                    timer.scheduleAtFixedRate(updateGuessPositionFromGPS, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
                 }
-        });
+        });*/
+    }
+
+    private void onStyleLoaded(Style style){
+        mapboxMap.getUiSettings().setCompassEnabled(false); //Hide the default mapbox compass because we use our compass
+
+        drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
+
+        style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_default));
+        style.addSource(guessSource);
+        style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
+                .withProperties(
+                        PropertyFactory.iconImage(GUESS_ICON_ID),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
+
+        style.addImage((ARROW_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.fleche_orange));
+        style.addSource(arrowSource);
+        style.addLayer(new SymbolLayer(ARROW_LAYER_ID, ARROW_SOURCE_ID)
+                .withProperties(
+                        PropertyFactory.visibility(Property.NONE),
+                        PropertyFactory.iconImage(ARROW_ICON_ID),
+                        PropertyFactory.iconRotate((float) mapboxMap.getCameraPosition().bearing),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
+
+        mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
+        mapboxMap.addOnCameraMoveListener(GuessLocationActivity.this);
+
+        timer.scheduleAtFixedRate(updateGuessPositionFromGPS, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
     }
 
     /**
@@ -246,8 +250,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return true;
         }
 
-        updatePositionByLineAnimation(animator, guessPosition, point, guessSource, ANIMATION_DURATION);
-        guessPosition = updatePositionByLineAnimation(animator1, guessPosition, point, guessSource1,  ANIMATION_DURATION);
+        updatePositionByLineAnimation(animator, guessPosition, point, guessSource);
+        guessPosition = updatePositionByLineAnimation(animator1, guessPosition, point, arrowSource);
         return true;
     }
 

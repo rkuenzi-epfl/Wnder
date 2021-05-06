@@ -22,6 +22,8 @@ import com.mapbox.turf.TurfTransformation;
 
 public class mapboxHelper {
 
+    private static final long ANIMATION_DURATION = 200;
+
     private static final String PICTURE_SOURCE_ID = "picture-source-id";
     private static final String PICTURE_LAYER_ID = "picture-layer-id";
 
@@ -32,10 +34,9 @@ public class mapboxHelper {
      * @param originPoint is the point where the animation begins
      * @param destinationPoint is the point where the animation ends
      * @param source of the GeoJsonSource on which to apply the animation
-     * @param duration of the animation
      * @return the new position reached at the end of the animation
      */
-    protected static LatLng updatePositionByLineAnimation(ValueAnimator animator, LatLng originPoint, @NonNull LatLng destinationPoint, GeoJsonSource source, long duration) {
+    protected static LatLng updatePositionByLineAnimation(ValueAnimator animator, LatLng originPoint, @NonNull LatLng destinationPoint, GeoJsonSource source) {
 
         if (animator != null && animator.isStarted()) {
             originPoint = (LatLng) animator.getAnimatedValue();
@@ -44,7 +45,7 @@ public class mapboxHelper {
 
         animator = ObjectAnimator
                 .ofObject(latLngEvaluator, originPoint, destinationPoint)
-                .setDuration(duration);
+                .setDuration(ANIMATION_DURATION);
         animator.addUpdateListener(animatorUpdateListenerForGJSource(source));
         animator.start();
 
