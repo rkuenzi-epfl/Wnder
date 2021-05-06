@@ -1,6 +1,8 @@
 package com.github.wnder;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -58,7 +60,9 @@ public class PictureHistoryTest {
     @BeforeClass
     public static void classSetUp(){
         dummyMap = new HashMap<>();
+        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         when(picturesDatabase.getScoreboard(anyString())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         intent = new Intent(ApplicationProvider.getApplicationContext(), PictureHistoryActivity.class);
         intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, "picture1");
     }
