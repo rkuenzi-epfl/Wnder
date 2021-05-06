@@ -56,6 +56,29 @@ public class ExistingPictureTesting {
     }
 
     @Test
+    public void onUserPositionAvailableWorksForExistingPicture(){
+        testPic.onUserPositionAvailable("testUser", (position)->{
+            assertThat(position.getLatitude(), is(20d));
+            assertThat(position.getLongitude(), is(20d));
+        });
+    }
+
+    @Test
+    public void onUserGuessAvailableWorksForExistingPicture(){
+        testPic.onUserGuessAvailable("testUser", (guess)->{
+            assertThat(guess.getLatitude(), is(10d));
+            assertThat(guess.getLongitude(), is(10d));
+        });
+    }
+
+    @Test
+    public void onUserRadiusAvailableWorksForExistingPicture(){
+        testPic.onUserRadiusAvailable("testUser", (radius)->{
+            assertThat(radius, is(5));
+        });
+    }
+
+    @Test
     public void onBitmapAvailableWorks(){
         testPic.onBitmapAvailable((bmp)->{
            assertTrue(bmp instanceof Bitmap);

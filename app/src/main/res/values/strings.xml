@@ -37,14 +37,13 @@
     <string name="mapClickOnCompassMode_confirm_message">In Compass Mode you are supposed to walk to the picture location you are currently guessing.\nExit the Compass Mode if you want to simply guess by clicking</string>
     <string name="distance_meter">Distance: %1$dm</string>
     <string name="distance_kilometer">Distance: %1$dkm</string>
-    <string name="score">Score: %1$dm</string>
+    <string name="score">Score: %1$d</string>
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>
 
     <!--History Picture Strings-->
     <string name="content_descr_history_display_picture">Previously guessed picture</string>
-    <string name="history_picture_description">Photo de l\'esplanade</string>
 
     <!--Scoreboard strings-->
     <string name="leave_scoreboard">Leave Scoreboard</string>

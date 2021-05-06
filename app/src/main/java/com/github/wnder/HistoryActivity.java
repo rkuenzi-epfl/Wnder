@@ -19,6 +19,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import com.github.wnder.picture.Picture;
+
 /**
  * Defines activity for history
  */
@@ -36,7 +38,7 @@ public class HistoryActivity extends AppCompatActivity {
     private int pictureIndex = 0;
 
     private List<String> pictureList; //To be filled with the appropriate function (from either the local or online database)
-    private String pictureDisplayed;
+    private String pictureId;
 
     @Inject
     public PicturesDatabase picturesDb;
@@ -65,8 +67,11 @@ public class HistoryActivity extends AppCompatActivity {
         getUserPictures();
         //When clicked open activity for specific picture history
         image.setOnClickListener((view) -> {
-            Intent intent = new Intent(this, PictureHistoryActivity.class);
-            startActivity(intent);
+            if (!(pictureId.equals(Picture.UNINITIALIZED_ID))) {
+                Intent intent = new Intent(this, PictureHistoryActivity.class);
+                intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
+                startActivity(intent);
+            }
         });
     }
 
@@ -107,7 +112,7 @@ public class HistoryActivity extends AppCompatActivity {
         }
 
         picturesDb.getBitmap(pictureList.get(index)).thenAccept(bmp ->image.setImageBitmap(bmp));
-        pictureDisplayed = pictureList.get(index);
+        pictureId = pictureList.get(index);
     }
 
     private void getUserPictures(){
