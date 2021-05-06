@@ -5,10 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,6 +41,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,6 +87,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private boolean guessConfirmed;
     private Timer timer;
     private TimerTask updateGuessPositionFromGPS;
+
+    private float angleAroundZ = 0;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -265,8 +273,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         } else {
             if (!guessIsClose()) { //compass update
                 double mapRotation = mapboxMap.getCameraPosition().bearing; //rotation of the map
-                float pictureRotation = 0; //TODO rotation of the picture location from the current position
-                layer.setProperties(PropertyFactory.iconRotate((float) -mapRotation));
+                float pictureRotation = angleAroundZ; //TODO rotation of the picture location from the current position
+                Log.d("tag", "rotation: " + pictureRotation);
+                //layer.setProperties(PropertyFactory.iconRotate((float) -mapRotation));
+                layer.setProperties(PropertyFactory.iconRotate(pictureRotation));
 
                 layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
                 hotbarView.setVisibility(View.INVISIBLE);
@@ -281,10 +291,51 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     /**
+     * The new compassed angle based on the "rotation vector" sensor with respect to the vector pointing from
+     * the user position to the real position of the picture
+     */
+    private void newCompassAngle(){
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+
+        SensorEventListener listener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float[] vectorPosition = event.values;
+                float[] quat = new float[4];
+                float[] rotMat = new float[9];
+                float[] result = new float[3];
+                SensorManager.getQuaternionFromVector(quat, vectorPosition);
+                SensorManager.getRotationMatrixFromVector(rotMat, quat);
+                SensorManager.getOrientation(rotMat, result);
+
+                //Log.d("tag", "x: " + result[0]*180/Math.PI);
+                //Log.d("tag", "y: " + result[1]*180/Math.PI);
+                //Log.d("tag", "z: " + result[2]*180/Math.PI);
+
+                angleAroundZ = (float) (result[2]*180/Math.PI);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy){}
+        };
+
+
+        if(list.isEmpty()){
+            //We can't use the sensor
+        }
+        else{
+            sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    /**
      * Return true if the guess is close enough to display the hotbar instead of the compass
      */
     private boolean guessIsClose() {
-        return false; //TODO compute or hardcode a distance in which the hotbar should be displayed
+        //Position of the radius (in meter) divided by an arbitrary factor
+        double referencePosition = GlobalUser.getUser().getRadius() * 1000 / 100;
+        return referencePosition > guessPosition.distanceTo(picturePosition);
     }
 
     /**
@@ -301,6 +352,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         compassMode = !compassMode;
         updateCompassMode();
         if(compassMode) {
+            newCompassAngle();
             updateGuessPositionFromGPS.run();
             compassModeButtonView.setText("Exit Compass Mode");
         } else {
