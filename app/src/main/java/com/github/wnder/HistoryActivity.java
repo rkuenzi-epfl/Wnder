@@ -2,6 +2,7 @@ package com.github.wnder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -10,15 +11,21 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Defines activity for history
  */
+@AndroidEntryPoint
 public class HistoryActivity extends AppCompatActivity {
     //Displayed image
     private ImageView image;
@@ -31,9 +38,11 @@ public class HistoryActivity extends AppCompatActivity {
     //Cyclic variable to display picture
     private int pictureIndex = 0;
 
-    private List<ExistingPicture> pictureList; //To be filled with the appropriate function (from either the local or online database)
-    private ExistingPicture pictureDisplayed; //To be used to recover the image we clicked on
+    private List<String> pictureList; //To be filled with the appropriate function (from either the local or online database)
+    private String pictureDisplayed;
 
+    @Inject
+    public PicturesDatabase picturesDb;
     /**
      * Executes when activity is created
      * @param savedInstanceState saved instance state
@@ -100,18 +109,15 @@ public class HistoryActivity extends AppCompatActivity {
             throw new IllegalArgumentException();
         }
 
-        pictureList.get(index).onBitmapAvailable(bmp ->image.setImageBitmap(bmp));
+        picturesDb.getBitmap(pictureList.get(index)).thenAccept(bmp ->image.setImageBitmap(bmp));
         pictureDisplayed = pictureList.get(index);
     }
 
     private void getUserPictures(){
-        List<ExistingPicture> picsList = new ArrayList<>();
 
         GlobalUser.getUser().onPicturesAvailable(User.GUESSED_PICS, this, guessedPics -> {
-            for (String id : guessedPics) {
-                picsList.add(new ExistingPicture(id));
-            }
-            pictureList = picsList;
+            Log.d("Local pics",guessedPics.toString());
+            pictureList = guessedPics;
             setupButtons();
         });
     }
