@@ -50,6 +50,8 @@ import static org.mockito.Mockito.when;
 @UninstallModules({NetworkModule.class})
 public class HistoryActivityTest {
 
+    private static LocalPictureDatabase localPicDb = new LocalPictureDatabase(ApplicationProvider.getApplicationContext());
+
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
@@ -62,7 +64,12 @@ public class HistoryActivityTest {
     @BeforeClass
     public static void beforeAll(){
         when(networkInfo.isNetworkAvailable()).thenReturn(false);
-
+        Location loc = new Location("");
+        loc.setLatitude(10);
+        loc.setLongitude(15);
+        Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
+        localPicDb.storePictureAndMetadata(pic);
     }
 
     //For activities that we did ourself otherwise need to use mockito
@@ -78,23 +85,10 @@ public class HistoryActivityTest {
         Intents.release();
     }
 
-//    @Test
-//    public void textIsDisplayed(){
-//        LocalPictureDatabase localPicDb = new LocalPictureDatabase(ApplicationProvider.getApplicationContext());
-//        Location loc = new Location("");
-//        loc.setLatitude(10);
-//        loc.setLongitude(15);
-//        Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-//        LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
-//        localPicDb.storePictureAndMetadata(pic);
-//
-//        try {
-//            sleep(10);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        // Verifiy that we can click the button
-//        onView(withId(R.id.leftHistory)).perform(click());
-//        localPicDb.deleteFile("testPic");
-//    }
+    @Test
+    public void textIsDisplayed(){
+        // Verifiy that we can click the button
+        onView(withId(R.id.leftHistory)).perform(click());
+        localPicDb.deleteFile("testPic");
+    }
 }
