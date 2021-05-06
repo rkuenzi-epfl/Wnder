@@ -134,14 +134,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         updateGuessPositionFromGPS = new TimerTask() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
-                        if (compassMode) {
-                            LatLng destinationPoint = new LatLng(loc.getLatitude(), loc.getLongitude());
-                            updatePositionByLineAnimation(animator, guessPosition, destinationPoint, guessSource);
-                            guessPosition = updatePositionByLineAnimation(animator1, guessPosition, destinationPoint, arrowSource);
-                        }
+                handler.post(() -> {
+                    Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
+                    if (compassMode) {
+                        LatLng destinationPoint = new LatLng(loc.getLatitude(), loc.getLongitude());
+                        updatePositionByLineAnimation(animator, guessPosition, destinationPoint, guessSource);
+                        guessPosition = updatePositionByLineAnimation(animator1, guessPosition, destinationPoint, arrowSource);
                     }
                 });
             }
@@ -302,9 +300,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         updateCompassMode();
         if(compassMode) {
             updateGuessPositionFromGPS.run();
-            compassModeButtonView.setText("Exit Compass Mode");
+            compassModeButtonView.setText(R.string.switchCompassModeText);
         } else {
-            compassModeButtonView.setText("Compass Mode");
+            compassModeButtonView.setText(R.string.switchNormalModeText);
         }
     }
 
@@ -322,7 +320,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             guessConfirmed = true;
 
             TextView confirmButtonView = (TextView) findViewById(R.id.confirmButton);
-            confirmButtonView.setText("See Scoreboard");
+            confirmButtonView.setText(R.string.confirmButtonPressedOnce);
 
             showActualLocation();
         } else {
