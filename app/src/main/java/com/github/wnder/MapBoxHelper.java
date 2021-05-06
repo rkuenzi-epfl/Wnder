@@ -20,7 +20,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
-public class mapboxHelper {
+public class MapBoxHelper {
 
     private static final long ANIMATION_DURATION = 200;
 
