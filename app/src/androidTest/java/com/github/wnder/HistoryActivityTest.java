@@ -19,6 +19,7 @@ import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -69,7 +70,12 @@ public class HistoryActivityTest {
         loc.setLongitude(15);
         Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
-        //localPicDb.storePictureAndMetadata(pic);
+        localPicDb.storePictureAndMetadata(pic);
+    }
+
+    @AfterClass
+    public static void afterAll(){
+        localPicDb.deleteFile("testPic");
     }
 
     //For activities that we did ourself otherwise need to use mockito
@@ -89,6 +95,5 @@ public class HistoryActivityTest {
 //    public void textIsDisplayed(){
 //        // Verifiy that we can click the button
 //        onView(withId(R.id.leftHistory)).perform(click());
-//        localPicDb.deleteFile("testPic");
 //    }
 }
