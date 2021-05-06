@@ -122,15 +122,8 @@ public class GuessLocationActivityInstrumentedTest  {
     public void testSwitchMode(){
         onView(withId(R.id.compassMode)).perform(click());
         onView(withId(R.id.compassMode)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
 
         onView(withId(R.id.confirmButton)).perform(click());
-
-        onView(withId(R.id.compassMode)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
 
         onView(withId(R.id.confirmButton)).perform(click());
 
