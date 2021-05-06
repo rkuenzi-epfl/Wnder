@@ -130,7 +130,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      */
     private void skipPicture() {
         if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
-            new ExistingPicture(pictureID).skipPicture();
+            picturesDb.updateKarma(pictureId, -1);
         }
 
         Intent intent = new Intent(this, GuessPreviewActivity.class);
