@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,9 +45,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.github.wnder.mapboxHelper.drawCircle;
-import static com.github.wnder.mapboxHelper.updatePositionByLineAnimation;
-import static com.github.wnder.mapboxHelper.zoomFromKilometers;
+import static com.github.wnder.MapBoxHelper.drawCircle;
+import static com.github.wnder.MapBoxHelper.updatePositionByLineAnimation;
+import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
 
 /**
  * Location activity
@@ -314,21 +315,28 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private void updateCompassMode(){
         SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(ARROW_LAYER_ID);
         View hotbarView = findViewById(R.id.hotbarView);
+        //Arbitrary value based on the radius to check if we are close enough
+        double referenceDistance = GlobalUser.getUser().getRadius() * 1000 / 100;
 
         if (!compassMode) {
             layer.setProperties(PropertyFactory.visibility(Property.NONE));
             hotbarView.setVisibility(View.INVISIBLE);
 
         } else {
-            //Arbitrary value based on the radius to check if we are close enough
-            if (!(GlobalUser.getUser().getRadius() * 1000 / 100 > guessPosition.distanceTo(picturePosition))) { //compass update
+            double distanceDiff = guessPosition.distanceTo(picturePosition);
+            if (referenceDistance < distanceDiff) { //compass update
                 layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
                 hotbarView.setVisibility(View.INVISIBLE);
 
             } else { //hotbar update
-                //TODO update hotbar
                 layer.setProperties(PropertyFactory.visibility(Property.NONE));
                 hotbarView.setVisibility(View.VISIBLE);
+
+                double ratio = distanceDiff / referenceDistance;
+
+                ProgressBar bar = (ProgressBar) hotbarView;
+                int barValue = (int) (bar.getMax() - (ratio * bar.getMax()));
+                MapBoxHelper.setHotBarColor(bar, barValue);
             }
         }
     }
