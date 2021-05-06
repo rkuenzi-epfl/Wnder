@@ -3,6 +3,9 @@ package com.github.wnder;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -125,5 +128,30 @@ public class MapBoxHelper {
         double latitudeDeformation = -0.00046*Math.pow(absLat, 2); //The latitude deformation effect to apply on the zoom parameter if the latitude isn't 0
 
         return zoomFromKilometerTheory + latitudeDeformation;
+    }
+
+    /**
+     * Set the Progress bar to a predefined set of color (red, yellow, cyan and blue)
+     * @param bar
+     * @param barValue
+     */
+    protected static void setHotBarColor(ProgressBar bar, int barValue){
+        final int ONE_QUARTER = 25;
+        final int TWO_QUARTER = 50;
+        final int THREE_QUARTER = 75;
+
+        bar.setProgress(barValue);
+        if (barValue > THREE_QUARTER){
+            bar.setProgressTintList(ColorStateList.valueOf(Color.RED));
+        }
+        else if (barValue > TWO_QUARTER && barValue <= THREE_QUARTER){
+            bar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+        }
+        else if (barValue > ONE_QUARTER && barValue <= TWO_QUARTER){
+            bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
+        }
+        else if (barValue <= ONE_QUARTER){
+            bar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
+        }
     }
 }

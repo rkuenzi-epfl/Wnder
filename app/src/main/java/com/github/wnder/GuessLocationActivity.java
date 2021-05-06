@@ -338,19 +338,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
                 ProgressBar bar = (ProgressBar) hotbarView;
                 int barValue = (int) (bar.getMax() - (ratio * bar.getMax()));
-                bar.setProgress(barValue);
-                if (barValue > 75){
-                    bar.setProgressTintList(ColorStateList.valueOf(Color.RED));
-                }
-                else if (barValue > 50 && barValue <= 75){
-                    bar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
-                }
-                else if (barValue > 25 && barValue <= 50){
-                    bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
-                }
-                else if (barValue <= 25){
-                    bar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
-                }
+                MapBoxHelper.setHotBarColor(bar, barValue);
             }
         }
     }
