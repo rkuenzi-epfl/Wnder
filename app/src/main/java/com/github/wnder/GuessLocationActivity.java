@@ -320,7 +320,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             hotbarView.setVisibility(View.INVISIBLE);
 
         } else {
-            if (!guessIsClose()) { //compass update
+            //Arbitrary value based on the radius to check if we are close enough
+            if (!(GlobalUser.getUser().getRadius() * 1000 / 100 > guessPosition.distanceTo(picturePosition))) { //compass update
                 layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
                 hotbarView.setVisibility(View.INVISIBLE);
 
@@ -330,15 +331,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 hotbarView.setVisibility(View.VISIBLE);
             }
         }
-    }
-
-    /**
-     * Return true if the guess is close enough to display the hotbar instead of the compass
-     */
-    private boolean guessIsClose() {
-        //Position of the radius (in meter) divided by an arbitrary factor
-        double referencePosition = GlobalUser.getUser().getRadius() * 1000 / 100;
-        return referencePosition > guessPosition.distanceTo(picturePosition);
     }
 
     private void compassModeSetup(){
