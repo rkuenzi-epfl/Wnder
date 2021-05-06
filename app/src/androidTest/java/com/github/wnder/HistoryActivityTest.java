@@ -85,10 +85,10 @@ public class HistoryActivityTest {
         Intents.release();
     }
 
-    @Test
-    public void textIsDisplayed(){
-        // Verifiy that we can click the button
-        onView(withId(R.id.leftHistory)).perform(click());
-        localPicDb.deleteFile("testPic");
-    }
+//    @Test
+//    public void textIsDisplayed(){
+//        // Verifiy that we can click the button
+//        onView(withId(R.id.leftHistory)).perform(click());
+//        localPicDb.deleteFile("testPic");
+//    }
 }
