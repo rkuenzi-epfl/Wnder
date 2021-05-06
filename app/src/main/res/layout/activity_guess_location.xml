@@ -9,12 +9,11 @@
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/confirmButton"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="413dp"
+        android:layout_height="577dp"
         app:layout_constrainedHeight="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:mapbox_cameraZoom="4.5" />
 
     <TextView
@@ -39,16 +38,30 @@
         android:text="@string/confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mapView" />
+        app:layout_constraintTop_toTopOf="@+id/compassMode"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
-        android:id="@+id/scoreBoardButton"
+        android:id="@+id/compassMode"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/see_scoreboard"
-        android:visibility="invisible"
+        android:text="@string/switchNormalModeText"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mapView" />
+        app:layout_constraintEnd_toStartOf="@+id/confirmButton"
+        app:layout_constraintTop_toBottomOf="@+id/mapView"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/hotbarView"
+        android:layout_width="24dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="308dp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/btn_default_small"
+        android:contentDescription="@string/content_descr_guess_hotbar_image"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
