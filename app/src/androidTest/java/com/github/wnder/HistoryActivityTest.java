@@ -69,7 +69,7 @@ public class HistoryActivityTest {
         loc.setLongitude(15);
         Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
-        localPicDb.storePictureAndMetadata(pic);
+        //localPicDb.storePictureAndMetadata(pic);
     }
 
     //For activities that we did ourself otherwise need to use mockito
