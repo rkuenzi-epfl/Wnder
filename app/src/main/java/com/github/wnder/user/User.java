@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -89,12 +90,13 @@ public abstract class User {
     /**
      * Apply a function once the designated list of pictures of the user have been retrieved
      * @param picturesListName The name of the list of pictures to get from the databse (ex.: guessedPics, uploadedPics)
-     * @param icsAv Function to apply
      */
-    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> picsAv){
+    public CompletableFuture<List<String>> onPicturesAvailable(String picturesListName, Context ctx){
+        CompletableFuture<List<String>> cf = new CompletableFuture<>();
         File mDirectory = ctx.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
         List<String> list = Arrays.asList(mDirectory.list((file, name)-> file.isDirectory()));
-        picsAv.accept(list);
+        cf.complete(list);
+        return cf;
     }
 
     /**

@@ -112,7 +112,7 @@ public class HistoryActivity extends AppCompatActivity {
 
     private void getUserPictures(){
 
-        GlobalUser.getUser().onPicturesAvailable(User.GUESSED_PICS, this, guessedPics -> {
+        GlobalUser.getUser().onPicturesAvailable(User.GUESSED_PICS, this).thenAccept(guessedPics -> {
 
             pictureList = guessedPics;
             setupButtons();
