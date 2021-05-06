@@ -107,25 +107,22 @@ public class PictureHistoryActivity extends AppCompatActivity implements OnMapRe
                 .build();
         mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 100));
 
-        mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
-            @Override
-            public void onStyleLoaded(@NonNull Style style) {
-                addIconToStyle(style, guessLatLng, GUESS_PREFIX);
-                addIconToStyle(style, pictureLatLng, PICTURE_PREFIX);
+        mapboxMap.setStyle(Style.SATELLITE_STREETS, (style) -> {
+            addIconToStyle(style, guessLatLng, GUESS_PREFIX);
+            addIconToStyle(style, pictureLatLng, PICTURE_PREFIX);
 
-                Point point = Point.fromLngLat(pictureLatLng.getLongitude(), pictureLatLng.getLatitude());
-                Polygon circle = TurfTransformation.circle(point, 200, "meters");
-                GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_CIRCLE_SOURCE_ID, circle);
+            Point point = Point.fromLngLat(pictureLatLng.getLongitude(), pictureLatLng.getLatitude());
+            Polygon circle = TurfTransformation.circle(point, 200, "meters");
+            GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_CIRCLE_SOURCE_ID, circle);
 
-                style.addSource(pictureSource);
-                style.addLayer(new FillLayer(PICTURE_CIRCLE_LAYER_ID, PICTURE_CIRCLE_SOURCE_ID).withProperties(
-                        PropertyFactory.fillColor("#ff0000"),
-                        PropertyFactory.fillOpacity(0.4f)
-                ));
+            style.addSource(pictureSource);
+            style.addLayer(new FillLayer(PICTURE_CIRCLE_LAYER_ID, PICTURE_CIRCLE_SOURCE_ID).withProperties(
+                    PropertyFactory.fillColor("#ff0000"),
+                    PropertyFactory.fillOpacity(0.4f)
+            ));
 
-                LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-                drawCircle(style, userLatLng, radius);
-            }
+            LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+            drawCircle(style, userLatLng, radius);
         });
     }
 

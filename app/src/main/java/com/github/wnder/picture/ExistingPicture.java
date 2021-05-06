@@ -85,14 +85,29 @@ public class ExistingPicture extends Picture{
         });
     }
 
+    /**
+     * Apply consumer function when the user's position during the guess is available
+     * @param user unique identifier of the user
+     * @param onUserPositionAvailable consumer function to call when the user's position during the guess is available
+     */
     public void onUserPositionAvailable(String user, Consumer<Location> onUserPositionAvailable) {
         onUserLocationAvailable(user, "userLocations", onUserPositionAvailable);
     }
 
+    /**
+     * Apply consumer function when the user's guess is available
+     * @param user unique identifier of the user
+     * @param onUserGuessAvailable consumer function to call when the user's guess is available
+     */
     public void onUserGuessAvailable(String user, Consumer<Location> onUserGuessAvailable) {
         onUserLocationAvailable(user, "userGuesses", onUserGuessAvailable);
     }
 
+    /**
+     * Apply consumer function when the user's radius setting is available
+     * @param user unique identifier of the user
+     * @param onRadiusAvailable consumer function to call when the user's radius setting is available
+     */
     public void onUserRadiusAvailable(String user, Consumer<Integer> onRadiusAvailable) {
         String[] path = {"pictures", getUniqueId(), "userData", "userRadii"};
         Storage.downloadFromFirestore(path).addOnSuccessListener((documentSnapshot) -> {
