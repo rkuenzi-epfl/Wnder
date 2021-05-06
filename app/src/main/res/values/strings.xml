@@ -29,6 +29,9 @@
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
 
     <!--Guess Location Strings-->
+    <string name="switchCompassModeText">Exit Compass Mode</string>
+    <string name="switchNormalModeText">Compass Mode</string>
+    <string name="confirmButtonPressedOnce">See Scoreboard</string>
     <string name="mapClickOnCompassMode_confirm_title">You are in Compass Mode</string>
     <string name="mapClickOnCompassMode_confirm_message">In Compass Mode you are supposed to walk to the picture location you are currently guessing.\nExit the Compass Mode if you want to simply guess by clicking</string>
     <string name="distance_meter">Distance: %1$dm</string>
