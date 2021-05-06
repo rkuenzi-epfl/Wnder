@@ -78,23 +78,23 @@ public class HistoryActivityTest {
         Intents.release();
     }
 
-    @Test
-    public void textIsDisplayed(){
-        LocalPictureDatabase localPicDb = new LocalPictureDatabase(ApplicationProvider.getApplicationContext());
-        Location loc = new Location("");
-        loc.setLatitude(10);
-        loc.setLongitude(15);
-        Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-        LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
-        localPicDb.storePictureAndMetadata(pic);
-
-        try {
-            sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // Verifiy that we can click the button
-        onView(withId(R.id.leftHistory)).perform(click());
-        localPicDb.deleteFile("testPic");
-    }
+//    @Test
+//    public void textIsDisplayed(){
+//        LocalPictureDatabase localPicDb = new LocalPictureDatabase(ApplicationProvider.getApplicationContext());
+//        Location loc = new Location("");
+//        loc.setLatitude(10);
+//        loc.setLongitude(15);
+//        Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+//        LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
+//        localPicDb.storePictureAndMetadata(pic);
+//
+//        try {
+//            sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        // Verifiy that we can click the button
+//        onView(withId(R.id.leftHistory)).perform(click());
+//        localPicDb.deleteFile("testPic");
+//    }
 }
