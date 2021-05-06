@@ -55,7 +55,7 @@ dependencies {
     testImplementation 'com.google.dagger:hilt-android-testing:2.35'
     testAnnotationProcessor 'com.google.dagger:hilt-compiler:2.35'
 
-    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0-beta01'
+    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0'
     //implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03'
 
     //Firebase
