@@ -30,11 +30,14 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     private final StorageReference storage;
     private final CollectionReference picturesCollection;
+    private final CollectionReference usersCollection;
 
     @Inject
     public FirebasePicturesDatabase(){
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
+        usersCollection = FirebaseFirestore.getInstance().collection("users");
+
     }
 
     @Override
@@ -158,7 +161,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private CompletableFuture<Void> addToUserGuessedPictures(String uniqueId, String user) {
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //user guessed pictures
-        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
         usersCollection.document(user).get().addOnSuccessListener((documentSnapshot) -> {
             //Get uploaded and guessed pics
             List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
@@ -241,7 +243,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private CompletableFuture<Void> addPhotoToUploadedUserPhoto(String uniqueId, String user){
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //get current user data
-        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
         usersCollection.document(user).get()
                 .addOnSuccessListener((documentSnapshot) ->{
 
