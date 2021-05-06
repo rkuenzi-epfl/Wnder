@@ -43,9 +43,10 @@
 
     <Button
         android:id="@+id/compassMode"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Compass Mode"
+        android:text="@string/switchNormalModeText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/confirmButton"
         app:layout_constraintTop_toBottomOf="@+id/mapView"
@@ -60,6 +61,7 @@
         android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/btn_default_small" />
+        app:srcCompat="@android:drawable/btn_default_small"
+        android:contentDescription="@string/content_descr_guess_hotbar_image"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

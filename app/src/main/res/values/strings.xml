@@ -29,6 +29,7 @@
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
 
     <!--Guess Location Strings-->
+    <string name="content_descr_guess_hotbar_image">This is the image of the hotbar shown in Compass Mode when close to the picture</string>
     <string name="switchCompassModeText">Exit Compass Mode</string>
     <string name="switchNormalModeText">Compass Mode</string>
     <string name="confirmButtonPressedOnce">See Scoreboard</string>
