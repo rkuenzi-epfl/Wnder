@@ -120,10 +120,10 @@ public class mapboxHelper {
     protected static double zoomFromKilometers(LatLng cameraPosition, int kilometers) {
         int absLat = Math.abs((int) cameraPosition.getLatitude());
 
-        //The latitude deformation taken care manually because of the lack of a good function (https://docs.mapbox.com/help/glossary/zoom-level/)
-        double latDeformation = 0.00046*Math.pow(absLat, 2);
-        double offset = 13.6 - latDeformation;
+        //Documentation used for this calcul: https://docs.mapbox.com/help/glossary/zoom-level/
+        double zoomFromKilometerTheory = 13.6 - Math.log((double) kilometers)/Math.log(2); //The zoom to apply given an amount of kilometer in Theory for latitude 0
+        double latitudeDeformation = -0.00046*Math.pow(absLat, 2); //The latitude deformation effect to apply on the zoom parameter if the latitude isn't 0
 
-        return - Math.log((double) kilometers)/Math.log(2) + offset;
+        return zoomFromKilometerTheory + latitudeDeformation;
     }
 }
