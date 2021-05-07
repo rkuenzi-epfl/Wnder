@@ -40,7 +40,11 @@ Next time, I'll make sure that my code is merged as soon as possible once it's d
 
 ## Pablo 
 
+This week I finished implementing the picture history activity.
 
+However, it took me a lot more time than expected because I needed to do some changed to the database and I was also dependent on other's people tasks.
+
+Next time, I will try to split my tasks to first get the UI with placeholders merged, and wire it to the backend separately.
 
 ## Romain 
 
