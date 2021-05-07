@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
@@ -45,6 +46,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 import static com.github.wnder.MapBoxHelper.drawCircle;
 import static com.github.wnder.MapBoxHelper.updatePositionByLineAnimation;
 import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
@@ -52,6 +57,7 @@ import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
 /**
  * Location activity
  */
+@AndroidEntryPoint
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnCameraMoveListener {
     //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
@@ -91,6 +97,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private SensorEventListener listener;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
+
+    @Inject
+    public PicturesDatabase picturesDb;
 
     /**
      * Executed on activity creation
@@ -404,6 +413,15 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             TextView confirmButtonView = (TextView) findViewById(R.id.confirmButton);
             confirmButtonView.setText(R.string.confirmButtonPressedOnce);
 
+            //Send guess and update karma
+            if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+                Location guessedLocation = new Location("");
+                guessedLocation.setLatitude(guessPosition.getLatitude());
+                guessedLocation.setLongitude(guessPosition.getLongitude());
+                picturesDb.sendUserGuess(pictureID, GlobalUser.getUser().getName(), guessedLocation);
+                picturesDb.updateKarma(pictureID, 1);
+            }
+
             showActualLocation();
         } else {
             //Open the scoreboard activity
@@ -417,11 +435,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Shows the real location of the picture
      */
     private void showActualLocation() {
-        //Update karma after a guess
-        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
-            ExistingPicture pic = new ExistingPicture(pictureID);
-            pic.addKarmaForGuess();
-        }
 
         //Remove old style with only the guess source
         Style style = mapboxMap.getStyle();

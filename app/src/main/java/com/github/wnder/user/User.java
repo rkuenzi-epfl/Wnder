@@ -9,7 +9,8 @@ import android.net.Uri;
 
 import androidx.core.app.ActivityCompat;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -26,6 +28,8 @@ public abstract class User {
 
     public static final String GUESSED_PICS = "guessedPics";
     public static final String UPLOADED_PICS = "uploadedPics";
+
+    private final String METADATA_DIR_NAME = "metadata";
 
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     protected int radius = 5;
@@ -86,12 +90,13 @@ public abstract class User {
     /**
      * Apply a function once the designated list of pictures of the user have been retrieved
      * @param picturesListName The name of the list of pictures to get from the databse (ex.: guessedPics, uploadedPics)
-     * @param PicsAv Function to apply
      */
-    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
-        //TODO: add local database implementation
-        List<String> list = new ArrayList<>();
-        PicsAv.accept(list);
+    public CompletableFuture<List<String>> onPicturesAvailable(String picturesListName, Context ctx){
+        CompletableFuture<List<String>> cf = new CompletableFuture<>();
+        File mDirectory = ctx.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
+        List<String> list = Arrays.asList(mDirectory.list((file, name)-> file.isDirectory()));
+        cf.complete(list);
+        return cf;
     }
 
     /**

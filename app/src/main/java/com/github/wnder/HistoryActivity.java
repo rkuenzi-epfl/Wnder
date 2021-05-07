@@ -9,18 +9,22 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 import com.github.wnder.picture.Picture;
 
 /**
  * Defines activity for history
  */
+@AndroidEntryPoint
 public class HistoryActivity extends AppCompatActivity {
     //Displayed image
     private ImageView image;
@@ -33,9 +37,11 @@ public class HistoryActivity extends AppCompatActivity {
     //Cyclic variable to display picture
     private int pictureIndex = 0;
 
-    private List<ExistingPicture> pictureList; //To be filled with the appropriate function (from either the local or online database)
-    private String pictureId = Picture.UNINITIALIZED_ID;
+    private List<String> pictureList; //To be filled with the appropriate function (from either the local or online database)
+    private String pictureId;
 
+    @Inject
+    public PicturesDatabase picturesDb;
     /**
      * Executes when activity is created
      * @param savedInstanceState saved instance state
@@ -105,18 +111,15 @@ public class HistoryActivity extends AppCompatActivity {
             throw new IllegalArgumentException();
         }
 
-        pictureList.get(index).onBitmapAvailable(bmp -> image.setImageBitmap(bmp));
-        pictureId = pictureList.get(index).getUniqueId();
+        picturesDb.getBitmap(pictureList.get(index)).thenAccept(bmp ->image.setImageBitmap(bmp));
+        pictureId = pictureList.get(index);
     }
 
     private void getUserPictures(){
-        List<ExistingPicture> picsList = new ArrayList<>();
 
-        GlobalUser.getUser().onPicturesAvailable(User.GUESSED_PICS, this, guessedPics -> {
-            for (String id : guessedPics) {
-                picsList.add(new ExistingPicture(id));
-            }
-            pictureList = picsList;
+        GlobalUser.getUser().onPicturesAvailable(User.GUESSED_PICS, this).thenAccept(guessedPics -> {
+
+            pictureList = guessedPics;
             setupButtons();
         });
     }

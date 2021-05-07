@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.LineString;
@@ -36,9 +37,14 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Detailed history for one specific history picture
  */
+@AndroidEntryPoint
 public class PictureHistoryActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String EXTRA_PICTURE_ID = "picture_id";
 
@@ -54,6 +60,9 @@ public class PictureHistoryActivity extends AppCompatActivity implements OnMapRe
 
     private MapView mapView;
     private String pictureID = Picture.UNINITIALIZED_ID;
+
+    @Inject
+    public PicturesDatabase picturesDb;
 
     /**
      * Executes on activity creation
@@ -71,7 +80,8 @@ public class PictureHistoryActivity extends AppCompatActivity implements OnMapRe
         setContentView(R.layout.activity_picture_history);
 
         ImageView image = findViewById(R.id.pictureHistoryImage);
-        image.setImageURI(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        picturesDb.getBitmap(pictureID).thenAccept(bmp -> image.setImageBitmap(bmp));
+
 
         mapView = findViewById(R.id.pictureHistoryMap);
         mapView.onCreate(savedInstanceState);
