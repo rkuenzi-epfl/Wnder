@@ -3,6 +3,11 @@
 
 ## Aloïs 
 
+This week I implemented my tasks that were about making the compass mode for the guess activity with the mapbox map.
+
+I started working on it wednesday morning and tried to make the outline ready in time for the middle of the day which I did so that Leonard who had some logic work to do on the compass mode could start his work. I finished my global work by the end of the day but I misunderstood how the team wanted to use the sensor of the phone to move the map. Because of that I did spend time on some details that weren't absolutly necessary in my implementation instead of tackeling more important little UI features to make the activity prettier.
+
+Next time instead of aiming to merge one day earlier again I should do my work right at the beginning of the week so that I give more time to my teammates and to myself to ask questions and be sure to not waste time by not understanding stuff.
 
 
 ## Jeremy (Scrum Master)
@@ -21,17 +26,13 @@ Next time, I will make sure to be clear with other people about those kinds of i
 
 This week I finished my attributed tasks which were to implement some logic for the UI and my task from last week.
 
-However I did not manage my time correctly this week. I was waiting for Aloïs works to have some support and general direction for the visual but it leads me to a rush on the last day.
+However I did not manage my time correctly this week. I was waiting for Aloïs works to have some support and general direction for the visual but it leads me to a rush on the last day last day.
 
 Next time, I will not hesitate to use dummy setup to begin my tasks earlier and also to work on multiple PR if possible to avoid dead time.
 
 ## Nicolas 
 
-This week, I finished implementing the local database backend and testing it.
 
-However, my PR wasn't merged until Wednesday, as it wasn't reviewed until them. It led to some problems as some people were waiting on it to implement their own features.
-
-Next time, I will make sure that my code is merged as soon as possible once it's finished.
 
 ## Pablo 
 
