@@ -14,7 +14,10 @@ import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
@@ -25,7 +28,7 @@ import com.mapbox.turf.TurfTransformation;
 
 public class MapBoxHelper {
 
-    private static final long ANIMATION_DURATION = 200;
+    private static final long POINT_ANIMATION_DURATION = 200;
 
     private static final String PICTURE_SOURCE_ID = "picture-source-id";
     private static final String PICTURE_LAYER_ID = "picture-layer-id";
@@ -39,7 +42,7 @@ public class MapBoxHelper {
      * @param source of the GeoJsonSource on which to apply the animation
      * @return the new position reached at the end of the animation
      */
-    protected static LatLng updatePositionByLineAnimation(ValueAnimator animator, LatLng originPoint, @NonNull LatLng destinationPoint, GeoJsonSource source) {
+    protected static LatLng updatePositionByLineAnimation(GeoJsonSource source, ValueAnimator animator, LatLng originPoint, @NonNull LatLng destinationPoint) {
 
         if (animator != null && animator.isStarted()) {
             originPoint = (LatLng) animator.getAnimatedValue();
@@ -48,7 +51,7 @@ public class MapBoxHelper {
 
         animator = ObjectAnimator
                 .ofObject(latLngEvaluator, originPoint, destinationPoint)
-                .setDuration(ANIMATION_DURATION);
+                .setDuration(POINT_ANIMATION_DURATION);
         animator.addUpdateListener(animatorUpdateListenerForGJSource(source));
         animator.start();
 
@@ -77,7 +80,6 @@ public class MapBoxHelper {
             return latLng;
         }
     };
-
 
     /**
      * Draw a hollow red circle on a MapBox
