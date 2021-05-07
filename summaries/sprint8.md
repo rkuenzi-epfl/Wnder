@@ -27,7 +27,11 @@ Next time, I will not hesitate to use dummy setup to begin my tasks earlier and 
 
 ## Nicolas 
 
+This week, I finished implementing the local database backend and testing it.
 
+However, my PR wasn't merged until Wednesday, as it wasn't reviewed until them. It led to some problems as some people were waiting on it to implement their own features.
+
+Next time, I will make sure that my code is merged as soon as possible once it's finished.
 
 ## Pablo 
 
