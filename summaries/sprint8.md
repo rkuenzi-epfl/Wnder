@@ -21,7 +21,7 @@ Next time, I will make sure to be clear with other people about those kinds of i
 
 This week I finished my attributed tasks which were to implement some logic for the UI and my task from last week.
 
-However I did not manage my time correctly this week. I was waiting for Aloïs works to have some support and general direction for the visual but it leads me to a rush on the last day last day.
+However I did not manage my time correctly this week. I was waiting for Aloïs works to have some support and general direction for the visual but it leads me to a rush on the last day.
 
 Next time, I will not hesitate to use dummy setup to begin my tasks earlier and also to work on multiple PR if possible to avoid dead time.
 
