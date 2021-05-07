@@ -65,16 +65,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
     public static final String EXTRA_PICTURE_ID = "picture_id";
 
-    private static final String GUESS_SOURCE_ID = "guess-source-id";
-    private static final String GUESS_LAYER_ID = "guess-layer-id";
-    private static final String GUESS_ICON_ID = "guess-icon-id";
-    private static final String PICTURE_SOURCE_ID = "picture-source-id";
-    private static final String PICTURE_LAYER_ID = "picture-layer-id";
-    private static final String PICTURE_ICON_ID = "picture-icon-id";
-    private static final String ARROW_SOURCE_ID = "arrow-source-id";
-    private static final String ARROW_LAYER_ID = "arrow-layer-id";
-    private static final String ARROW_ICON_ID = "arrow-icon-id";
-
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
     private static final long GET_POSITION_FROM_GPS_PERIOD = 1*1000; //10 secondes
@@ -175,7 +165,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
                 float angleAroundZ = (float) (result[2]*180/Math.PI + 180); //Value of the sensor
 
-                SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(ARROW_LAYER_ID);
+                SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
                 layer.setProperties(PropertyFactory.iconRotate(angleFromNorthToImagePosition - angleAroundZ)); //Arrow angle
 
                 CameraPosition position = new CameraPosition.Builder()
@@ -234,9 +224,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         this.mapboxMap.setCameraPosition(position);
 
         //Get guess source
-        guessSource = new GeoJsonSource(GUESS_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
-        arrowSource = new GeoJsonSource(ARROW_SOURCE_ID, Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
-        pictureSource = new GeoJsonSource(PICTURE_SOURCE_ID, Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
+        guessSource = new GeoJsonSource(String.valueOf(R.string.GUESS_SOURCE_ID), Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
+        arrowSource = new GeoJsonSource(String.valueOf(R.string.ORANGE_ARROW_SOURCE_ID), Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
+        pictureSource = new GeoJsonSource(String.valueOf(R.string.PICTURE_SOURCE_ID), Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
 
         //Set mapbox style
         mapboxMap.setStyle(Style.SATELLITE_STREETS, style -> onStyleLoaded(style));
@@ -251,32 +241,32 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
 
-        style.addImage((GUESS_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_20px_orange));
+        style.addImage((String.valueOf(R.string.GUESS_ICON_ID)), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_20px_red));
         style.addSource(guessSource);
-        style.addLayer(new SymbolLayer(GUESS_LAYER_ID, GUESS_SOURCE_ID)
+        style.addLayer(new SymbolLayer(String.valueOf(R.string.GUESS_LAYER_ID), String.valueOf(R.string.GUESS_SOURCE_ID))
                 .withProperties(
-                        PropertyFactory.iconImage(GUESS_ICON_ID),
+                        PropertyFactory.iconImage(String.valueOf(R.string.GUESS_ICON_ID)),
                         PropertyFactory.iconIgnorePlacement(true),
                         PropertyFactory.iconAllowOverlap(true)
                 ));
 
-        style.addImage((ARROW_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.fleche_orange));
+        style.addImage((String.valueOf(R.string.ORANGE_ARROW_ICON_ID)), BitmapFactory.decodeResource(getResources(), R.drawable.fleche_orange));
         style.addSource(arrowSource);
-        style.addLayer(new SymbolLayer(ARROW_LAYER_ID, ARROW_SOURCE_ID)
+        style.addLayer(new SymbolLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID), String.valueOf(R.string.ORANGE_ARROW_SOURCE_ID))
                 .withProperties(
                         PropertyFactory.visibility(Property.NONE),
-                        PropertyFactory.iconImage(ARROW_ICON_ID),
+                        PropertyFactory.iconImage(String.valueOf(R.string.ORANGE_ARROW_ICON_ID)),
                         PropertyFactory.iconRotate((float) mapboxMap.getCameraPosition().bearing),
                         PropertyFactory.iconIgnorePlacement(true),
                         PropertyFactory.iconAllowOverlap(true)
                 ));
 
-        style.addImage((PICTURE_ICON_ID), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_20px_purple));
+        style.addImage((String.valueOf(R.string.PICTURE_ICON_ID)), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_20px_purple));
         style.addSource(pictureSource);
-        style.addLayer(new SymbolLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID)
+        style.addLayer(new SymbolLayer(String.valueOf(R.string.PICTURE_LAYER_ID), String.valueOf(R.string.PICTURE_SOURCE_ID))
                 .withProperties(
                         PropertyFactory.visibility(Property.NONE),
-                        PropertyFactory.iconImage(PICTURE_ICON_ID),
+                        PropertyFactory.iconImage(String.valueOf(R.string.PICTURE_ICON_ID)),
                         PropertyFactory.iconIgnorePlacement(true),
                         PropertyFactory.iconAllowOverlap(true)
                 ));
@@ -335,7 +325,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      *  Update the compass and the hotbar according to the mode and distance between the current guess and picture location
      */
     private void updateCompassMode(){
-        SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(ARROW_LAYER_ID);
+        SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
         View hotbarView = findViewById(R.id.hotbarView);
         //Arbitrary value based on the radius to check if we are close enough
         double referenceDistance = GlobalUser.getUser().getRadius() * 1000 / 100;
@@ -448,48 +438,14 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Shows the real location of the picture
      */
     private void showActualLocation() {
-        /*
-        //Remove old style with only the guess source
+        //Make the icon of the picture visible
         Style style = mapboxMap.getStyle();
-        style.removeSource(guessSource);
-        style.removeLayer(GUESS_LAYER_ID);
-
-        //Features
-        Feature guessFeature = Feature.fromGeometry(Point.fromLngLat(guessPosition.getLongitude(), guessPosition.getLatitude()));
-        Feature pictureFeature = Feature.fromGeometry(Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
-
-        //Add new style with both icons
-        style.addSource(new GeoJsonSource(PICTURE_SOURCE_ID,
-                FeatureCollection.fromFeatures(new Feature[] {
-                        guessFeature,
-                        pictureFeature
-                })));
-        style.addLayer(new SymbolLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID)
-                .withProperties(
-                        PropertyFactory.iconImage(GUESS_ICON_ID),
-                        PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconAllowOverlap(true)
-                ));
-
-        //Set camera position
-        CameraPosition position = new CameraPosition.Builder().target(picturePosition).zoom(14).build();
-        mapboxMap.setCameraPosition(position);
-        LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                .include(guessPosition)
-                .include(picturePosition)
-                .build();
-        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds,100), 200);
-        
-         */
-
-        /*
-        Style style = mapboxMap.getStyle();
-        style.getLayer(PICTURE_LAYER_ID).setProperties(PropertyFactory.visibility(Property.VISIBLE));
+        style.getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.VISIBLE));
 
         //Animate camera position to englobe the picture and the guess position
         LatLngBounds latLngBounds = new LatLngBounds.Builder().include(guessPosition).include(picturePosition).build();
         mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, CAMERA_PADDING), (int) CAMERA_ANIMATION_DURATION);
-*/
+
         double distanceFromPicture = guessPosition.distanceTo(picturePosition);
         TextView distanceText = findViewById(R.id.distanceText);
         String dText = getString(R.string.distance_meter,(int)distanceFromPicture);

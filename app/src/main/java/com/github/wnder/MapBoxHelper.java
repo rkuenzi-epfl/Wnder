@@ -30,9 +30,6 @@ public class MapBoxHelper {
 
     private static final long POINT_ANIMATION_DURATION = 200;
 
-    private static final String PICTURE_SOURCE_ID = "picture-source-id";
-    private static final String PICTURE_LAYER_ID = "picture-layer-id";
-
     /**
      * Animate on a line a point from an origin to a destination for a MapBox GeoJsonSource.
      *
@@ -96,7 +93,7 @@ public class MapBoxHelper {
         Polygon outerCirclePolygon = TurfTransformation.circle(center,  distanceDiameter + distanceDiameter/15.0, "kilometers");
         Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distanceDiameter, "kilometers");
 
-        GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
+        GeoJsonSource outerCircleSource = new GeoJsonSource(String.valueOf(R.string.RED_CIRCLE_SOURCE_ID), outerCirclePolygon);
 
         //Create hollow circle
         if (outerCircleSource != null) {
@@ -109,7 +106,7 @@ public class MapBoxHelper {
         //Set mapbox style
         Style style = mapboxMap.getStyle();
         style.addSource(outerCircleSource);
-        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
+        style.addLayer(new FillLayer(String.valueOf(R.string.RED_CIRCLE_LAYER_ID), String.valueOf(R.string.RED_CIRCLE_SOURCE_ID)).withProperties(
                 PropertyFactory.fillColor(ContextCompat.getColor(context, R.color.red)),
                 PropertyFactory.fillOpacity(0.4f)
         ));
