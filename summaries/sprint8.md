@@ -8,6 +8,14 @@
 ## Jeremy (Crum Master)
 
 
+This week I had to implement a local database to access the history offline. I worked on this task with Nicolas since our tasks were roughly the same. I also had to make a function that finds out if the device is connected or not. My final task was to stop the user from doing stuff that required an internet connection. All of this was merged by wednesday to let time for other people to integrate my work into theirs.
+
+As the scrum master of this week, I tried to encourage people to start their tasks sooner during the week and made sure people do not overload themselves in order to finish the user stories of the week.
+
+However some miscommunication happened with Romain which lead him to believe that I had done one of his tasks without realizing it which caused him to start his task late.
+
+Next time, I will make sure to be clear with other people about those kinds of issues.
+
 
 ## Léonard 
 
@@ -31,3 +39,10 @@ Next time, I will try to do the reviews as soon as possible so that no one (inlu
 
 ## Overall team
 
+This week the group managed to deliver all the user stories in the sprint backlog
+
+The earliests PRs took quite a bit of time (a day or two) to get reviewed which slowed down the rest of the team since some people were waiting on features inside those PR to start. 
+
+Some people didn't use those features in their work and continued using the old, deprecated methods which will complicate things in the long run.
+
+Also people waited thursday evening to submit their work for review forcing people to stay up late to review and merge.
