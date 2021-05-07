@@ -5,7 +5,7 @@
 
 
 
-## Jeremy (Crum Master)
+## Jeremy (Scrum Master)
 
 
 This week I had to implement a local database to access the history offline. I worked on this task with Nicolas since our tasks were roughly the same. I also had to make a function that finds out if the device is connected or not. My final task was to stop the user from doing stuff that required an internet connection. All of this was merged by wednesday to let time for other people to integrate my work into theirs.
@@ -19,7 +19,11 @@ Next time, I will make sure to be clear with other people about those kinds of i
 
 ## Léonard 
 
+This week I finished my attributed tasks which were to implement some logic for the UI and my task from last week.
 
+However I did not manage my time correctly this week. I was waiting for Aloïs works to have some support and general direction for the visual but it leads me to a rush on the last day last day.
+
+Next time, I will not hesitate to use dummy setup to begin my tasks earlier and also to work on multiple PR if possible to avoid dead time.
 
 ## Nicolas 
 
