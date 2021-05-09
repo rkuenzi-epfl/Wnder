@@ -45,6 +45,7 @@ dependencies {
 
     // Hilt, dependencies injection
     implementation 'com.google.dagger:hilt-android:2.35'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     annotationProcessor 'com.google.dagger:hilt-compiler:2.35'
 
     // For instrumentation tests

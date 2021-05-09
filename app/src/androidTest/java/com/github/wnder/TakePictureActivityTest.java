@@ -59,7 +59,7 @@ public class TakePictureActivityTest {
 
     @Test
     public void testTakePhotoButton(){
-        onView(withId(R.id.takePictureButton)).perform(click());
+        onView(withId(R.id.oldTakePictureButton)).perform(click());
         intended(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE));
     }
 
@@ -72,7 +72,7 @@ public class TakePictureActivityTest {
 
         intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
 
-        onView(withId(R.id.takePictureButton)).perform(click());
+        onView(withId(R.id.oldTakePictureButton)).perform(click());
         onView(withId(R.id.pictureConfirmButton)).perform(click());
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
         onView(withText(R.string.no_connection)).perform(pressBack());
@@ -86,7 +86,7 @@ public class TakePictureActivityTest {
 
         intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
 
-        onView(withId(R.id.takePictureButton)).perform(click());
+        onView(withId(R.id.oldTakePictureButton)).perform(click());
         onView(withId(R.id.pictureConfirmButton)).perform(click());
 
     }
