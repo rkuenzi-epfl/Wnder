@@ -48,5 +48,7 @@ public class NavigationActivityTest {
 
         //All those should do nothing for now
         assertTrue(true);
+
+        Intents.release();
     }
 }
