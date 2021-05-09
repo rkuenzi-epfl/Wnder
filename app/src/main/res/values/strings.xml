@@ -70,5 +70,6 @@
     <string name="profile_destination">Profile</string>
     <string name="guess_destination">Guess</string>
     <string name="history_destination">History</string>
+    <string name="take_picture_destination">Upload</string>
 
 </resources>

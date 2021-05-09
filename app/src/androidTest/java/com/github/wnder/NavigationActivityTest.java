@@ -35,16 +35,25 @@ public class NavigationActivityTest {
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 0));
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 0));
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 0));
 
-        //When guess is selected
+        //When take_picture is selected
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 1));
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 1));
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 1));
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 1));
 
-        //When history is selected
+        //When guess is selected
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 2));
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 2));
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 2));
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 2));
+
+        //When history is selected
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 3));
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 3));
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 3));
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 3));
 
         //All those should do nothing for now
         assertTrue(true);

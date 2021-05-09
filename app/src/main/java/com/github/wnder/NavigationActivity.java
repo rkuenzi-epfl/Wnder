@@ -11,13 +11,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Class displaying a bottom navigation bar and letting us go from one fragment to the other depending on this bar
  */
 public class NavigationActivity extends AppCompatActivity {
 
-    //Navigation view
-    private BottomNavigationView bottomNavigationView;
+    BottomNavigationView bottomNavigationView;
+
+    //Page strings
+    private static final String PROFILE_PAGE = "profile";
+    private static final String TAKE_PICTURE_PAGE = "take_picture";
+    private static final String GUESS_PAGE = "guess";
+    private static final String HISTORY_PAGE = "history";
 
     /**
      * Execs on activity creation
@@ -28,9 +36,16 @@ public class NavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
 
-        //Setup bottom navigation bar
+        //Setup map with corresponding strings
+        Map<Integer, String> iconMap = new HashMap<>();
+        iconMap.put(R.id.profile_page, PROFILE_PAGE);
+        iconMap.put(R.id.take_picture_page, TAKE_PICTURE_PAGE);
+        iconMap.put(R.id.guess_page, GUESS_PAGE);
+        iconMap.put(R.id.history_page, HISTORY_PAGE);
+
+        //call updateFragment depending on clicked icon
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateFragment(item.getItemId()));
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateFragment(iconMap.get(item.getItemId())));
     }
 
     /**
@@ -43,18 +58,11 @@ public class NavigationActivity extends AppCompatActivity {
 
     /**
      * Update fragment depending on pressed navigation bar button
-     * @param id id of the pressed icon
-     * @return true when done
+     * @param id string defining pressed button
+     * @return Boolean true
      */
-    private Boolean updateFragment(Integer id){
-        switch(id){
-            case R.id.profile_page:
-                //update fragment
-            case R.id.guess_page:
-                //update fragment
-            case R.id.history_page:
-                //update fragment
-        }
+    private Boolean updateFragment(String id){
+        //do nothing for now
         return true;
     }
 }
