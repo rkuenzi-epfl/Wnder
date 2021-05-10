@@ -1,19 +1,13 @@
 package com.github.wnder;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -28,7 +22,7 @@ public class ScoreboardActivity extends AppCompatActivity {
 
     private ScoreboardActivityViewModel viewModel;
     private ScoreboardAdapter adapter;
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
 
     /**
      * Executes on activity creation
@@ -61,18 +55,5 @@ public class ScoreboardActivity extends AppCompatActivity {
     private void updateScoreboard(List<Map.Entry<String, Double>> scoreboard){
         adapter.updateScoreboard(scoreboard);
         adapter.notifyDataSetChanged();
-        /*TableLayout scoreTable = findViewById(R.id.scoreTable);
-        for(Map.Entry<String, Double> e : scoreboard){
-            TableRow newRow = new TableRow(this);
-            TextView userName = new TextView(this);
-            userName.setText((String)e.getKey());
-            TextView score = new TextView(this);
-            Double value = (Double) e.getValue();
-            score.setText(Double.toString(value));
-            newRow.addView(userName);
-            newRow.addView(score);
-            scoreTable.addView(newRow);
-
-        }*/
     }
 }

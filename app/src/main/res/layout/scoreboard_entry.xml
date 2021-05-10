@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:text="username"
+            android:text="@string/scoreboard_username_placeholder"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -28,7 +28,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="43dp"
-            android:text="score"
+            android:text="@string/scoreboard_score_placeholder"
             android:textColor="@color/black"
             android:textSize="15sp"/>
     </RelativeLayout>

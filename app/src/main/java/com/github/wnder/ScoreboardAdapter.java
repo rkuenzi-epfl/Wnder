@@ -48,7 +48,7 @@ public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.Vi
         Map.Entry<String, Double> entry = scoreboard.get(position);
 
         holder.username.setText(entry.getKey());
-        holder.score.setText(entry.getValue().toString());
+        holder.score.setText(String.format("%4.1f", entry.getValue()));
     }
 
     @Override
