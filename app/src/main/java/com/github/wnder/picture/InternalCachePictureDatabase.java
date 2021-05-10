@@ -62,7 +62,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.getApproximateLocation(uniqueId);
         }
         else {
-            throw new IllegalStateException("The approximate location is not available locally");
+            CompletableFuture<Location> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
+            return cf;
         }
     }
 
@@ -72,7 +74,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.getUserGuesses(uniqueId);
         }
         else {
-            throw new IllegalStateException("This method is not available on offline mode");
+            CompletableFuture<Map<String, Location>> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
+            return cf;
         }
     }
 
@@ -153,7 +157,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.updateKarma(uniqueId, delta);
         }
         else {
-            throw new IllegalStateException("The karma is not stored locally");
+            CompletableFuture<Void> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
+            return cf;
         }
     }
 

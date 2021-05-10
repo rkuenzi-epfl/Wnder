@@ -136,13 +136,8 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void getApproximateLocationThrows(){
-        try {
-            ICPD.getApproximateLocation(uniqueId);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+
+        assertTrue(ICPD.getApproximateLocation(uniqueId).isCompletedExceptionally());
     }
 
     @Test
@@ -152,13 +147,8 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void sendUserGuessesThrows(){
-        try {
-            ICPD.sendUserGuess(uniqueId, "testUser", realLoc);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+        assertTrue(ICPD.sendUserGuess(uniqueId, "testUser", realLoc).isCompletedExceptionally());
+
     }
 
     @Test
@@ -180,12 +170,8 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void updateKarmaThrows(){
-        try{
-            ICPD.updateKarma(uniqueId, 0);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+
+        assertTrue(ICPD.updateKarma(uniqueId, 0).isCompletedExceptionally());
+
     }
 }
