@@ -318,11 +318,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     @Override
     public void onCameraMove() {
-        if(compassMode) updateCompassMode(); //Would be nice to find a way to know if the map is rotating instead of simply moving
+        if(compassMode) updateCompassMode();
     }
 
     /**
-     *  Update the compass and the hotbar according to the mode and distance between the current guess and picture location
+     *  Update the compass and the hotbar according to the mode and the distance between the current guess and picture location
      */
     private void updateCompassMode(){
         SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
