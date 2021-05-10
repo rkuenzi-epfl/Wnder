@@ -30,15 +30,14 @@ public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        private final TextView rank;
-
+        private final TextView position;
         private final TextView username;
         private final TextView score;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            rank = itemView.findViewById(R.id.scoreboardRank);
+            position = itemView.findViewById(R.id.scoreboardRank);
             username = itemView.findViewById(R.id.scoreboardUsername);
             score = itemView.findViewById(R.id.scoreboardScore);
         }
@@ -55,7 +54,7 @@ public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Map.Entry<String, Double> entry = scoreboard.get(position);
 
-        holder.rank.setText(String.format(Locale.getDefault(),"%d", position + 1));
+        holder.position.setText(String.format(Locale.getDefault(),"%d", position + 1));
         holder.username.setText(entry.getKey());
         holder.score.setText(String.format(Locale.getDefault(),"%4.1f", entry.getValue()));
     }
