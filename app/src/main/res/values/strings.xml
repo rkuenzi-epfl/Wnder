@@ -24,7 +24,10 @@
     <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
     <string name="guess_location">Guess Location</string>
     <string name="skip_location">Skip</string>
-    <string name="report_location">Report</string>
+    <string name="report_location">...</string>
+    <string name="report">Report</string>
+    <string name="help">Help</string>
+    <string name="popup_menu">Popup menu</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
 

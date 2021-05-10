@@ -7,14 +7,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.MenuInflater;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
@@ -63,9 +64,29 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
         findViewById(R.id.skipButton).setOnClickListener(id -> skipPicture());
-        findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
+        //findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
 
     }
+
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if(id == R.id.report){
+                reportImage();
+                return true;
+            }
+            else if(id == R.id.help){
+                helpMenu();
+                return true;
+            }
+            return false;
+        });
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.help_menu, popup.getMenu());
+        popup.show();
+    }
+
 
     /**
      * Executed on activity start
@@ -135,6 +156,14 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * Create an alert popup to explain how to use this activity
+     */
+    private void helpMenu(){
+        AlertBuilder.noConnectionAlert("Actions possible:", "Guess: Click on the picture if you want to guess it's location. \n\nSkip: " +
+                "Swipe left to skip the actual image and search an other one.", this).show();
     }
 
     /**
