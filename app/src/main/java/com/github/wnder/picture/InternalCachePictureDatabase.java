@@ -129,7 +129,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
         }
         else {
-            throw new IllegalStateException("This method is not available on offline mode");
+            CompletableFuture<Void> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
+            return cf;
         }
     }
 

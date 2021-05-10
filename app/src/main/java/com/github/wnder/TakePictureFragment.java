@@ -1,11 +1,14 @@
 package com.github.wnder;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,9 +21,14 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.transition.TransitionManager;
 
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,14 +48,16 @@ public class TakePictureFragment extends Fragment {
     @Inject
     public PicturesDatabase picturesDb;
 
-    private ActivityResultLauncher<Uri> takePictureLauncher;
+    @Inject
+    public NetworkService networkInfo;
 
-    private static final int CONSTRAINT_DISTANCE_RIGHT = 16;
-    private static final int CONSTRAINT_DISTANCE_BOTTOM = 32;
+    private ActivityResultLauncher<Uri> takePictureLauncher;
 
     private ConstraintLayout constraintLayout;
     private FloatingActionButton takePictureButton;
     private FloatingActionButton uploadButton;
+
+    private User user;
     private String userName;
 
     private Uri takenPictureUri;
@@ -61,15 +71,25 @@ public class TakePictureFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        constraintLayout = (ConstraintLayout) getView();
+        constraintLayout = getView().findViewById(R.id.takePictureConstraint);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         uploadButton = view.findViewById(R.id.uploadButton);
-        userName = GlobalUser.getUser().getName();
-        takePictureLauncher = registerForActivityResult(new TakePicture(), (stored) -> onTakePictureResult(stored));
 
+        user = GlobalUser.getUser();
+        userName = user.getName();
+
+        // Prepare to open the camera
+        takePictureLauncher = registerForActivityResult(new TakePicture(), (stored) -> onTakePictureResult(stored));
         takePictureButton.setOnClickListener(button -> openCamera());
-        uploadButton.setVisibility(View.INVISIBLE);
-        uploadButton.setClickable(false);
+
+        // Alert Guest user and user no connected to the internet
+        if(user instanceof GuestUser){
+            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), getContext())
+                    .show();
+        } else if(!networkInfo.isNetworkAvailable()){
+            AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), getContext())
+                    .show();
+        }
     }
 
     /**
@@ -79,20 +99,13 @@ public class TakePictureFragment extends Fragment {
         // Create an id and the Uri where to store the resulting picture
         takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
 
-        // Create the File where the photo should go
-        File pictureFile = null;
-        try {
-            File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            pictureFile = File.createTempFile(takenPictureId, ".jpg", storageDir);
-        } catch (IOException ex) {
-            // Error occurred while creating the File
-        }
-        // Continue only if the File was successfully created
-        if (pictureFile != null) {
-            takenPictureUri = FileProvider.getUriForFile(getContext(),
-                    "com.github.wnder.android.fileprovider",
-                    pictureFile);
+        takenPictureUri = setupGalleryFile();
+        if (takenPictureUri != null) {
+
             takePictureLauncher.launch(takenPictureUri);
+        } else {
+            Snackbar.make(getView(), R.string.could_not_launch_camera, BaseTransientBottomBar.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -101,6 +114,7 @@ public class TakePictureFragment extends Fragment {
      */
     private void onTakePictureResult(boolean stored) {
         if (stored) {
+
             // Move takePictureButton to the left
             TransitionManager.beginDelayedTransition(constraintLayout);
             ConstraintSet constraintSet = new ConstraintSet();
@@ -110,6 +124,9 @@ public class TakePictureFragment extends Fragment {
             ImageView takenPictureView = getView().findViewById(R.id.takenPicture);
             takenPictureView.setImageURI(takenPictureUri);
             uploadButton.setOnClickListener(button -> uploadTakenPicture());
+        } else {
+            Snackbar.make(getView(), R.string.no_picture_from_camera, BaseTransientBottomBar.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -117,20 +134,45 @@ public class TakePictureFragment extends Fragment {
      * Upload the picture taken
      */
     private void uploadTakenPicture() {
-        takenPictureLocation = GlobalUser.getUser().getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
-        CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, userName, takenPictureLocation, takenPictureUri);
-        uploadResult.thenAccept(res -> {
+        if(user instanceof GuestUser){
+            Snackbar.make(getView(), R.string.guest_no_upload, BaseTransientBottomBar.LENGTH_SHORT)
+                    .show();
+        } else {
+            takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
+            CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, userName, takenPictureLocation, takenPictureUri);
+            uploadResult.thenAccept(res -> {
 
-            // Move takePictureButton to the right
-            TransitionManager.beginDelayedTransition(constraintLayout);
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.load(getContext(), R.layout.fragment_take_picture);
-            constraintSet.applyTo(constraintLayout);
+                // Move takePictureButton to the right
+                TransitionManager.beginDelayedTransition(constraintLayout);
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.load(getContext(), R.layout.fragment_take_picture);
+                constraintSet.applyTo(constraintLayout);
 
-            uploadButton.setClickable(false);
-        }).exceptionally(res -> {
-            // TODO: Display upload failed message
-            return null;
-        });
+                uploadButton.setClickable(false);
+            }).exceptionally(res -> {
+
+                Snackbar.make(getView(), R.string.upload_failed, BaseTransientBottomBar.LENGTH_SHORT)
+                        .show();
+                return null;
+            });
+        }
+    }
+
+    /**
+     * Add the picture just taken to the shared media
+     */
+    private Uri setupGalleryFile(){
+        Uri imageCollection;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            imageCollection = MediaStore.Images.Media
+                    .getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        } else {
+            imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
+        ContentValues newPictureDetails = new ContentValues();
+        newPictureDetails.put(MediaStore.Images.Media.DISPLAY_NAME, takenPictureId);
+        newPictureDetails.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+        return getContext().getContentResolver().insert(imageCollection, newPictureDetails);
+
     }
 }

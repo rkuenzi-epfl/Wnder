@@ -11,7 +11,7 @@ public final class AlertBuilder {
         //Non instanciable class
     }
 
-    public static AlertDialog noConnectionAlert(String title, String body, Context ctx){
+    public static AlertDialog okAlert(String title, String body, Context ctx){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
         alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setMessage(body);

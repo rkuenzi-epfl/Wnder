@@ -12,9 +12,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
@@ -120,7 +118,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
             finish();
         }
         else{
-            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
             alert.show();
         }
     }
