@@ -67,7 +67,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
-    private static final long GET_POSITION_FROM_GPS_PERIOD = 1*1000; //10 secondes
+    private static final long GET_POSITION_FROM_GPS_PERIOD = 1000; //10 secondes
 
     //Defines necessary mapBox setup
     private MapView mapView;
