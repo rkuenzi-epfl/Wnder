@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -75,10 +76,10 @@ public class SignedInUser extends User{
     /**
      * Apply a function once the designated list of pictures of the user have been retrieved
      * @param picturesListName The name of the list of pictures to get from firestore (ex.: guessedPics, uploadedPics)
-     * @param PicsAv Function to apply
      */
     @Override
-    public void onPicturesAvailable(String picturesListName, Context ctx, Consumer<List<String>> PicsAv){
+    public CompletableFuture<List<String>> onPicturesAvailable(String picturesListName, Context ctx){
+        CompletableFuture<List<String>> cf = new CompletableFuture<>();
         if(new NetworkInformation((ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE)).isNetworkAvailable()){
             Task<DocumentSnapshot> userData = Storage.downloadFromFirestore("users", this.name);
 
@@ -87,11 +88,12 @@ public class SignedInUser extends User{
                 if(pictures == null){
                     pictures = new ArrayList<>();
                 }
-                PicsAv.accept(pictures);
+                cf.complete(pictures);
             });
+            return cf;
         }
         else{
-            super.onPicturesAvailable(picturesListName, ctx, PicsAv);
+            return super.onPicturesAvailable(picturesListName, ctx);
         }
     }
 
@@ -102,10 +104,10 @@ public class SignedInUser extends User{
     void onUploadedAndGuessedPicturesAvailable(Context ctx, Consumer<Set<String>> uAGPA){
         Set<String> allPictures = new HashSet<>();
 
-        onPicturesAvailable(User.GUESSED_PICS, ctx, guessedPics -> {
+        onPicturesAvailable(User.GUESSED_PICS, ctx).thenAccept(guessedPics -> {
             allPictures.addAll(guessedPics);
 
-            onPicturesAvailable(User.UPLOADED_PICS, ctx, uploadedPics -> {
+            onPicturesAvailable(User.UPLOADED_PICS, ctx).thenAccept(uploadedPics -> {
                 allPictures.addAll(uploadedPics);
 
                 uAGPA.accept(allPictures);

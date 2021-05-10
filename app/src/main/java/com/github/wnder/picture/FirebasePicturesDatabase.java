@@ -6,7 +6,10 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.github.wnder.Score;
+import com.github.wnder.Storage;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
@@ -27,11 +30,14 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     private final StorageReference storage;
     private final CollectionReference picturesCollection;
+    private final CollectionReference usersCollection;
 
     @Inject
     public FirebasePicturesDatabase(){
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
+        usersCollection = FirebaseFirestore.getInstance().collection("users");
+
     }
 
     @Override
@@ -145,7 +151,43 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
             });
         });
-        return CompletableFuture.allOf(guessSent, scoreSent);
+        return CompletableFuture.allOf(guessSent, scoreSent, addToUserGuessedPictures(uniqueId, user));
+    }
+
+    /**
+     * Add a picture to the guessed pictures of a user on the database
+     * @param user the user
+     */
+    private CompletableFuture<Void> addToUserGuessedPictures(String uniqueId, String user) {
+        CompletableFuture<Void> cf = new CompletableFuture<>();
+        //user guessed pictures
+        usersCollection.document(user).get().addOnSuccessListener((documentSnapshot) -> {
+            //Get uploaded and guessed pics
+            List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
+            List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
+
+            //create the lists if they don't exist
+            if (guessedPictures == null) {
+                guessedPictures = new ArrayList<>();
+            }
+            if (uploadedPictures == null) {
+                uploadedPictures = new ArrayList<>();
+            }
+
+            //add picture to list if it isn't already in
+            if (!guessedPictures.contains(uniqueId)) {
+                guessedPictures.add(uniqueId);
+            }
+
+            //Upload everything back to Firestore
+            Map<String, Object> toUpload = new HashMap<>();
+            toUpload.put("guessedPics", guessedPictures);
+            toUpload.put("uploadedPics", uploadedPictures);
+            usersCollection.document(user).set(toUpload)
+                    .addOnSuccessListener(result -> cf.complete(null))
+                    .addOnFailureListener(cf::completeExceptionally);
+        }).addOnFailureListener(cf::completeExceptionally);
+        return cf;
     }
 
     @Override
@@ -201,7 +243,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private CompletableFuture<Void> addPhotoToUploadedUserPhoto(String uniqueId, String user){
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //get current user data
-        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("users");
         usersCollection.document(user).get()
                 .addOnSuccessListener((documentSnapshot) ->{
 

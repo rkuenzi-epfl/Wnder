@@ -91,6 +91,14 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) throws IllegalStateException{
         if (isOnline()) {
+            getBitmap(uniqueId).thenAccept(bmp -> {
+                getLocation(uniqueId).thenAccept(location->{
+                    getScoreboard(uniqueId).thenAccept(scoreboard ->{
+                        storePictureLocally(new LocalPicture(uniqueId, bmp, location, guessedLocation, scoreboard));
+                    });
+                });
+            });
+
             return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
         }
         else {
@@ -101,6 +109,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
         if (isOnline()) {
+
             return remoteDatabase.getBitmap(uniqueId);
         }
         else {
