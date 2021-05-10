@@ -2,6 +2,8 @@ package com.github.wnder;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.TableLayout;
@@ -25,6 +27,8 @@ public class ScoreboardActivity extends AppCompatActivity {
     public static final String EXTRA_PICTURE_ID = "picture_id";
 
     private ScoreboardActivityViewModel viewModel;
+    private ScoreboardAdapter adapter;
+    RecyclerView recyclerView;
 
     /**
      * Executes on activity creation
@@ -40,6 +44,14 @@ public class ScoreboardActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(ScoreboardActivityViewModel.class);
         viewModel.getScoreboard().observe(this, this::updateScoreboard);
+
+        recyclerView = findViewById(R.id.recyclerViewScoreboard);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new ScoreboardAdapter();
+
+        recyclerView.setAdapter(adapter);
     }
 
     /**
@@ -47,8 +59,9 @@ public class ScoreboardActivity extends AppCompatActivity {
      * @param scoreboard the new scoreboard to display
      */
     private void updateScoreboard(List<Map.Entry<String, Double>> scoreboard){
-
-        TableLayout scoreTable = findViewById(R.id.scoreTable);
+        adapter.updateScoreboard(scoreboard);
+        adapter.notifyDataSetChanged();
+        /*TableLayout scoreTable = findViewById(R.id.scoreTable);
         for(Map.Entry<String, Double> e : scoreboard){
             TableRow newRow = new TableRow(this);
             TextView userName = new TextView(this);
@@ -60,6 +73,6 @@ public class ScoreboardActivity extends AppCompatActivity {
             newRow.addView(score);
             scoreTable.addView(newRow);
 
-        }
+        }*/
     }
 }
