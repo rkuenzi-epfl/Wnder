@@ -46,5 +46,7 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+        app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+        android:focusable="true"
+        android:contentDescription="@string/go_back" />
 </androidx.constraintlayout.widget.ConstraintLayout>
