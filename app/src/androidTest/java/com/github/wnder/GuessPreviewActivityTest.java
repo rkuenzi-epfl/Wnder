@@ -1,6 +1,8 @@
 package com.github.wnder;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 
@@ -13,6 +15,8 @@ import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.ExistingPicture;
+import com.github.wnder.picture.PicturesDatabase;
+import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
@@ -25,6 +29,8 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+
+import java.util.concurrent.CompletableFuture;
 
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -40,9 +46,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
-@UninstallModules({NetworkModule.class})
+@UninstallModules({NetworkModule.class, PicturesModule.class})
 public class GuessPreviewActivityTest {
 
     //Intent with extra that the activity with start with
@@ -60,8 +70,18 @@ public class GuessPreviewActivityTest {
     @BindValue
     public static NetworkService networkInfo = Mockito.mock(NetworkInformation.class);
 
+    @BindValue
+    public static PicturesDatabase picturesDatabase = Mockito.mock(PicturesDatabase.class);
+
     @BeforeClass
     public static void setup(){
+        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        Location loc =  new Location("");
+        loc.setLatitude(15.);
+        loc.setLongitude(5.);
+        when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
+        when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
+        when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
         SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         GlobalUser.setUser(u);
         boolean[] isDone = new boolean[1];
@@ -81,7 +101,7 @@ public class GuessPreviewActivityTest {
     //Initializes Intents and begins recording intents, similar to MockitoAnnotations.initMocks.
     public void setUp() {
         Intents.init();
-        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
+        when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
 
     @After //Clears Intents state. Must be called after each test case.
@@ -100,7 +120,7 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButtonWhenNoInternet(){
-        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(false);
+        when(networkInfo.isNetworkAvailable()).thenReturn(false);
 
         onView(withId(R.id.guessButton)).perform(click());
 
