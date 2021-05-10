@@ -1,7 +1,6 @@
 package com.github.wnder;
 
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
