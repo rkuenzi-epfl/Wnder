@@ -68,4 +68,10 @@
     <string name="SensorNotAvailableTitle">Sensor not available</string>
     <string name="SensorNotAvailable">The sensor to get information about the phone 3D position is not available. You can\'t access the compass mode.</string>
 
+    <!--Navigation Activity Strings-->
+    <string name="profile_destination">Profile</string>
+    <string name="guess_destination">Guess</string>
+    <string name="history_destination">History</string>
+    <string name="take_picture_destination">Upload</string>
+
 </resources>
