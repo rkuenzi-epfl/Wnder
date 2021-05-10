@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.scoreboard;
 
 import android.os.Bundle;
 
@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.wnder.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
