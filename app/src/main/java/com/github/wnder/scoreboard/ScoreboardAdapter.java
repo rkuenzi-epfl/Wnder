@@ -18,10 +18,17 @@ import java.util.Map;
 public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardViewHolder> {
     private List<Map.Entry<String, Double>> scoreboard;
 
+    /**
+     * Creates an adapter that will write to a recyclerView the scores of all users
+     */
     public ScoreboardAdapter() {
         scoreboard = new ArrayList<>();
     }
 
+    /**
+     * Updates the scoreboard
+     * @param scoreboard the scoreboard to show
+     */
     public void updateScoreboard(List<Map.Entry<String, Double>> scoreboard) {
         this.scoreboard = scoreboard;
     }

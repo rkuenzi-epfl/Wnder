@@ -20,10 +20,17 @@ public class ScoreboardOwnRankAdapter extends RecyclerView.Adapter<ScoreboardVie
     private List<Map.Entry<String, Double>> scoreboardOnlyForUser;
     private int rank;
 
+    /**
+     * Creates an adapter that will write to a recyclerView only the score of the user
+     */
     public ScoreboardOwnRankAdapter() {
         scoreboardOnlyForUser = new ArrayList<>();
     }
 
+    /**
+     * Updates the scoreboard
+     * @param scoreboard the scoreboard to show
+     */
     public void updateScoreboard(List<Map.Entry<String, Double>> scoreboard) {
         int count = 1;
         for(Map.Entry<String, Double> entry : scoreboard){

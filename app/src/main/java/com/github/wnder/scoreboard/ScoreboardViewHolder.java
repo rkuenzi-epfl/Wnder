@@ -22,14 +22,26 @@ public class ScoreboardViewHolder extends RecyclerView.ViewHolder{
         score = itemView.findViewById(R.id.scoreboardScore);
     }
 
+    /**
+     * Returns the textView of the rank
+     * @return a textview of the rank
+     */
     public TextView getRank(){
         return rank;
     }
 
+    /**
+     * Returns the textView of the username
+     * @return a textview of the username
+     */
     public TextView getUsername(){
         return username;
     }
 
+    /**
+     * Returns the textView of the score
+     * @return a textview of the score
+     */
     public TextView getScore(){
         return score;
     }
