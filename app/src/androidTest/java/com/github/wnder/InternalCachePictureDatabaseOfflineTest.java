@@ -147,13 +147,7 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void getUserGuessesThrows(){
-        try {
-            ICPD.getUserGuesses(uniqueId);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+        assertTrue(ICPD.getUserGuesses(uniqueId).isCompletedExceptionally());
     }
 
     @Test
@@ -169,13 +163,8 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void uploadPictureThrows(){
-        try {
-            ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+        assertTrue(ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)).isCompletedExceptionally());
+
     }
 
     @Test
