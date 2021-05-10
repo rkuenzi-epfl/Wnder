@@ -56,16 +56,16 @@ public class ScoreboardOwnRankAdapter extends RecyclerView.Adapter<ScoreboardOwn
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        private final TextView rank;
-        private final TextView username;
         private final TextView score;
-
+        private final TextView username;
+        private final TextView rank;
+        
         public ViewHolder(@NonNull View itemView) {
-            super(itemView);
 
-            rank = itemView.findViewById(R.id.scoreboardRank);
-            username = itemView.findViewById(R.id.scoreboardUsername);
+            super(itemView);
             score = itemView.findViewById(R.id.scoreboardScore);
+            username = itemView.findViewById(R.id.scoreboardUsername);
+            rank = itemView.findViewById(R.id.scoreboardRank);
         }
     }
 }
