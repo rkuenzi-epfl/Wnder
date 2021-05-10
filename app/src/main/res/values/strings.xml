@@ -48,6 +48,7 @@
     <string name="leave_scoreboard">Leave Scoreboard</string>
     <string name="scoreboard_username_placeholder">Username</string>
     <string name="scoreboard_score_placeholder">Score</string>
+    <string name="scoreboard_rank_placeholder">1</string>
 
     <!--Take Picture Strings-->
     <string name="content_descr_picture_taken">Your picture</string>

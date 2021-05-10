@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.ViewHolder> {
@@ -23,13 +24,15 @@ public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.Vi
         this.scoreboard = scoreboard;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView username;
-        private TextView score;
+    public static class ViewHolder extends RecyclerView.ViewHolder{
+        private final TextView rank;
+        private final TextView username;
+        private final TextView score;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            rank = itemView.findViewById(R.id.scoreboardRank);
             username = itemView.findViewById(R.id.scoreboardUsername);
             score = itemView.findViewById(R.id.scoreboardScore);
         }
@@ -46,8 +49,9 @@ public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Map.Entry<String, Double> entry = scoreboard.get(position);
 
+        holder.rank.setText(String.format(Locale.getDefault(),"%d", position + 1));
         holder.username.setText(entry.getKey());
-        holder.score.setText(String.format("%4.1f", entry.getValue()));
+        holder.score.setText(String.format(Locale.getDefault(),"%4.1f", entry.getValue()));
     }
 
     @Override

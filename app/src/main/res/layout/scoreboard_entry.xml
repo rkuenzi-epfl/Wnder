@@ -12,10 +12,21 @@
         android:layout_margin="4dp">
 
         <TextView
+            android:id="@+id/scoreboardRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="@string/scoreboard_rank_placeholder"
+            android:textSize="45sp"
+            android:textStyle="bold"/>
+
+        <TextView
             android:id="@+id/scoreboardUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+
+            android:layout_marginStart="70dp"
             android:text="@string/scoreboard_username_placeholder"
             android:textColor="@color/black"
             android:textSize="20sp"
@@ -26,7 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="8dp"
+
+            android:layout_marginStart="78dp"
             android:layout_marginTop="43dp"
             android:text="@string/scoreboard_score_placeholder"
             android:textColor="@color/black"
