@@ -4,10 +4,6 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.internal.NavigationMenu;
-import com.google.android.material.internal.NavigationMenuView;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;

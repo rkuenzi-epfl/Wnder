@@ -7,7 +7,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts.TakePicture;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.transition.TransitionManager;
 
@@ -31,8 +29,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.CompletableFuture;
 

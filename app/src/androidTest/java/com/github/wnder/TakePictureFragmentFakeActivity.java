@@ -1,6 +1,5 @@
 package com.github.wnder;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultRegistry;
