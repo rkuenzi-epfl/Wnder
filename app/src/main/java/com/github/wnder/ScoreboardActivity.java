@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +23,14 @@ public class ScoreboardActivity extends AppCompatActivity {
     public static final String EXTRA_PICTURE_ID = "picture_id";
 
     private ScoreboardActivityViewModel viewModel;
-    private ScoreboardAdapter adapter;
-    private RecyclerView recyclerView;
+
+    private RecyclerView recyclerViewGlobalRankings;
+    private RecyclerView recyclerViewOwnRank;
+
+    private ScoreboardAdapter adapterGlobalRankings;
+    private ScoreboardOwnRankAdapter adapterOwnRank;
+
+    private FloatingActionButton returnButton;
 
     /**
      * Executes on activity creation
@@ -34,18 +42,25 @@ public class ScoreboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoreboard);
 
-        findViewById(R.id.leaveScoreboardButton).setOnClickListener(id -> finish());
-
         viewModel = new ViewModelProvider(this).get(ScoreboardActivityViewModel.class);
         viewModel.getScoreboard().observe(this, this::updateScoreboard);
 
-        recyclerView = findViewById(R.id.recyclerViewScoreboard);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewGlobalRankings = findViewById(R.id.recyclerViewScoreboard);
+        recyclerViewGlobalRankings.setHasFixedSize(true);
+        recyclerViewGlobalRankings.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new ScoreboardAdapter();
+        recyclerViewOwnRank = findViewById(R.id.recyclerViewOwnRank);
+        recyclerViewOwnRank.setHasFixedSize(true);
+        recyclerViewOwnRank.setLayoutManager(new LinearLayoutManager(this));
 
-        recyclerView.setAdapter(adapter);
+        adapterGlobalRankings = new ScoreboardAdapter();
+        adapterOwnRank = new ScoreboardOwnRankAdapter();
+
+        recyclerViewGlobalRankings.setAdapter(adapterGlobalRankings);
+        recyclerViewOwnRank.setAdapter(adapterOwnRank);
+
+        returnButton = findViewById(R.id.floatingActionButtonReturn);
+        returnButton.setOnClickListener((button) -> finish());
     }
 
     /**
@@ -53,7 +68,10 @@ public class ScoreboardActivity extends AppCompatActivity {
      * @param scoreboard the new scoreboard to display
      */
     private void updateScoreboard(List<Map.Entry<String, Double>> scoreboard){
-        adapter.updateScoreboard(scoreboard);
-        adapter.notifyDataSetChanged();
+        adapterGlobalRankings.updateScoreboard(scoreboard);
+        adapterGlobalRankings.notifyDataSetChanged();
+
+        adapterOwnRank.updateScoreboard(scoreboard);
+        adapterOwnRank.notifyDataSetChanged();
     }
 }
