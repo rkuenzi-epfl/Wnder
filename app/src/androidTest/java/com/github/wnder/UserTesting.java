@@ -1,6 +1,8 @@
 package com.github.wnder;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -119,7 +121,7 @@ public class UserTesting {
         allIds.add("testPicDontRm");
         doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
 
-        u.onNewPictureAvailable(null, InstrumentationRegistry.getInstrumentation().getTargetContext(),(pic) -> {
+        u.onNewPictureAvailable((LocationManager)InstrumentationRegistry.getInstrumentation().getContext().getApplicationContext().getSystemService(Context.LOCATION_SERVICE), InstrumentationRegistry.getInstrumentation().getTargetContext(),(pic) -> {
             //Check that it is not in user's uploaded and guessed pictures
             Set<String> upAdownPics = new HashSet<>();
 
