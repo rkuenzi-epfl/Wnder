@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +15,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -352,7 +355,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void compassModeSetup(){
-        TextView compassModeButtonView = (TextView) findViewById(R.id.compassMode);
+        View compassModeButtonView = findViewById(R.id.compassMode);
 
         List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
 
@@ -371,7 +374,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
             updateGuessPositionFromGPS.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
-            compassModeButtonView.setText(R.string.switchCompassModeText);
+            compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_24));
         }
     }
 
@@ -384,7 +387,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
-        TextView compassModeButtonView = (TextView) findViewById(R.id.compassMode);
+        View compassModeButtonView = findViewById(R.id.compassMode);
 
         compassMode = !compassMode;
         if(compassMode) {
@@ -393,7 +396,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             updateCompassMode();
             sensorManager.unregisterListener(listener);
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
-            compassModeButtonView.setText(R.string.switchNormalModeText);
+            compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
         }
     }
 
@@ -411,8 +414,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             guessConfirmed = true;
 
             findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
-            TextView confirmButtonView = (TextView) findViewById(R.id.confirmButton);
-            confirmButtonView.setText(R.string.confirmButtonPressedOnce);
+            View confirmButtonView = findViewById(R.id.confirmButton);
+            confirmButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
 
             //Send guess and update karma
             if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
@@ -435,26 +438,38 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     /**
      * Shows the real location of the picture
      */
+    @SuppressLint("SetTextI18n")
     private void showActualLocation() {
         //Make the icon of the picture visible
         Style style = mapboxMap.getStyle();
         style.getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.VISIBLE));
 
         //Animate camera position to englobe the picture and the guess position
-        LatLngBounds latLngBounds = new LatLngBounds.Builder().include(guessPosition).include(picturePosition).build();
+        double latDiff = Math.abs(guessPosition.getLatitude() - picturePosition.getLatitude());
+        double latMax = Math.max(guessPosition.getLatitude(), picturePosition.getLatitude());
+        double latMin = Math.min(guessPosition.getLatitude(), picturePosition.getLatitude());
+        LatLng topPosition = new LatLng(latMax + latDiff, guessPosition.getLongitude());
+        LatLng downPosition = new LatLng(latMin - latDiff, guessPosition.getLongitude());
+
+        LatLngBounds latLngBounds = new LatLngBounds.Builder().include(guessPosition).include(picturePosition).include(topPosition).include(downPosition).build();
         mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, CAMERA_PADDING), (int) CAMERA_ANIMATION_DURATION);
 
+        //Set the score text
         double distanceFromPicture = guessPosition.distanceTo(picturePosition);
-        TextView distanceText = findViewById(R.id.distanceText);
+
         String dText = getString(R.string.distance_meter,(int)distanceFromPicture);
         if(distanceFromPicture > 10000){
             dText = getString(R.string.distance_kilometer,(int)distanceFromPicture/1000);
         }
-        distanceText.setText(dText);
 
         double score = Score.calculationScore(distanceFromPicture, GlobalUser.getUser().getRadius() * 1000);
         TextView scoreText = findViewById(R.id.scoreText);
-        scoreText.setText(getString(R.string.score,(int)score));
+        scoreText.setText(getString(R.string.score, (int)score) + "\n" + dText);
+
+        //Animate the text
+        scoreText.setVisibility(View.VISIBLE);
+        Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
+        scoreText.startAnimation(score_animation);
     }
 
     //Necessary overwrites for MapView lifecycle methods
