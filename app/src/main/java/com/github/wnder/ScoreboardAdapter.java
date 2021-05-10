@@ -31,6 +31,7 @@ public class ScoreboardAdapter extends RecyclerView.Adapter<ScoreboardAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView rank;
+
         private final TextView username;
         private final TextView score;
 

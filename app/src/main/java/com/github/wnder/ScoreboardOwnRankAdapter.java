@@ -57,9 +57,11 @@ public class ScoreboardOwnRankAdapter extends RecyclerView.Adapter<ScoreboardOwn
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView score;
+
         private final TextView username;
+
         private final TextView rank;
-        
+
         public ViewHolder(@NonNull View itemView) {
 
             super(itemView);
