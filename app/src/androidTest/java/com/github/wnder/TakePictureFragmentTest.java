@@ -70,6 +70,7 @@ public class TakePictureFragmentTest {
         intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
         ActivityScenario.launch(intent);
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
+        onView(withText(R.string.guest_no_upload)).perform(click());
         onView(withText(R.string.guest_no_upload)).perform(pressBack());
 
         onView(withId(R.id.takePictureButton)).perform(click());
@@ -90,6 +91,7 @@ public class TakePictureFragmentTest {
         ActivityScenario.launch(intent);
 
         onView(withText(R.string.no_internet_upload)).check(matches(isDisplayed()));
+        onView(withText(R.string.no_internet_upload)).perform(click());
         onView(withText(R.string.no_internet_upload)).perform(pressBack());
         onView(withId(R.id.takePictureButton)).perform(click());
         onView(withId(R.id.uploadButton)).perform(click());
