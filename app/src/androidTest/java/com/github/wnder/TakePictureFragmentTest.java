@@ -52,22 +52,13 @@ public class TakePictureFragmentTest {
     @BindValue
     public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
 
-    @Before
-    public void setUp() {
-        when(networkInfo.isNetworkAvailable()).thenReturn(true);
-        Intents.init();
-    }
-
-    @After
-    public void tearDown() {
-        Intents.release();
-    }
-
     @Test
     public void guestUserInformedTheyCannotUpload(){
         GlobalUser.resetUser();
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
         intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
+        when(networkInfo.isNetworkAvailable()).thenReturn(true);
+
         ActivityScenario.launch(intent);
 
         onView(withId(R.id.takePictureButton)).perform(click());
