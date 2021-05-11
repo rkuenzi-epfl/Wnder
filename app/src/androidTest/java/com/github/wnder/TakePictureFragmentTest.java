@@ -65,7 +65,6 @@ public class TakePictureFragmentTest {
 
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
-        onView(withId(android.R.id.button1)).perform(click());
 
 //        onView(withId(R.id.takePictureButton)).perform(click());
 //        onView(withId(R.id.uploadButton)).perform(click());
