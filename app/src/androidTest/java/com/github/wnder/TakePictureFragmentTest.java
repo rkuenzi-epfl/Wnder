@@ -93,22 +93,22 @@ public class TakePictureFragmentTest {
 //
 //    }
 
-    @Test
-    public void signedInUserDidNotGetPicture(){
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
-        CompletableFuture<Void> cf = new CompletableFuture<>();
-        cf.complete(null);
-        when(picturesDb.uploadPicture(anyString(), anyString(), any(), any())).thenReturn(cf);
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
-        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, false);
-        ActivityScenario.launch(intent);
-
-        onView(withId(R.id.takePictureButton)).perform(click());
-        onView(withText(R.string.no_picture_from_camera)).check(matches(isDisplayed()));
-        onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
-
-
-    }
+//    @Test
+//    public void signedInUserDidNotGetPicture(){
+//        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+//        CompletableFuture<Void> cf = new CompletableFuture<>();
+//        cf.complete(null);
+//        when(picturesDb.uploadPicture(anyString(), anyString(), any(), any())).thenReturn(cf);
+//        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
+//        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, false);
+//        ActivityScenario.launch(intent);
+//
+//        onView(withId(R.id.takePictureButton)).perform(click());
+//        onView(withText(R.string.no_picture_from_camera)).check(matches(isDisplayed()));
+//        onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
+//
+//
+//    }
 
     @Test
     public void signedInUserInAPerfectWorld(){
