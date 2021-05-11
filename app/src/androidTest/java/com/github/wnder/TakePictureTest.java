@@ -6,11 +6,15 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
@@ -20,7 +24,13 @@ import dagger.hilt.android.testing.UninstallModules;
 public class TakePictureTest {
 
     @Rule
-    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
+
+    @BindValue
+    public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
 
     @Test
     public void guestUserInformedTheyCannotUpload(){
