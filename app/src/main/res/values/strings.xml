@@ -51,7 +51,7 @@
     <!--Take Picture Strings-->
     <string name="content_descr_picture_taken">Your picture</string>
     <string name="take_picture">Take a picture</string>
-    <string name="guest_no_upload">Guest no upload.</string>
+    <string name="guest_no_upload">Guest user are not allowed to upload pictures.</string>
     <string name="no_internet_upload">You cannot upload pictures without an internet connection.</string>
     <string name="upload_failed">Upload failed. Check your internet connection and try again.</string>
     <string name="could_not_launch_camera">Wnder was not able to open your camera.</string>
