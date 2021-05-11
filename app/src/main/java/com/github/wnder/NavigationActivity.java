@@ -90,7 +90,7 @@ public class NavigationActivity extends AppCompatActivity {
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container_view, new TakePictureFragment(getActivityResultRegistry()))
+                    .replace(R.id.fragment_container_view, TakePictureFragment.class, null)
                     .setReorderingAllowed(true)
                     .addToBackStack(null)
                     .commit();

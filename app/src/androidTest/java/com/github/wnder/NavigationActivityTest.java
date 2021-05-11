@@ -1,5 +1,12 @@
 package com.github.wnder;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
@@ -9,7 +16,10 @@ import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
+import com.github.wnder.user.GlobalUser;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -21,7 +31,10 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -44,9 +57,18 @@ public class NavigationActivityTest {
     @BindValue
     public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
 
+    @Before
+    public void setUp() {
+        Intents.init();
+    }
+
+    @After
+    public void tearDown() {
+        Intents.release();
+    }
+
     @Test
     public void clickingOnBarDoesNothing(){
-        Intents.init();
 
         // Clicking on bar now does something so we need to be a bit more careful
 
@@ -76,13 +98,31 @@ public class NavigationActivityTest {
 
         //All those should do nothing for now
         assertTrue(true);
-
-        Intents.release();
     }
 
     @Test
-    public void clickingOnTakePictureOpenFragment(){
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
+    public void informPictureCantBeUploadedAsGuest(){
+        GlobalUser.resetUser();
+        //Goto take picture
+        onView(withId(R.id.bottom_navigation)).perform(click(1, 0));
+        // As we are guest, verify that we are alerted we cannot upload
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
+        onView(withId(android.R.id.button1)).perform(click());
+
+        // Build a result to return from the Camera app
+        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        Intent resultData = new Intent();
+        resultData.putExtra("data", dummyPic);
+        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
+
+        // Return a sucessful result from the camera
+        intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
+
+        // Click the take picture button
+        onView(withId(R.id.takePictureButton)).perform(click());
+        // And check that we are informed that upload did not happen
+        onView(withId(R.id.uploadButton)).perform(click());
+        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
+
     }
 }

@@ -49,7 +49,6 @@ public class TakePictureFragment extends Fragment {
     public NetworkService networkInfo;
 
     private ActivityResultLauncher<Uri> takePictureLauncher;
-    private ActivityResultRegistry resultRegistry;
 
     private ConstraintLayout constraintLayout;
     private FloatingActionButton takePictureButton;
@@ -62,9 +61,8 @@ public class TakePictureFragment extends Fragment {
     private String takenPictureId;
     private Location takenPictureLocation;
 
-    public TakePictureFragment(@NonNull ActivityResultRegistry registry) {
+    public TakePictureFragment() {
         super(R.layout.fragment_take_picture);
-        resultRegistry = registry;
     }
 
 
@@ -78,7 +76,7 @@ public class TakePictureFragment extends Fragment {
         userName = user.getName();
 
         // Prepare to open the camera
-        takePictureLauncher = registerForActivityResult(new TakePicture(), resultRegistry, (stored) -> onTakePictureResult(stored));
+        takePictureLauncher = registerForActivityResult(new TakePicture(), (stored) -> onTakePictureResult(stored));
         takePictureButton.setOnClickListener(button -> openCamera());
     }
 
