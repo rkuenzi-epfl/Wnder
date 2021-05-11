@@ -7,6 +7,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
@@ -19,6 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
@@ -44,8 +46,11 @@ import static org.mockito.Mockito.when;
 @UninstallModules({PicturesModule.class, NetworkModule.class})
 public class TakePictureFragmentTest {
 
-    @Rule
     public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+    @Rule
+    public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(new ActivityScenarioRule<>(NavigationActivity.class));
 
     @BindValue
     public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
