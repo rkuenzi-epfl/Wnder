@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,6 +22,8 @@ import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
@@ -45,6 +48,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private boolean reported = false;
 
     private ImageView imageDisplayed;
+    private Bitmap bitmap;
+    private String imageName;
 
     @Inject
     public NetworkService networkInfo;
@@ -68,6 +73,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         imageDisplayed = findViewById(R.id.imagePreview);
 
         //Setup buttons
+        findViewById(R.id.SaveToGallery).setOnClickListener(id -> saveToGallery());
 
         //Setup swipe and click action
         imageDisplayed.setOnTouchListener(new OnSwipeTouchListener(this){
@@ -119,10 +125,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
             user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
                 if(!picId.equals("")){
                     //If there is a picture, display it
-                    pictureId = picId;
-                    picturesDb.getBitmap(pictureId).thenAccept((bmp) -> setImageViewBitmap(bmp));
-                    pictureID = picId;
-                    picturesDb.getLocation(pictureId).thenAccept((Lct) -> {
+                    picturesDb.getBitmap(picId).thenAccept((bmp) -> setImageViewBitmap(bmp, picId));
+                    picturesDb.getLocation(picId).thenAccept((Lct) -> {
                         pictureLat = Lct.getLatitude();
                         pictureLng = Lct.getLongitude();
                     });
@@ -130,7 +134,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     //If not, display default picture
                     // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
                     Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
-                    setImageViewBitmap(bmp);
+                    setImageViewBitmap(bmp, picId);
                 }
             }
             );
@@ -199,6 +203,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
                         picturesDb.updateKarma(pictureId,-10);
                         addToReportedPictures(pictureId);
                         reported = true;
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "This picture has been reported.", BaseTransientBottomBar.LENGTH_SHORT);
+                        snackbar.show();
                     }
                 });
         //Cancellation possible
@@ -212,8 +218,23 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Displays the bitmap image
      * @param bmp bitmap of image
      */
-    private void setImageViewBitmap(Bitmap bmp){
+    private void setImageViewBitmap(Bitmap bmp, String newPictureID){
         imageDisplayed.setImageBitmap(bmp);
+        bitmap = bmp;
+        pictureID = newPictureID;
+    }
+
+    private void saveToGallery(){
+        if(pictureID.equals(Picture.UNINITIALIZED_ID)){
+            //Snack bar
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "Impossible to save this picture.", BaseTransientBottomBar.LENGTH_SHORT);
+            snackbar.show();
+        }
+        else{
+            MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, pictureId, "");
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "This picture has been saved.", BaseTransientBottomBar.LENGTH_SHORT);
+            snackbar.show();
+        }
     }
 }
 
