@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 
 import com.github.wnder.networkService.NetworkModule;
@@ -55,11 +56,14 @@ public class TakePictureFragmentTest {
     @Test
     public void guestUserInformedTheyCannotUpload(){
         GlobalUser.resetUser();
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
-        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), NavigationActivity.class);;
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
 
         ActivityScenario.launch(intent);
+        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
+        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
+        onView(withId(android.R.id.button1)).perform(click());
+        onView(withId(R.id.takePictureButton)).perform(click());
 
 //        onView(withId(R.id.takePictureButton)).perform(click());
 //        onView(withId(R.id.uploadButton)).perform(click());
