@@ -69,8 +69,6 @@ public class TakePictureFragmentTest {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
         intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
         ActivityScenario.launch(intent);
-        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
-        onView(withId(android.R.id.button1)).perform(click());
 
         onView(withId(R.id.takePictureButton)).perform(click());
         onView(withId(R.id.uploadButton)).perform(click());
@@ -89,8 +87,6 @@ public class TakePictureFragmentTest {
         intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
         ActivityScenario.launch(intent);
 
-        onView(withText(R.string.no_internet_upload)).check(matches(isDisplayed()));
-        onView(withId(android.R.id.button1)).perform(click());
         onView(withId(R.id.takePictureButton)).perform(click());
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_failed)).check(matches(isDisplayed()));

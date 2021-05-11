@@ -80,15 +80,6 @@ public class TakePictureFragment extends Fragment {
         // Prepare to open the camera
         takePictureLauncher = registerForActivityResult(new TakePicture(), resultRegistry, (stored) -> onTakePictureResult(stored));
         takePictureButton.setOnClickListener(button -> openCamera());
-
-        // Alert Guest user and user no connected to the internet
-        if(user instanceof GuestUser){
-            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), getContext())
-                    .show();
-        } else if(!networkInfo.isNetworkAvailable()){
-            AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), getContext())
-                    .show();
-        }
     }
 
     /**
