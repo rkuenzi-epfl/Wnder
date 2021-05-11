@@ -61,10 +61,8 @@ public class TakePictureFragmentTest {
     @Test
     public void guestUserInformedTheyCannotUpload(){
         GlobalUser.resetUser();
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), NavigationActivity.class);;
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
 
-        ActivityScenario.launch(intent);
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
         onView(withId(android.R.id.button1)).perform(click());
