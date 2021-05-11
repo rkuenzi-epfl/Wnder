@@ -61,7 +61,6 @@ public class TakePictureFragmentTest {
     @Test
     public void guestUserInformedTheyCannotUpload(){
         GlobalUser.resetUser();
-        when(networkInfo.isNetworkAvailable()).thenReturn(true);
 
         onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
