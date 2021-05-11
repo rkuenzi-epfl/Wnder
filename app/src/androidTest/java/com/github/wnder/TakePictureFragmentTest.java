@@ -1,29 +1,18 @@
 package com.github.wnder;
 
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.intent.Intents;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
-import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.SignedInUser;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
-
-import java.util.concurrent.CompletableFuture;
 
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -32,25 +21,17 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @UninstallModules({PicturesModule.class, NetworkModule.class})
 public class TakePictureFragmentTest {
 
-    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
     @Rule
-    public RuleChain testRule = RuleChain.outerRule(hiltRule)
-            .around(new ActivityScenarioRule<>(NavigationActivity.class));
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @BindValue
     public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
@@ -60,14 +41,14 @@ public class TakePictureFragmentTest {
 
     @Test
     public void guestUserInformedTheyCannotUpload(){
-        GlobalUser.resetUser();
 
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
+        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
+        ActivityScenario.launch(intent);
+
+        onView(withId(R.id.takePictureButton)).perform(click());
+        onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
-
-//        onView(withId(R.id.takePictureButton)).perform(click());
-//        onView(withId(R.id.uploadButton)).perform(click());
-//        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
 
     }
 
