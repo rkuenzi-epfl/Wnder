@@ -174,46 +174,46 @@ public class UserTesting {
         });
     }
 
-    @Test
-    public void getNewPictureForGuestUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
-        User realUser = GlobalUser.getUser();
-        User u = spy(realUser);
-
-
-        Set<String> allIds = new HashSet<>();
-        allIds.add("testPicDontRm");
-        doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
-
-        u.setRadius(20000);
-        u.onNewPictureAvailable(null, null, (pic) -> {
-            Set<String> allPictures = new HashSet<>();
-            Task<QuerySnapshot> task = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                    for(int i = 0; i < docs.size(); i++){
-                        allPictures.add(docs.get(i).getId());
-                    }
-                    assertTrue(allPictures.contains(pic));
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    assertTrue(false);
-                }
-            });
-
-            //Ensure location is in radius
-            try {
-                ensureInRadius(pic, u);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
-            }
-            GlobalUser.resetUser();
-        });
-    }
+//    @Test
+//    public void getNewPictureForGuestUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
+//        User realUser = GlobalUser.getUser();
+//        User u = spy(realUser);
+//
+//
+//        Set<String> allIds = new HashSet<>();
+//        allIds.add("testPicDontRm");
+//        doReturn(allIds).when(u).keepOnlyInRadius(any(), any(), any());
+//
+//        u.setRadius(20000);
+//        u.onNewPictureAvailable(null, null, (pic) -> {
+//            Set<String> allPictures = new HashSet<>();
+//            Task<QuerySnapshot> task = Storage.downloadCollectionFromFirestore("pictures").addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                @Override
+//                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                    List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+//                    for(int i = 0; i < docs.size(); i++){
+//                        allPictures.add(docs.get(i).getId());
+//                    }
+//                    assertTrue(allPictures.contains(pic));
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    assertTrue(false);
+//                }
+//            });
+//
+//            //Ensure location is in radius
+//            try {
+//                ensureInRadius(pic, u);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (TimeoutException e) {
+//                e.printStackTrace();
+//            }
+//            GlobalUser.resetUser();
+//        });
+//    }
 }
