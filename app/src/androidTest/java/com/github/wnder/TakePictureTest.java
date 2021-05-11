@@ -6,38 +6,21 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.networkService.NetworkModule;
-import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 @HiltAndroidTest
 @UninstallModules({PicturesModule.class, NetworkModule.class})
-public class TakePictureFragmentTest {
+public class TakePictureTest {
 
     @Rule
-    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
-
-    @BindValue
-    public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
-
-    @BindValue
-    public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
+    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Test
     public void guestUserInformedTheyCannotUpload(){
@@ -45,10 +28,6 @@ public class TakePictureFragmentTest {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
         intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
         ActivityScenario.launch(intent);
-
-        onView(withId(R.id.takePictureButton)).perform(click());
-        onView(withId(R.id.uploadButton)).perform(click());
-        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
 
     }
 
@@ -102,6 +81,4 @@ public class TakePictureFragmentTest {
 //        onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
 //
 //    }
-
-
 }
