@@ -63,18 +63,18 @@ public class TakePictureFragmentTest {
         Intents.release();
     }
 
-    @Test
-    public void guestUserInformedTheyCannotUpload(){
-        GlobalUser.resetUser();
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
-        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
-        ActivityScenario.launch(intent);
-
-        onView(withId(R.id.takePictureButton)).perform(click());
-        onView(withId(R.id.uploadButton)).perform(click());
-        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
-
-    }
+//    @Test
+//    public void guestUserInformedTheyCannotUpload(){
+//        GlobalUser.resetUser();
+//        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
+//        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
+//        ActivityScenario.launch(intent);
+//
+//        onView(withId(R.id.takePictureButton)).perform(click());
+//        onView(withId(R.id.uploadButton)).perform(click());
+//        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
+//
+//    }
 
 //    @Test
 //    public void signedInUserInformedNoConnection(){
