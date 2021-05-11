@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.wnder"
-    xmlns:dist="http://schemas.android.com/apk/distribution">
-
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    package="com.github.wnder">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,23 +18,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wnder">
-        <activity android:name=".HistoryActivity"></activity>
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@drawable/bottom_navigation_colors"/>
+
+        <activity android:name=".HistoryActivity" />
         <activity android:name=".PictureHistoryActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".ScoreboardActivity" />
-        <activity android:name=".GuessLocationActivity"/>
+        <activity android:name=".GuessLocationActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
-        <activity android:name=".GuessPreviewActivity"
+        <activity
+            android:name=".GuessPreviewActivity"
             android:noHistory="true" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".TakePictureActivity" />
+        <activity android:name=".NavigationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TakePictureActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
