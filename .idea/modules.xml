@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Wnder.wnder.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Wnder.wnder.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/wnder.iml" filepath="$PROJECT_DIR$/.idea/modules/wnder.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/wnder.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/wnder.app.iml" />
     </modules>
   </component>
 </project>

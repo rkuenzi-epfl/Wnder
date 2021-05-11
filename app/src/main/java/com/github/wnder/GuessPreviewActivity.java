@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +44,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private String pictureId;
     private boolean reported = false;
 
+    private ImageView imageDisplayed;
+
     @Inject
     public NetworkService networkInfo;
     @Inject
@@ -61,10 +64,23 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //Set layout
         setContentView(R.layout.activity_guess_preview);
 
+        //Find the image view
+        imageDisplayed = findViewById(R.id.imagePreview);
+
         //Setup buttons
-        findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
-        findViewById(R.id.skipButton).setOnClickListener(id -> skipPicture());
-        //findViewById(R.id.reportButton).setOnClickListener(id -> reportImage());
+
+        //Setup swipe and click action
+        imageDisplayed.setOnTouchListener(new OnSwipeTouchListener(this){
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onSwipeRight() {
+                skipPicture();
+                return true;
+            }
+        });
+        imageDisplayed.setOnClickListener(view -> {
+            openGuessActivity();
+        });
 
     }
 
@@ -197,8 +213,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * @param bmp bitmap of image
      */
     private void setImageViewBitmap(Bitmap bmp){
-        ImageView img = findViewById(R.id.imagePreview);
-        img.setImageBitmap(bmp);
+        imageDisplayed.setImageBitmap(bmp);
     }
 }
 
