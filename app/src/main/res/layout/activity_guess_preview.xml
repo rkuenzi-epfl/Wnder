@@ -20,7 +20,7 @@
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/reportButton"
+        android:id="@+id/helperButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
