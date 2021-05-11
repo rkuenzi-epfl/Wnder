@@ -11,10 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
+import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -24,7 +29,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class NavigationActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
+    @Inject
+    public NetworkService networkInfo;
+
+    private BottomNavigationView bottomNavigationView;
 
     //Page strings
     private static final String PROFILE_PAGE = "profile";
@@ -71,6 +79,14 @@ public class NavigationActivity extends AppCompatActivity {
      */
     private Boolean updateFragment(String id){
         if(id.equals(TAKE_PICTURE_PAGE)){
+            // Alert Guest user and user no connected to the internet
+            if(GlobalUser.getUser() instanceof GuestUser){
+                AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), this)
+                        .show();
+            } else if(!networkInfo.isNetworkAvailable()){
+                AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this)
+                        .show();
+            }
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()

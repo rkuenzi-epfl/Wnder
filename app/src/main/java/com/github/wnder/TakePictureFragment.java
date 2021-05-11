@@ -70,7 +70,7 @@ public class TakePictureFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        constraintLayout = getView().findViewById(R.id.takePictureConstraint);
+        constraintLayout = view.findViewById(R.id.takePictureConstraint);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         uploadButton = view.findViewById(R.id.uploadButton);
 
