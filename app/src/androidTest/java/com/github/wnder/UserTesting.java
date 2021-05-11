@@ -82,19 +82,19 @@ public class UserTesting {
         Intents.release();
     }
 
-    @Test
-    public void getAndSetRadiusWorks(){
-        //Signed in user
-        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        u.setRadius(50);
-        assertThat(u.getRadius(), is(50));
-
-        //Guest user
-        User u1 = GlobalUser.getUser();
-        u1.setRadius(50);
-        assertThat(u1.getRadius(), is(50));
-        GlobalUser.resetUser();
-    }
+//    @Test
+//    public void getAndSetRadiusWorks(){
+//        //Signed in user
+//        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+//        u.setRadius(50);
+//        assertThat(u.getRadius(), is(50));
+//
+//        //Guest user
+//        User u1 = GlobalUser.getUser();
+//        u1.setRadius(50);
+//        assertThat(u1.getRadius(), is(50));
+//        GlobalUser.resetUser();
+//    }
 
     private void ensureInRadius(String id, User u) throws InterruptedException, ExecutionException, TimeoutException {
         Task<DocumentSnapshot> task = Storage.downloadFromFirestore("pictures", id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
