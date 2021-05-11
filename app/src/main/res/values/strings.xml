@@ -54,6 +54,7 @@
     <string name="guest_no_upload">Guest user are not allowed to upload pictures.</string>
     <string name="no_internet_upload">You cannot upload pictures without an internet connection.</string>
     <string name="upload_failed">Upload failed. Check your internet connection and try again.</string>
+    <string name="upload_successful">Your picture was successfully uploaded!</string>
     <string name="could_not_launch_camera">Wnder was not able to open your camera.</string>
     <string name="no_picture_from_camera">Wnder did not receive a picture from the camera.</string>
 

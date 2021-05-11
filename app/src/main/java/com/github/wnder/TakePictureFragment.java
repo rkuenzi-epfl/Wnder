@@ -26,7 +26,6 @@ import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
@@ -92,7 +91,7 @@ public class TakePictureFragment extends Fragment {
 
             takePictureLauncher.launch(takenPictureUri);
         } else {
-            Snackbar.make(getView(), R.string.could_not_launch_camera, BaseTransientBottomBar.LENGTH_SHORT)
+            Snackbar.make(getView(), R.string.could_not_launch_camera, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -113,7 +112,7 @@ public class TakePictureFragment extends Fragment {
             takenPictureView.setImageURI(takenPictureUri);
             uploadButton.setOnClickListener(button -> uploadTakenPicture());
         } else {
-            Snackbar.make(getView(), R.string.no_picture_from_camera, BaseTransientBottomBar.LENGTH_SHORT)
+            Snackbar.make(getView(), R.string.no_picture_from_camera, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -123,7 +122,7 @@ public class TakePictureFragment extends Fragment {
      */
     private void uploadTakenPicture() {
         if(user instanceof GuestUser){
-            Snackbar.make(getView(), R.string.guest_no_upload, BaseTransientBottomBar.LENGTH_SHORT)
+            Snackbar.make(getView(), R.string.guest_no_upload, Snackbar.LENGTH_SHORT)
                     .show();
         } else {
             takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
@@ -135,11 +134,13 @@ public class TakePictureFragment extends Fragment {
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.load(getContext(), R.layout.fragment_take_picture);
                 constraintSet.applyTo(constraintLayout);
+                Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT)
+                        .show();
 
                 uploadButton.setClickable(false);
             }).exceptionally(res -> {
 
-                Snackbar.make(getView(), R.string.upload_failed, BaseTransientBottomBar.LENGTH_SHORT)
+                Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT)
                         .show();
                 return null;
             });
