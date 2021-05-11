@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 @HiltAndroidTest
 @UninstallModules({PicturesModule.class, NetworkModule.class})
 public class NavigationActivityTest {
+
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
