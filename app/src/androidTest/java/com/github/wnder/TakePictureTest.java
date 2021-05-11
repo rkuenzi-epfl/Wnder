@@ -26,21 +26,6 @@ public class TakePictureTest {
     @Rule
     public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-    @BindValue
-    public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
-
-    @BindValue
-    public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
-
-    @Test
-    public void guestUserInformedTheyCannotUpload(){
-
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), TakePictureFragmentFakeActivity.class);;
-        intent.putExtra(TakePictureFragmentFakeActivity.EXPECTED_RESULT, true);
-        ActivityScenario.launch(intent);
-
-    }
-
 //    @Test
 //    public void signedInUserInformedNoConnection(){
 //        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
