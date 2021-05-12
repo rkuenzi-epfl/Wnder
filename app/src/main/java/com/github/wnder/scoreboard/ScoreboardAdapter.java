@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.wnder.R;
-import com.github.wnder.scoreboard.ScoreboardViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

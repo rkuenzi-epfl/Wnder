@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
 import com.github.wnder.picture.PicturesDatabase;
-import com.github.wnder.scoreboard.ScoreboardActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
