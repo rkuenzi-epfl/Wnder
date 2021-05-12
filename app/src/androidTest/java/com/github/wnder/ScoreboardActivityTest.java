@@ -8,6 +8,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
+import com.github.wnder.scoreboard.ScoreboardActivity;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
