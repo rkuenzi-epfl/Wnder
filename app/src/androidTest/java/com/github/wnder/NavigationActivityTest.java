@@ -1,59 +1,54 @@
 package com.github.wnder;
 
+import android.view.View;
+
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.github.wnder.networkService.NetworkModule;
+import com.github.wnder.networkService.NetworkService;
+
+import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.mockito.Mockito;
 
+import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertTrue;
 
 @HiltAndroidTest
+@UninstallModules({NetworkModule.class})
 public class NavigationActivityTest {
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
 
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
             .around(new ActivityScenarioRule<>(NavigationActivity.class));
 
-    @Test
-    public void clickingOnBarDoesNothing(){
-        Intents.init();
-
-        //When profile is selected
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 0));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 0));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 0));
-
-        //When take_picture is selected
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 1));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 1));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 1));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 1));
-
-        //When guess is selected
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 2));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 2));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 2));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 2));
-
-        //When history is selected
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 3));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 3));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 3));
-        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 3));
-
-        //All those should do nothing for now
-        assertTrue(true);
-
-        Intents.release();
+    @Before
+    public void before(){
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
+
+    @Test
+    public void guessButtonShowsSeekbar(){
+        onView(withId(R.id.guess_page)).perform(ViewActions.click());
+        onView(withText("Radius: 5km")).check(matches(isDisplayed()));
+    }
+
 }
