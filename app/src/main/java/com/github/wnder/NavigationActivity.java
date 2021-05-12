@@ -10,6 +10,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -18,6 +21,11 @@ import androidx.fragment.app.FragmentManager;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+
+
+import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -32,9 +40,13 @@ import dagger.hilt.android.AndroidEntryPoint;
  * Class displaying a bottom navigation bar and letting us go from one fragment to the other depending on this bar
  */
 @AndroidEntryPoint
-public class NavigationActivity extends AppCompatActivity{
+public class NavigationActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
+
+    @Inject
+    public NetworkService networkInfo;
+
+    private BottomNavigationView bottomNavigationView;
 
     @Inject
     public NetworkService networkInfo;
@@ -44,6 +56,8 @@ public class NavigationActivity extends AppCompatActivity{
     private static final String TAKE_PICTURE_PAGE = "take_picture";
     private static final String GUESS_PAGE = "guess";
     private static final String HISTORY_PAGE = "history";
+
+    private static final int REQUEST_POSITION_CODE = 100;
 
     /**
      * Execs on activity creation
@@ -116,11 +130,25 @@ public class NavigationActivity extends AppCompatActivity{
             FragmentManager fragManager = getSupportFragmentManager();
             fragManager.beginTransaction()
                     .replace(R.id.fragment_container_view, SeekbarFragment.class, null)
+
+        else if(id.equals(TAKE_PICTURE_PAGE)){
+            // Alert Guest user and user no connected to the internet
+            if(GlobalUser.getUser() instanceof GuestUser){
+                AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), this)
+                        .show();
+            } else if(!networkInfo.isNetworkAvailable()){
+                AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this)
+                        .show();
+            }
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_view, TakePictureFragment.class, null)
+
                     .setReorderingAllowed(true)
                     .addToBackStack(null)
                     .commit();
         }
         return true;
     }
-
 }

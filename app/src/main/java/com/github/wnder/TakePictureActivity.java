@@ -68,7 +68,7 @@ public class TakePictureActivity extends AppCompatActivity {
         picture = findViewById(R.id.imageFromCamera);
 
         //button to take picture
-        takePictureButton = findViewById(R.id.takePictureButton);
+        takePictureButton = findViewById(R.id.oldTakePictureButton);
         takePictureButton.setOnClickListener((view) -> dispatchTakePictureIntent());
 
         //button to confirm the taken picture, once confirmed, stored in gallery
@@ -86,7 +86,7 @@ public class TakePictureActivity extends AppCompatActivity {
                 this.finish();
             }
             else{
-                AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+                AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
                 alert.show();
             }
         });
