@@ -1,13 +1,9 @@
 package com.github.wnder;
 
-import android.app.ActivityGroup;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -23,15 +19,9 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import okhttp3.internal.cache.InternalCache;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

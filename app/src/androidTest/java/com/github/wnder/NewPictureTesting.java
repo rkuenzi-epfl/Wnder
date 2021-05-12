@@ -4,7 +4,6 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.github.wnder.picture.NewPicture;
-import com.github.wnder.picture.Picture;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -14,8 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static java.lang.Thread.sleep;
