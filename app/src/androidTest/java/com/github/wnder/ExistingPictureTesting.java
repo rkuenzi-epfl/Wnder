@@ -4,25 +4,15 @@ import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.github.wnder.picture.ExistingPicture;
-import com.github.wnder.picture.NewPicture;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
 
 public class ExistingPictureTesting {
 

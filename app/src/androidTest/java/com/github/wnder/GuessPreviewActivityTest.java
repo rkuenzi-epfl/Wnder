@@ -9,7 +9,6 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
@@ -19,7 +18,6 @@ import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
-import com.github.wnder.user.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +25,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
@@ -45,8 +42,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;

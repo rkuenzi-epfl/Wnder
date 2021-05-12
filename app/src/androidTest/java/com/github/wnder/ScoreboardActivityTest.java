@@ -2,7 +2,6 @@ package com.github.wnder;
 
 import android.content.Intent;
 
-import androidx.lifecycle.SavedStateHandle;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
