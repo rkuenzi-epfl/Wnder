@@ -50,6 +50,8 @@
 
     <!--Take Picture Strings-->
     <string name="content_descr_picture_taken">Your picture</string>
+    <string name="content_descr_take_picture_button">Take picture image button</string>
+    <string name="content_descr_upload_button">Upload image button</string>
     <string name="take_picture">Take a picture</string>
     <string name="guest_no_upload">Guest user are not allowed to upload pictures.</string>
     <string name="no_internet_upload">You cannot upload pictures without an internet connection.</string>
