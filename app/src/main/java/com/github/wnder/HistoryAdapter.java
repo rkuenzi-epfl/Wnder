@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,14 +46,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getName(), 0.));
             holder.getYourScoreView().setText(score);
         });
-        if(holder.getHistoryImageView() != null){
+        holder.getToMapView().setOnClickListener(image -> {
+            Intent intent = new Intent(context, PictureHistoryActivity.class);
+            intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
+            context.startActivity(intent);
+        });
+        holder.getToScoreboardView().setOnClickListener(image -> {
+            Intent intent = new Intent(context, ScoreboardActivity.class);
+            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureId);
+            context.startActivity(intent);
+        });
 
-            holder.getHistoryImageView().setOnClickListener(image -> {
-                Intent intent = new Intent(context, PictureHistoryActivity.class);
-                intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
-                context.startActivity(intent);
-            });
-        }
     }
 
     @Override
@@ -67,12 +71,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView historyImageView;
         private final TextView yourScoreView;
+        private final LinearLayout toMapView;
+        private final LinearLayout toScoreboardView;
 
         public ViewHolder(View view) {
             super(view);
             historyImageView = view.findViewById(R.id.historyImage);
 
             yourScoreView = view.findViewById(R.id.yourScore);
+
+            toMapView = view.findViewById(R.id.historyToMap);
+
+            toScoreboardView = view.findViewById(R.id.historyToScoreboard);
         }
 
         public ImageView getHistoryImageView() {
@@ -82,5 +92,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView getYourScoreView(){
             return yourScoreView;
         }
+
+        public LinearLayout getToMapView(){ return toMapView; }
+
+        public LinearLayout getToScoreboardView(){ return toScoreboardView; }
     }
 }
