@@ -4,11 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.InternalCachePictureDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
