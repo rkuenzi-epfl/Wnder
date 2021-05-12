@@ -28,14 +28,18 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
+        private boolean movementTypeDispatch(float diff, movementType type){
+            if (diff > 0) {
+                return type == movementType.HORIZONTAL ? onSwipeRight() : onSwipeBottom();
+            } else {
+                return type == movementType.HORIZONTAL ? onSwipeLeft() : onSwipeTop();
+            }
+        }
+
         private boolean multiDirectionalSwipe(float diff, float velocity, movementType type){
             boolean result = false;
             if (Math.abs(diff) > SWIPE_THRESHOLD && Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD) {
-                if (diff > 0) {
-                    result = type == movementType.HORIZONTAL ? onSwipeRight() : onSwipeBottom();
-                } else {
-                    result = type == movementType.HORIZONTAL ? onSwipeLeft() : onSwipeTop();
-                }
+                result = movementTypeDispatch(diff, type);
             }
             return result;
         }
