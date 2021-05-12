@@ -61,7 +61,7 @@ public class SeekbarFragment extends Fragment implements OnSeekBarChangeListener
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), getActivity());
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), getActivity());
             alert.show();
         }
     }

@@ -48,9 +48,6 @@ public class NavigationActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
 
-    @Inject
-    public NetworkService networkInfo;
-
     //Page strings
     private static final String PROFILE_PAGE = "profile";
     private static final String TAKE_PICTURE_PAGE = "take_picture";
@@ -126,10 +123,14 @@ public class NavigationActivity extends AppCompatActivity {
      * @return Boolean true
      */
     private Boolean updateFragment(String id){
-        if(id.equals(GUESS_PAGE)){
+        if(id.equals(GUESS_PAGE)) {
             FragmentManager fragManager = getSupportFragmentManager();
             fragManager.beginTransaction()
                     .replace(R.id.fragment_container_view, SeekbarFragment.class, null)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null)
+                    .commit();
+        }
 
         else if(id.equals(TAKE_PICTURE_PAGE)){
             // Alert Guest user and user no connected to the internet
