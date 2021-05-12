@@ -48,7 +48,7 @@ public class NavigationActivity extends AppCompatActivity {
         setContentView(R.layout.navigation);
 
         // If you want to test history without sign in:
-        GlobalUser.setUser(new SignedInUser("Bonbon", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        // GlobalUser.setUser(new SignedInUser("Bonbon", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
 
         //Setup map with corresponding strings
         Map<Integer, Class> iconMap = new HashMap<>();
