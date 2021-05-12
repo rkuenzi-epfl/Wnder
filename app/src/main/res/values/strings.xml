@@ -30,6 +30,11 @@
     <string name="popup_menu">Popup menu</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
+    <string name="bar_save_is_impossible">"Impossible to save this picture."</string>
+    <string name="bar_save_is_ok">"This picture has been saved."</string>
+    <string name="help_title">"Actions possible:"</string>
+    <string name="help_body">"Guess: Click on the picture if you want to guess it's location. \n\nSkip: " +
+                "Swipe left to skip the actual image and search an other one."</string>
 
     <!--Guess Location Strings-->
     <string name="content_descr_guess_hotbar_image">This is the image of the hotbar shown in Compass Mode when close to the picture</string>

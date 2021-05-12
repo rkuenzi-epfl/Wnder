@@ -44,12 +44,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private User user;
     private double pictureLat = DEFAULT_LAT;
     private double pictureLng = DEFAULT_LNG;
-    private String pictureId;
     private boolean reported = false;
 
     private ImageView imageDisplayed;
     private Bitmap bitmap;
-    private String imageName;
 
     @Inject
     public NetworkService networkInfo;
@@ -172,7 +170,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      */
     private void skipPicture() {
         if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
-            picturesDb.updateKarma(pictureId, -1);
+            picturesDb.updateKarma(pictureID, -1);
         }
 
         Intent intent = new Intent(this, GuessPreviewActivity.class);
@@ -183,8 +181,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Create an alert popup to explain how to use this activity
      */
     private void helpMenu(){
-        AlertBuilder.noConnectionAlert("Actions possible:", "Guess: Click on the picture if you want to guess it's location. \n\nSkip: " +
-                "Swipe left to skip the actual image and search an other one.", this).show();
+        AlertBuilder.noConnectionAlert(getString(R.string.help_title), getString(R.string.help_body), this).show();
     }
 
     /**
@@ -201,8 +198,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
                     if(!reported && pictureID != Picture.UNINITIALIZED_ID){
-                        picturesDb.updateKarma(pictureId,-10);
-                        addToReportedPictures(pictureId);
+                        picturesDb.updateKarma(pictureID,-10);
+                        addToReportedPictures(pictureID);
                         reported = true;
                         Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "This picture has been reported.", BaseTransientBottomBar.LENGTH_SHORT);
                         snackbar.show();
@@ -228,12 +225,12 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private void saveToGallery(){
         if(pictureID.equals(Picture.UNINITIALIZED_ID)){
             //Snack bar
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "Impossible to save this picture.", BaseTransientBottomBar.LENGTH_SHORT);
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT);
             snackbar.show();
         }
         else{
-            MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, pictureId, "");
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "This picture has been saved.", BaseTransientBottomBar.LENGTH_SHORT);
+            MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, pictureID, "");
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_save_is_ok, BaseTransientBottomBar.LENGTH_SHORT);
             snackbar.show();
         }
     }
