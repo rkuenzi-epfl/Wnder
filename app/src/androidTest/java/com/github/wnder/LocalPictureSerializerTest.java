@@ -4,7 +4,6 @@ import android.location.Location;
 
 import com.github.wnder.picture.LocalPictureSerializer;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,9 +15,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 @RunWith(JUnit4.class)
 public class LocalPictureSerializerTest {

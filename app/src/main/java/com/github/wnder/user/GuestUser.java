@@ -1,7 +1,6 @@
 package com.github.wnder.user;
 
 import android.content.Context;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 
@@ -9,7 +8,6 @@ import com.github.wnder.R;
 import com.github.wnder.Storage;
 
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 /**

@@ -2,7 +2,6 @@ package com.github.wnder;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
@@ -13,7 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import dagger.hilt.android.testing.BindValue;

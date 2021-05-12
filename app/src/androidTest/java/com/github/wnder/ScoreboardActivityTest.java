@@ -2,13 +2,13 @@ package com.github.wnder;
 
 import android.content.Intent;
 
-import androidx.lifecycle.SavedStateHandle;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
+import com.github.wnder.scoreboard.ScoreboardActivity;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;

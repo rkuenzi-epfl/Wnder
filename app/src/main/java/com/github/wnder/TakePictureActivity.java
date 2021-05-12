@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.NewPicture;
 import com.github.wnder.user.GlobalUser;

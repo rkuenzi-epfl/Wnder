@@ -1,12 +1,12 @@
 package com.github.wnder;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;

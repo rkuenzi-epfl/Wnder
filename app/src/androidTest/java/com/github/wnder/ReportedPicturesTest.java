@@ -16,10 +16,6 @@ import org.junit.runners.JUnit4;
 
 import java.util.concurrent.CompletableFuture;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
