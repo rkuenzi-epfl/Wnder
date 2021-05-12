@@ -40,6 +40,8 @@
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>
+    <string name="content_descr_history_location">Location icon</string>
+    <string name="content_descr_history_scoreboard">Scoreboard icon</string>
     <string name="your_score">Your score :</string>
     <string name="default_distance">0m</string>
     <string name="default_score">0.0</string>

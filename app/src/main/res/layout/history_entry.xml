@@ -29,11 +29,9 @@
             android:layout_height="match_parent"
             android:layout_margin="8dp">
 
-            <LinearLayout
+            <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:id="@+id/historyToMap"
@@ -48,7 +46,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_baseline_location_on_24" />
+                        app:srcCompat="@drawable/ic_baseline_location_on_24"
+                        android:contentDescription="@string/content_descr_history_location" />
 
                     <TextView
                         android:id="@+id/historyDistance"
@@ -74,7 +73,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/ic_baseline_list_24" />
+                        app:srcCompat="@drawable/ic_baseline_list_24"
+                        android:contentDescription="@string/content_descr_history_scoreboard" />
 
                     <TextView
                         android:id="@+id/yourScore"
@@ -87,7 +87,8 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </TableRow>
+
         </FrameLayout>
 
     </LinearLayout>

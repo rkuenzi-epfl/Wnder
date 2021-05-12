@@ -42,7 +42,7 @@ public class HistoryFragment extends Fragment {
         userDb.getPictureList(GlobalUser.getUser(), "guessedPics")
                 .thenAccept(list -> {
                     pictureList.addAll(list);
-                    HistoryAdapter historyAdapter = new HistoryAdapter(view.getContext(), pictureList, picturesDb);
+                    HistoryAdapter historyAdapter = new HistoryAdapter(pictureList, picturesDb);
                     RecyclerView historyRecycler = view.findViewById(R.id.historyRecyclerView);
                     historyRecycler.setHasFixedSize(true);
                     historyRecycler.setLayoutManager(new LinearLayoutManager(view.getContext()));

@@ -3,6 +3,7 @@ package com.github.wnder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +24,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private ArrayList<String> pictureList;
     private PicturesDatabase picturesDb;
-    private Context context;
 
-    public HistoryAdapter(Context context, ArrayList<String> pictureList, PicturesDatabase picturesDatabase){
+    public HistoryAdapter(ArrayList<String> pictureList, PicturesDatabase picturesDatabase){
         this.pictureList = pictureList;
         this.picturesDb = picturesDatabase;
-        this.context = context;
     }
 
     @Override
@@ -40,12 +39,29 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Context context = holder.itemView.getContext();
         String pictureId = pictureList.get(position);
         picturesDb.getBitmap(pictureId).thenAccept(bitmap -> holder.getHistoryImageView().setImageBitmap(bitmap));
         picturesDb.getScoreboard(pictureId).thenAccept(scoreboard -> {
             String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getName(), 0.));
             holder.getYourScoreView().setText(score);
         });
+        picturesDb.getLocation(pictureId).thenAccept(location -> {
+
+            picturesDb.getUserGuesses(pictureId).thenAccept(guesses -> {
+                Location userGuess = guesses.get(GlobalUser.getUser().getName());
+                int distanceFromPicture = 0;
+                if (userGuess != null) {
+                    distanceFromPicture = (int) userGuess.distanceTo(location);
+                }
+                String dText = context.getString(R.string.history_distance_meter, distanceFromPicture);
+                if (distanceFromPicture > 10000) {
+                    dText = context.getString(R.string.history_distance_kilometer, distanceFromPicture / 1000);
+                }
+                holder.getHistoryDistanceView().setText(dText);
+            });
+        });
+
         holder.getToMapView().setOnClickListener(image -> {
             Intent intent = new Intent(context, PictureHistoryActivity.class);
             intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
@@ -71,6 +87,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView historyImageView;
         private final TextView yourScoreView;
+        private final TextView historyDistanceView;
         private final LinearLayout toMapView;
         private final LinearLayout toScoreboardView;
 
@@ -79,9 +96,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             historyImageView = view.findViewById(R.id.historyImage);
 
             yourScoreView = view.findViewById(R.id.yourScore);
+            historyDistanceView = view.findViewById(R.id.historyDistance);
 
             toMapView = view.findViewById(R.id.historyToMap);
-
             toScoreboardView = view.findViewById(R.id.historyToScoreboard);
         }
 
@@ -91,6 +108,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         public TextView getYourScoreView(){
             return yourScoreView;
+        }
+
+        public TextView getHistoryDistanceView(){
+            return historyDistanceView;
         }
 
         public LinearLayout getToMapView(){ return toMapView; }
