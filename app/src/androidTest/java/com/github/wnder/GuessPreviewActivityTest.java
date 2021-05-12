@@ -169,4 +169,9 @@ public class GuessPreviewActivityTest {
 
         onView(withText("Ok")).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testSaveButtonIsClickable(){
+        onView(withId(R.id.SaveToGallery)).perform(click());
+    }
 }
