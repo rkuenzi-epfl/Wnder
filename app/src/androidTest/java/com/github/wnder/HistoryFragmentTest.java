@@ -89,26 +89,5 @@ public class HistoryFragmentTest {
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
 
-//        when(picturesDb.uploadPicture(anyString(), anyString(), any(), any())).thenReturn(cf);
-//
-//        //Goto take picture
-//        onView(withId(R.id.bottom_navigation)).perform(click(3, 0));
-//        // As we have no connection, verify that we are alerted we cannot upload
-//        onView(withText(R.string.no_internet_upload)).check(matches(isDisplayed()));
-//        onView(withId(android.R.id.button1)).perform(click());
-//
-//        // Build a result to return from the Camera app
-//        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-//        Intent resultData = new Intent();
-//        resultData.putExtra("data", dummyPic);
-//        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
-//
-//        // Return a sucessful result from the camera
-//        intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
-//
-//        onView(withId(R.id.takePictureButton)).perform(click());
-//        onView(withId(R.id.uploadButton)).perform(click());
-//        onView(withText(R.string.upload_failed)).check(matches(isDisplayed()));
-
     }
 }
