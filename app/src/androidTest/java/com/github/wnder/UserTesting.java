@@ -28,8 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
