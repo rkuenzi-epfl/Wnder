@@ -2,6 +2,7 @@ package com.github.wnder.user;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -14,8 +15,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -23,48 +26,76 @@ public class UserDatabase {
     private NetworkInformation networkInfo;
     private final InternalCachePictureDatabase ICPD;
 
-    private List<String> guessedPics;
-    private double totalScore;
+    private CompletableFuture<List<String>> guessedPics;
 
     public UserDatabase(Context context){
         networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         ICPD = new InternalCachePictureDatabase(context);
 
-        totalScore = 0;
-        guessedPics = new ArrayList<>();
+        guessedPics = new CompletableFuture<>();
 
         if(networkInfo.isNetworkAvailable()){
-            getAllGuessedPictures().thenAccept(pics -> guessedPics = pics);
-            getAllScores();
+            guessedPics = getAllGuessedPictures();
         }
     }
 
-    public double getTotalScore(){
-        return totalScore;
+    public CompletableFuture<Double> getTotalScore(){
+        CompletableFuture<Double> totalScoreFuture = new CompletableFuture<>();
+
+        getAllScores().thenAccept(scores -> {
+            double totalScore = 0;
+            for(double score: scores){
+                totalScore = totalScore + score;
+            }
+            totalScoreFuture.complete(totalScore);
+        });
+
+        return totalScoreFuture;
     }
 
-    public double getNbrOfGuessedPictures(){
-            return getGuessedPics().size();
+    public CompletableFuture<Integer> getNbrOfGuessedPictures(){
+        CompletableFuture<Integer> toRet = new CompletableFuture<>();
+        guessedPics.thenAccept(pics -> {
+           toRet.complete(pics.size());
+        });
+        return toRet;
     }
 
-    public double getAverageScore(){
-        return (double) totalScore/getNbrOfGuessedPictures();
+    public CompletableFuture<Double> getAverageScore(){
+        CompletableFuture<Double> averageScore = new CompletableFuture<>();
+        getNbrOfGuessedPictures().thenAccept(nbr -> {
+            if(nbr == 0){
+                averageScore.complete(0.);
+            }
+            else{
+                getTotalScore().thenAccept(total -> averageScore.complete((double) total/nbr));
+            }
+        });
+
+        return averageScore;
     }
 
-    public List<String> getGuessedPics(){
+    public CompletableFuture<List<String>> getGuessedPics(){
         return guessedPics;
     }
 
-    private void addScoreToTotal(Double score){
-        totalScore = totalScore + score;
-    }
 
-    private CompletableFuture<List<Double>> getAllScores(){
-        CompletableFuture<List<Double>> allScoresFuture = new CompletableFuture<>();
+    private CompletableFuture<Set<Double>> getAllScores(){
+        CompletableFuture<Set<Double>> allScoresFuture = new CompletableFuture<>();
+        //Set<CompletableFuture<Double>> futureScores = new HashSet<>();
+        Set<Double> allScores = new HashSet<>();
 
-        for(String uniqueId: guessedPics){
-            ICPD.getScoreboard(uniqueId).thenAccept(scoreboard -> addScoreToTotal(scoreboard.get(GlobalUser.getUser().getName())));
-        }
+        guessedPics.thenAccept(pics ->{
+            CompletableFuture[] futureScores = new CompletableFuture[pics.size()];
+            for(String uniqueId: pics){
+                futureScores[pics.indexOf(uniqueId)] = (ICPD.getScoreboard(uniqueId).thenApply(s -> s.get(GlobalUser.getUser().getName())));
+            }
+            for(CompletableFuture<Double> futureScore: futureScores){
+                futureScore.thenAccept(score -> allScores.add(score));
+            }
+            CompletableFuture<Void> allScoresReceived = CompletableFuture.allOf(futureScores);
+            allScoresReceived.thenAccept(empty -> allScoresFuture.complete(allScores));
+        });
 
         return allScoresFuture;
     }

@@ -47,6 +47,8 @@ public class ProfileFragment extends Fragment {
     private TextView averageScoreText;
     private TextView totalScoreText;
 
+    private TextView username;
+
     private GoogleSignInClient client;
     private final int RC_SIGN_IN = 10; // Arbitrary number
     private UserDatabase userDb;
@@ -62,7 +64,10 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+
         this.view = view;
+
+        username = view.findViewById(R.id.username);
 
         noConnection = view.findViewById(R.id.no_connection_text);
         noConnection.setVisibility(View.INVISIBLE);
@@ -99,8 +104,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-
-        userDb = new UserDatabase(this.getContext());
 
         //Checks if user has already signed in
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
@@ -161,7 +164,6 @@ public class ProfileFragment extends Fragment {
             // Signed in successfully, show authenticated UI.
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
 
-
             areWeLoggedIn = true;
             updateLoginStatus();
         } catch (ApiException e) {
@@ -186,22 +188,25 @@ public class ProfileFragment extends Fragment {
 
         Picasso.get().load(user.getProfilePicture()).into(profilePic);
 
-        TextView username = view.findViewById(R.id.username);
         username.setText(user.getName());
+        username.setVisibility(View.VISIBLE);
+
+        userDb = new UserDatabase(this.getContext());
 
         updateNetworkStatus();
     }
 
     private void updateNetworkStatus(){
         if(networkInfo.isNetworkAvailable() && areWeLoggedIn){
+
+            userDb.getNbrOfGuessedPictures().thenAccept(nbr -> nbrOfGuessesText.setText(String.format("%d", nbr)));
+            userDb.getAverageScore().thenAccept(average -> averageScoreText.setText(String.format("%,.2f", average)));
+            userDb.getTotalScore().thenAccept(total -> totalScoreText.setText(String.format("%,.2f", total)));
+
             nbrOfGuessesCard.setVisibility(View.VISIBLE);
             totalScoreCard.setVisibility(View.VISIBLE);
             averageScoreCard.setVisibility(View.VISIBLE);
             noConnection.setVisibility(View.INVISIBLE);
-
-            nbrOfGuessesText.setText(String.valueOf(userDb.getNbrOfGuessedPictures()));
-            averageScoreText.setText(String.valueOf(userDb.getAverageScore()));
-            totalScoreText.setText(String.valueOf(userDb.getTotalScore()));
         }
         else{
             nbrOfGuessesCard.setVisibility(View.INVISIBLE);
