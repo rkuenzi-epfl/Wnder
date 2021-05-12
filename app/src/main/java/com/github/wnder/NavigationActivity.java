@@ -3,14 +3,19 @@ package com.github.wnder;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Class displaying a bottom navigation bar and letting us go from one fragment to the other depending on this bar
  */
+@AndroidEntryPoint
 public class NavigationActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
@@ -40,6 +45,13 @@ public class NavigationActivity extends AppCompatActivity {
         //call updateFragment depending on clicked icon
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateFragment(iconMap.get(item.getItemId())));
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_view, ProfileFragment.class, null)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
     }
 
     /**
@@ -56,7 +68,14 @@ public class NavigationActivity extends AppCompatActivity {
      * @return Boolean true
      */
     private Boolean updateFragment(String id){
-        //do nothing for now
+        if(id.equals(PROFILE_PAGE)){
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_view, ProfileFragment.class, null)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null)
+                    .commit();
+        }
         return true;
     }
 }
