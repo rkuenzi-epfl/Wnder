@@ -1,14 +1,10 @@
 package com.github.wnder.picture;
 
-import android.graphics.Bitmap;
-
 import com.github.wnder.Storage;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;

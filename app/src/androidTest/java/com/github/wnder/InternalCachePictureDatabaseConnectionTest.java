@@ -12,8 +12,6 @@ import com.github.wnder.picture.InternalCachePictureDatabase;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 import dagger.hilt.android.testing.BindValue;

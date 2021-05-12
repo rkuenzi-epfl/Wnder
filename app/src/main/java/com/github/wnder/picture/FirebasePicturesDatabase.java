@@ -6,10 +6,7 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.github.wnder.Score;
-import com.github.wnder.Storage;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;

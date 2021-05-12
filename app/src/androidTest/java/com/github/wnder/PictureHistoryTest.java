@@ -8,7 +8,6 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
@@ -21,7 +20,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.util.HashMap;
