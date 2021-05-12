@@ -12,7 +12,7 @@
 
     <application
         android:name=".WnderApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -25,16 +25,16 @@
         <activity android:name=".HistoryActivity" />
         <activity android:name=".PictureHistoryActivity" />
         <activity android:name=".UploadActivity" />
-        <activity android:name=".ScoreboardActivity" />
+        <activity android:name=".scoreboard.ScoreboardActivity" />
         <activity android:name=".GuessLocationActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".NavigationActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
         <activity
             android:name=".GuessPreviewActivity"
             android:noHistory="true" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".TakePictureActivity" />
-        <activity android:name=".NavigationActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

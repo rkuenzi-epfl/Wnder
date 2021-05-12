@@ -160,7 +160,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
             finish();
         }
         else{
-            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
             alert.show();
         }
     }

@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
+import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
