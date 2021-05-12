@@ -62,6 +62,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * executed on activity creation
      * @param savedInstanceState saved instance state
      */
+    @SuppressLint("ClickableViewAccessibility") //This suppress is to avoid warning about accessibility problem caused by touching functionality
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,19 +76,19 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //Setup buttons
         findViewById(R.id.SaveToGallery).setOnClickListener(id -> saveToGallery());
 
+
+
         //Setup swipe and click action
+        imageDisplayed.setOnClickListener(view -> {
+            openGuessActivity();
+        });
         imageDisplayed.setOnTouchListener(new OnSwipeTouchListener(this){
-            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onSwipeRight() {
                 skipPicture();
                 return true;
             }
         });
-        imageDisplayed.setOnClickListener(view -> {
-            openGuessActivity();
-        });
-
     }
 
     public void showPopup(View v) {

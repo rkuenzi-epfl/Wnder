@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -16,6 +17,7 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         gestureDetector = new GestureDetector(ctx, new GestureListener());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(final View v, final MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
