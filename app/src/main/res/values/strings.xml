@@ -41,6 +41,7 @@
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>
+    <string name="your_score">Your score :</string>
 
     <!--History Picture Strings-->
     <string name="content_descr_history_display_picture">Previously guessed picture</string>

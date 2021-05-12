@@ -1,16 +1,24 @@
 package com.github.wnder;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Class displaying a bottom navigation bar and letting us go from one fragment to the other depending on this bar
  */
+@AndroidEntryPoint
 public class NavigationActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
@@ -56,7 +64,16 @@ public class NavigationActivity extends AppCompatActivity {
      * @return Boolean true
      */
     private Boolean updateFragment(String id){
-        //do nothing for now
+        if(id.equals(HISTORY_PAGE)){
+            GlobalUser.setUser(new SignedInUser("Bonbon", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_view, HistoryFragment.class, null)
+                    .setReorderingAllowed(true)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
         return true;
     }
 }
