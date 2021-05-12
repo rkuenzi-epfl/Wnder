@@ -70,6 +70,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
     private static final long GET_POSITION_FROM_GPS_PERIOD = 1000; //10 secondes
 
+    private static final double MAX_LAT = 90;
+
     //Defines necessary mapBox setup
     private MapView mapView;
     private MapboxMap mapboxMap;
@@ -448,8 +450,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         double latDiff = Math.abs(guessPosition.getLatitude() - picturePosition.getLatitude());
         double latMax = Math.max(guessPosition.getLatitude(), picturePosition.getLatitude());
         double latMin = Math.min(guessPosition.getLatitude(), picturePosition.getLatitude());
-        LatLng topPosition = new LatLng(latMax + latDiff, guessPosition.getLongitude());
-        LatLng downPosition = new LatLng(latMin - latDiff, guessPosition.getLongitude());
+        LatLng topPosition = new LatLng(latMax + latDiff > MAX_LAT ? MAX_LAT : latMax + latDiff, guessPosition.getLongitude());
+        LatLng downPosition = new LatLng(latMin - latDiff < -MAX_LAT ? -MAX_LAT : latMin - latDiff, guessPosition.getLongitude());
 
         LatLngBounds latLngBounds = new LatLngBounds.Builder().include(guessPosition).include(picturePosition).include(topPosition).include(downPosition).build();
         mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, CAMERA_PADDING), (int) CAMERA_ANIMATION_DURATION);
