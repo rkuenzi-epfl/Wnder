@@ -1,13 +1,9 @@
 package com.github.wnder;
 
-import android.app.ActivityGroup;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -23,15 +19,9 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import okhttp3.internal.cache.InternalCache;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -136,46 +126,25 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void getApproximateLocationThrows(){
-        try {
-            ICPD.getApproximateLocation(uniqueId);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+
+        assertTrue(ICPD.getApproximateLocation(uniqueId).isCompletedExceptionally());
     }
 
     @Test
     public void getUserGuessesThrows(){
-        try {
-            ICPD.getUserGuesses(uniqueId);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+        assertTrue(ICPD.getUserGuesses(uniqueId).isCompletedExceptionally());
     }
 
     @Test
     public void sendUserGuessesThrows(){
-        try {
-            ICPD.sendUserGuess(uniqueId, "testUser", realLoc);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+        assertTrue(ICPD.sendUserGuess(uniqueId, "testUser", realLoc).isCompletedExceptionally());
+
     }
 
     @Test
     public void uploadPictureThrows(){
-        try {
-            ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+        assertTrue(ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)).isCompletedExceptionally());
+
     }
 
     @Test
@@ -191,12 +160,8 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void updateKarmaThrows(){
-        try{
-            ICPD.updateKarma(uniqueId, 0);
-            fail();
-        }
-        catch(IllegalStateException e){
-            assertTrue(true);
-        }
+
+        assertTrue(ICPD.updateKarma(uniqueId, 0).isCompletedExceptionally());
+
     }
 }

@@ -21,9 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
+import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;

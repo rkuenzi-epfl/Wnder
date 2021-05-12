@@ -53,10 +53,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         setSupportActionBar(toolbar);
 
         //Set user profile pic and name on toolbar
-        TextView textView = toolbar.findViewById(R.id.username);
+        TextView textView = toolbar.findViewById(R.id.username_old);
         User user = GlobalUser.getUser();
         textView.setText(user.getName());
-        ImageView imageView = toolbar.findViewById(R.id.profile_picture);
+        ImageView imageView = toolbar.findViewById(R.id.profile_picture_old);
         imageView.setImageURI(user.getProfilePicture());
 
         //Set the buttons: guess, upload, history
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this);
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this);
             alert.show();
         }
     }
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), this);
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_guess), this);
             alert.show();
         }
     }
