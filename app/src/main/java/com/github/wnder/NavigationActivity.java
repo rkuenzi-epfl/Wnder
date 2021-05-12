@@ -40,6 +40,8 @@ public class NavigationActivity extends AppCompatActivity {
     private static final String GUESS_PAGE = "guess";
     private static final String HISTORY_PAGE = "history";
 
+    private static final int REQUEST_POSITION_CODE = 100;
+
     /**
      * Execs on activity creation
      * @param savedInstanceState saved instance state
@@ -110,7 +112,7 @@ public class NavigationActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         //if it's not the good request, return
-        if(requestCode == 100){
+        if(requestCode == REQUEST_POSITION_CODE){
             //permission to get the location
             for(int i = 0; i < permissions.length; ++i){
                 if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
