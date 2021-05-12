@@ -12,6 +12,7 @@ import android.view.View;
  */
 public class OnSwipeTouchListener implements View.OnTouchListener {
     private final GestureDetector gestureDetector;
+    private enum movementType {VERTICAL, HORIZONTAL};
 
     public OnSwipeTouchListener(Context ctx){
         gestureDetector = new GestureDetector(ctx, new GestureListener());
@@ -27,25 +28,13 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
-        private boolean horizontalSwipe(float diffX, float velocityX){
+        private boolean multiDirectionalSwipe(float diff, float velocity, movementType type){
             boolean result = false;
-            if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                if (diffX > 0) {
-                    result = onSwipeRight();
+            if (Math.abs(diff) > SWIPE_THRESHOLD && Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD) {
+                if (diff > 0) {
+                    result = type == movementType.HORIZONTAL ? onSwipeRight() : onSwipeBottom();
                 } else {
-                    result = onSwipeLeft();
-                }
-            }
-            return result;
-        }
-
-        private boolean verticalSwipe(float diffY, float velocityY){
-            boolean result = false;
-            if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                if (diffY > 0) {
-                    result = onSwipeBottom();
-                } else {
-                    result =  onSwipeTop();
+                    result = type == movementType.HORIZONTAL ? onSwipeLeft() : onSwipeTop();
                 }
             }
             return result;
@@ -58,9 +47,9 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
                 float diffY = e2.getY() - e1.getY();
                 float diffX = e2.getX() - e1.getX();
                 if (Math.abs(diffX) > Math.abs(diffY)) {
-                    result = horizontalSwipe(diffX, velocityX);
+                    result = multiDirectionalSwipe(diffX, velocityX, movementType.HORIZONTAL);
                 } else {
-                    result = verticalSwipe(diffY, velocityY);
+                    result = multiDirectionalSwipe(diffY, velocityY, movementType.VERTICAL);
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
