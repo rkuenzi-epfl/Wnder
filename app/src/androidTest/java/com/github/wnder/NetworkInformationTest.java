@@ -7,12 +7,12 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.networkService.NetworkInformation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(JUnit4.class)
 public class NetworkInformationTest {
