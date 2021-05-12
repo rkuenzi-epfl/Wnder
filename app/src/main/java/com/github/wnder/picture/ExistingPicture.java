@@ -38,8 +38,7 @@ public class ExistingPicture extends Picture{
     public ExistingPicture(String uniqueId){
         super(uniqueId);
         User user = GlobalUser.getUser();
-        if(user instanceof SignedInUser){
-
+        if (user instanceof SignedInUser){
             addToUserGuessedPictures(user.getName());
         }
     }
@@ -74,45 +73,19 @@ public class ExistingPicture extends Picture{
         }
     }
 
-    private void onUserLocationAvailable(String user, String variant, Consumer<Location> onUserLocationAvailable) {
-        String[] path = {"pictures", getUniqueId(), "userData", variant};
-        Storage.downloadFromFirestore(path).addOnSuccessListener((documentSnapshot) -> {
-            GeoPoint geoPoint = documentSnapshot.getGeoPoint(user);
-            Location location = new Location("");
-            location.setLatitude(geoPoint.getLatitude());
-            location.setLongitude(geoPoint.getLongitude());
-            onUserLocationAvailable.accept(location);
-        });
-    }
-
-    /**
-     * Apply consumer function when the user's position during the guess is available
-     * @param user unique identifier of the user
-     * @param onUserPositionAvailable consumer function to call when the user's position during the guess is available
-     */
-    public void onUserPositionAvailable(String user, Consumer<Location> onUserPositionAvailable) {
-        onUserLocationAvailable(user, "userLocations", onUserPositionAvailable);
-    }
-
     /**
      * Apply consumer function when the user's guess is available
      * @param user unique identifier of the user
      * @param onUserGuessAvailable consumer function to call when the user's guess is available
      */
     public void onUserGuessAvailable(String user, Consumer<Location> onUserGuessAvailable) {
-        onUserLocationAvailable(user, "userGuesses", onUserGuessAvailable);
-    }
-
-    /**
-     * Apply consumer function when the user's radius setting is available
-     * @param user unique identifier of the user
-     * @param onRadiusAvailable consumer function to call when the user's radius setting is available
-     */
-    public void onUserRadiusAvailable(String user, Consumer<Integer> onRadiusAvailable) {
-        String[] path = {"pictures", getUniqueId(), "userData", "userRadii"};
+        String[] path = {"pictures", getUniqueId(), "userData", "userGuesses"};
         Storage.downloadFromFirestore(path).addOnSuccessListener((documentSnapshot) -> {
-            Integer radius = documentSnapshot.getLong(user).intValue();
-            onRadiusAvailable.accept(radius);
+            GeoPoint geoPoint = documentSnapshot.getGeoPoint(user);
+            Location guess = new Location("");
+            guess.setLatitude(geoPoint.getLatitude());
+            guess.setLongitude(geoPoint.getLongitude());
+            onUserGuessAvailable.accept(guess);
         });
     }
 
@@ -273,19 +246,5 @@ public class ExistingPicture extends Picture{
             //accept location with reduced precision
             approximateLocationAvailable.accept(al);
         });
-    }
-
-    /**
-     * To be used when a picture is guessed, add 1 karma to it.
-     */
-    public void addKarmaForGuess(){
-        updateKarma(1);
-    }
-
-    /**
-     * To be used when a picture is reported, subtract 10 karma from it.
-     */
-    public void subtractKarmaForReport() {
-        updateKarma(-10);
     }
 }

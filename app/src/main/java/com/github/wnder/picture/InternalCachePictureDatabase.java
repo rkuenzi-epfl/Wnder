@@ -9,7 +9,6 @@ import android.net.Uri;
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 
-import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,7 +20,6 @@ import javax.inject.Inject;
 public class InternalCachePictureDatabase implements PicturesDatabase{
     private final FirebasePicturesDatabase remoteDatabase;
     private final LocalPictureDatabase localDatabase;
-    private final Context context;
     public NetworkService networkInfo;
 
     /**
@@ -32,7 +30,6 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     public InternalCachePictureDatabase(Context context){
         remoteDatabase = new FirebasePicturesDatabase();
         localDatabase = new LocalPictureDatabase(context);
-        this.context = context;
         networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
     }
 
@@ -93,17 +90,17 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) throws IllegalStateException{
+    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot) throws IllegalStateException{
         if (isOnline()) {
             getBitmap(uniqueId).thenAccept(bmp -> {
                 getLocation(uniqueId).thenAccept(location->{
                     getScoreboard(uniqueId).thenAccept(scoreboard ->{
-                        storePictureLocally(new LocalPicture(uniqueId, bmp, location, guessedLocation, scoreboard));
+                        storePictureLocally(new LocalPicture(uniqueId, bmp, mapSnapshot, location, guessedLocation, scoreboard));
                     });
                 });
             });
 
-            return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation);
+            return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation, mapSnapshot);
         }
         else {
             CompletableFuture<Void> cf = new CompletableFuture<>();
@@ -115,18 +112,27 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     @Override
     public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
         if (isOnline()) {
-
             return remoteDatabase.getBitmap(uniqueId);
         }
         else {
             CompletableFuture<Bitmap> cf = new CompletableFuture<>();
-            try {
-                cf.complete(localDatabase.getPicture(uniqueId));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            cf.complete(localDatabase.getBitmap(uniqueId));
             return cf;
         }
+    }
+
+    @Override
+    public CompletableFuture<Bitmap> getMapSnapshot(String uniqueId) {
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        cf.complete(localDatabase.getMapSnapshot(uniqueId));
+        return cf;
+    }
+
+    @Override
+    public CompletableFuture<Location> getUserGuess(String uniqueId) {
+        CompletableFuture<Location> cf = new CompletableFuture<>();
+        cf.complete(localDatabase.getGuessedLocation(uniqueId));
+        return cf;
     }
 
     @Override
@@ -168,7 +174,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      * @param picture local picture to store
      */
     public void storePictureLocally(LocalPicture picture) {
-        localDatabase.storePictureAndMetadata(picture);
+        localDatabase.storePicture(picture);
     }
 
     /**
@@ -180,19 +186,10 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     /**
-     * Get the location of the image the user guessed
-     * @param uniqueId id of the image
-     * @return the location the user guessed
-     */
-    public Location getLocalGuessedLocation(String uniqueId){
-        return localDatabase.getGuessedLocation(uniqueId);
-    }
-
-    /**
      * Deletes picture file AND metadata file
      * @param uniqueId uniqueId of picture
      */
     public void deleteLocalPicture(String uniqueId){
-        localDatabase.deleteFile(uniqueId);
+        localDatabase.deletePicture(uniqueId);
     }
 }

@@ -71,6 +71,7 @@
 
     <!--History Picture Strings-->
     <string name="content_descr_history_display_picture">Previously guessed picture</string>
+    <string name="content_descr_history_map_image">Map with guess and actual location</string>
 
     <!--Scoreboard strings-->
     <string name="scoreboard_username_placeholder">Username</string>

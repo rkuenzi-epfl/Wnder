@@ -14,24 +14,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/pictureHistoryMap"
+        app:layout_constraintBottom_toTopOf="@+id/pictureHistoryMapImage"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/pictureHistoryMap"
+    <ImageView
+        android:id="@+id/pictureHistoryMapImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:contentDescription="@string/content_descr_history_map_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pictureHistoryImage"
-        app:layout_constraintBottom_toTopOf="@+id/pictureHistoryToScoreboardButton" />
+        app:layout_constraintBottom_toTopOf="@+id/pictureHistoryToScoreboardButton"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
         android:id="@+id/pictureHistoryDistanceText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pictureHistoryMap" />
+        app:layout_constraintTop_toBottomOf="@+id/pictureHistoryMapImage" />
 
     <TextView
         android:id="@+id/pictureHistoryScoreText"
@@ -46,6 +48,6 @@
         android:layout_height="wrap_content"
         android:text="@string/see_scoreboard"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pictureHistoryMap"
+        app:layout_constraintTop_toBottomOf="@+id/pictureHistoryMapImage"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

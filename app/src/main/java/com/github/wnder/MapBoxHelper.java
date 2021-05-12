@@ -3,25 +3,46 @@ package com.github.wnder;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.github.wnder.user.GlobalUser;
+import com.mapbox.api.staticmap.v1.MapboxStaticMap;
+import com.mapbox.api.staticmap.v1.StaticMapCriteria;
+import com.mapbox.api.staticmap.v1.models.StaticMarkerAnnotation;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.snapshotter.MapSnapshotter;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class MapBoxHelper {
 
@@ -147,5 +168,52 @@ public class MapBoxHelper {
         else if (barValue > ONE_QUARTER && barValue <= TWO_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
         }
+    }
+
+    /**
+     * Apply consumer function when a map snapshot for a particular guess is available
+     * @param context application context
+     * @param guessLatLng the position of the guess
+     * @param pictureLatLng the actual position of the picture
+     * @param mapSnapshotAvailable consumer function
+     * @return a Future of all user scores
+     */
+    protected static void onMapSnapshotAvailable(Context context, LatLng guessLatLng, LatLng pictureLatLng, Consumer<Bitmap> mapSnapshotAvailable) {
+        StaticMarkerAnnotation guessMarker = StaticMarkerAnnotation.builder()
+                .name(StaticMapCriteria.LARGE_PIN)
+                .color(255, 0, 0)
+                .lnglat(Point.fromLngLat(guessLatLng.getLongitude(), guessLatLng.getLatitude()))
+                .build();
+
+        StaticMarkerAnnotation pictureMarker = StaticMarkerAnnotation.builder()
+                .name(StaticMapCriteria.LARGE_PIN)
+                .color(255, 0, 0)
+                .lnglat(Point.fromLngLat(pictureLatLng.getLongitude(), pictureLatLng.getLatitude()))
+                .build();
+
+        MapboxStaticMap staticMap = MapboxStaticMap.builder()
+                .accessToken(context.getString(R.string.mapbox_access_token))
+                .styleId(StaticMapCriteria.SATELLITE_STREETS_STYLE)
+                .staticMarkerAnnotations(Arrays.asList(guessMarker, pictureMarker))
+                .cameraAuto(true)
+                .width(1024)
+                .height(1024)
+                .build();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            Bitmap mapSnapshot = null;
+            try {
+                mapSnapshot = BitmapFactory.decodeStream(staticMap.url().url().openConnection().getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Bitmap finalMapSnapshot = mapSnapshot;
+            handler.post(() -> {
+                mapSnapshotAvailable.accept(finalMapSnapshot);
+            });
+        });
     }
 }

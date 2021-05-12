@@ -86,6 +86,7 @@ dependencies {
 
     //Add library for mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
+    implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:5.8.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-turf:5.8.0'
 
     //for pictures from url

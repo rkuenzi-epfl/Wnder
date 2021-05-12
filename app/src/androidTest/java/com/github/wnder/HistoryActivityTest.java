@@ -30,6 +30,10 @@ import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static java.lang.Thread.sleep;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,13 +59,13 @@ public class HistoryActivityTest {
         loc.setLatitude(10);
         loc.setLongitude(15);
         Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-        LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
-        localPicDb.storePictureAndMetadata(pic);
+        LocalPicture pic =  new LocalPicture("testPic", bmp, bmp, loc, loc, new HashMap<>());
+        localPicDb.storePicture(pic);
     }
 
     @AfterClass
     public static void afterAll(){
-        localPicDb.deleteFile("testPic");
+        localPicDb.deletePicture("testPic");
     }
 
     //For activities that we did ourself otherwise need to use mockito
