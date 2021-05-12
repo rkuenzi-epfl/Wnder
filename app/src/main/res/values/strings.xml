@@ -21,6 +21,7 @@
     <string name="no_internet_guess">You cannot guess pictures without an internet connection.</string>
 
     <!--Guess Preview Strings-->
+    <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
     <string name="report">Report</string>
     <string name="help">Help</string>
     <string name="popup_menu">Popup menu</string>
