@@ -29,10 +29,11 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
         private boolean movementTypeDispatch(float diff, movementType type){
+            boolean isHorizontal = type == movementType.HORIZONTAL;
             if (diff > 0) {
-                return type == movementType.HORIZONTAL ? onSwipeRight() : onSwipeBottom();
+                return isHorizontal ? onSwipeRight() : onSwipeBottom();
             } else {
-                return type == movementType.HORIZONTAL ? onSwipeLeft() : onSwipeTop();
+                return isHorizontal ? onSwipeLeft() : onSwipeTop();
             }
         }
 
