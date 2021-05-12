@@ -3,8 +3,12 @@ package com.github.wnder;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -14,14 +18,21 @@ import com.github.wnder.user.GlobalUser;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.snapshotter.MapSnapshotter;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
+
+import java.util.function.Consumer;
 
 public class MapBoxHelper {
 
@@ -29,6 +40,14 @@ public class MapBoxHelper {
 
     private static final String PICTURE_SOURCE_ID = "picture-source-id";
     private static final String PICTURE_LAYER_ID = "picture-layer-id";
+
+    private static final String SOURCE_ID_SUFFIX = "-source-id";
+    private static final String ICON_ID_SUFFIX = "-icon-id";
+    private static final String LAYER_ID_SUFFIX = "-layer-id";
+    private static final String GUESS_PREFIX = "guess";
+    private static final String PICTURE_PREFIX = "picture";
+    private static final String PICTURE_CIRCLE_SOURCE_ID = "picture-circle-source-id";
+    private static final String PICTURE_CIRCLE_LAYER_ID = "picture-circle-layer-id";
 
     /**
      * Animate on a line a point from an origin to a destination for a MapBox GeoJsonSource.
@@ -151,5 +170,51 @@ public class MapBoxHelper {
         else if (barValue > ONE_QUARTER && barValue <= TWO_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
         }
+    }
+
+    protected static void onSnapshotAvailable(Context context, LatLng guessLatLng, LatLng pictureLatLng, Consumer<Bitmap> snapshotAvailable) {
+        LatLngBounds region = new LatLngBounds.Builder()
+                .include(guessLatLng)
+                .include(pictureLatLng)
+                .build();
+
+        Style.Builder styleBuilder = new Style.Builder()
+                .fromUri(Style.SATELLITE_STREETS);
+
+        addIconToStyleBuilder(context, styleBuilder, guessLatLng, GUESS_PREFIX);
+        addIconToStyleBuilder(context, styleBuilder, pictureLatLng, PICTURE_PREFIX);
+
+        Point point = Point.fromLngLat(pictureLatLng.getLongitude(), pictureLatLng.getLatitude());
+        Polygon circle = TurfTransformation.circle(point, 200, "meters");
+        GeoJsonSource pictureSource = new GeoJsonSource(PICTURE_CIRCLE_SOURCE_ID, circle);
+
+        styleBuilder.withSource(pictureSource);
+        styleBuilder.withLayer(new FillLayer(PICTURE_CIRCLE_LAYER_ID, PICTURE_CIRCLE_SOURCE_ID).withProperties(
+                PropertyFactory.fillColor("#ff0000"),
+                PropertyFactory.fillOpacity(0.4f)
+        ));
+
+        MapSnapshotter.Options options = new MapSnapshotter.Options(1024, 1024)
+                .withRegion(region)
+                .withStyleBuilder(styleBuilder);
+        MapSnapshotter snapshotter = new MapSnapshotter(context, options);
+        snapshotter.start(snapshot -> {
+            snapshotAvailable.accept(snapshot.getBitmap());
+        });
+    }
+
+    private static void addIconToStyleBuilder(Context context, Style.Builder styleBuilder, LatLng position, String prefix) {
+        GeoJsonSource source = new GeoJsonSource(prefix + SOURCE_ID_SUFFIX,
+                Point.fromLngLat(position.getLongitude(), position.getLatitude()));
+
+        styleBuilder.withImage(prefix + ICON_ID_SUFFIX, BitmapFactory.decodeResource(
+                context.getResources(), R.drawable.mapbox_marker_icon_default))
+                    .withSource(source)
+                .withLayer(new SymbolLayer(prefix + LAYER_ID_SUFFIX, prefix + SOURCE_ID_SUFFIX)
+                .withProperties(
+                        PropertyFactory.iconImage(prefix + ICON_ID_SUFFIX),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
     }
 }

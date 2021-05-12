@@ -43,9 +43,10 @@ public interface PicturesDatabase {
      * @param uniqueId the picture unique Id
      * @param user the user guessing
      * @param guessedLocation the user's guessed location
+     * @param mapSnapshot a snapshot of the map with the markers
      * @return a Future
      */
-    CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation);
+    CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot);
 
     /**
      * Provides (later) the bitmap of a picture

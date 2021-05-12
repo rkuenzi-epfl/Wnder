@@ -13,36 +13,27 @@ import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.LocalPicture;
 import com.github.wnder.picture.LocalPictureDatabase;
-import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
-import com.github.wnder.user.User;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.RuleChain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
 
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static java.lang.Thread.sleep;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -69,13 +60,13 @@ public class HistoryActivityTest {
         loc.setLatitude(10);
         loc.setLongitude(15);
         Bitmap bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-        LocalPicture pic =  new LocalPicture("testPic",bmp, loc, loc, new HashMap<>());
-        localPicDb.storePictureAndMetadata(pic);
+        LocalPicture pic =  new LocalPicture("testPic", bmp, bmp, loc, loc, new HashMap<>());
+        localPicDb.storePicture(pic);
     }
 
     @AfterClass
     public static void afterAll(){
-        localPicDb.deleteFile("testPic");
+        localPicDb.deletePicture("testPic");
     }
 
     //For activities that we did ourself otherwise need to use mockito

@@ -37,7 +37,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
-
     }
 
     @Override
@@ -121,7 +120,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) {
+    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot) {
         CompletableFuture<Void> guessSent = new CompletableFuture<>();
         CompletableFuture<Void> scoreSent = new CompletableFuture<>();
         getLocation(uniqueId).thenAccept(location -> {
