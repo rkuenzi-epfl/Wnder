@@ -201,7 +201,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                         picturesDb.updateKarma(pictureID,-10);
                         addToReportedPictures(pictureID);
                         reported = true;
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), "This picture has been reported.", BaseTransientBottomBar.LENGTH_SHORT);
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report, BaseTransientBottomBar.LENGTH_SHORT);
                         snackbar.show();
                     }
                 });

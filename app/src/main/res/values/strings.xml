@@ -35,6 +35,7 @@
     <string name="help_title">"Actions possible:"</string>
     <string name="help_body">"Guess: Click on the picture if you want to guess it's location. \n\nSkip: " +
                 "Swipe left to skip the actual image and search an other one."</string>
+    <string name="bar_report">"This picture has been reported."</string>
 
     <!--Guess Location Strings-->
     <string name="content_descr_guess_hotbar_image">This is the image of the hotbar shown in Compass Mode when close to the picture</string>
