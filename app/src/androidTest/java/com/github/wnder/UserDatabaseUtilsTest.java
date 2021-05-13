@@ -1,9 +1,6 @@
 package com.github.wnder;
 
-import android.content.Context;
 import android.net.Uri;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
@@ -31,8 +28,6 @@ import static org.hamcrest.Matchers.is;
 @HiltAndroidTest
 public class UserDatabaseUtilsTest {
     private UserDatabaseUtils userDbUtils;
-
-    private static Context context = ApplicationProvider.getApplicationContext();
 
     @BindValue
     public static UserDatabase userDb = Mockito.mock(UserDatabase.class);
