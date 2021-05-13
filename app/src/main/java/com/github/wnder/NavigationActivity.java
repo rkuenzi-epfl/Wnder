@@ -29,17 +29,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class NavigationActivity extends AppCompatActivity {
 
-
     @Inject
     public NetworkService networkInfo;
 
     private BottomNavigationView bottomNavigationView;
-
-    //Page strings
-    private static final String PROFILE_PAGE = "profile";
-    private static final String TAKE_PICTURE_PAGE = "take_picture";
-    private static final String GUESS_PAGE = "guess";
-    private static final String HISTORY_PAGE = "history";
 
     private static final int REQUEST_POSITION_CODE = 100;
 
@@ -52,28 +45,52 @@ public class NavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
 
+        // If you want to test history without sign in:
+        // GlobalUser.setUser(new SignedInUser("Bonbon", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+
         //Setup map with corresponding strings
-        Map<Integer, String> iconMap = new HashMap<>();
-        iconMap.put(R.id.profile_page, PROFILE_PAGE);
-        iconMap.put(R.id.take_picture_page, TAKE_PICTURE_PAGE);
-        iconMap.put(R.id.guess_page, GUESS_PAGE);
-        iconMap.put(R.id.history_page, HISTORY_PAGE);
+        Map<Integer, Class> iconMap = new HashMap<>();
+        iconMap.put(R.id.profile_page, ProfileFragment.class);
+        iconMap.put(R.id.take_picture_page, TakePictureFragment.class);
+        iconMap.put(R.id.guess_page, GuessFragment.class);
+        iconMap.put(R.id.history_page, HistoryFragment.class);
 
         //call updateFragment depending on clicked icon
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateFragment(iconMap.get(item.getItemId())));
 
         //First displayed fragment is profile one
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_view, ProfileFragment.class, null)
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit();
+        updateFragment(ProfileFragment.class);
 
         //rights for location services
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
+    }
+
+    /**
+     * Execs on activity start
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    /**
+     * Update fragment depending on pressed navigation bar button
+     * @param fragmentClass class associated to pressed button
+     * @return Boolean true
+     */
+    private Boolean updateFragment(Class fragmentClass){
+
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_view, fragmentClass, null)
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
+                .commit();
+
+        return true;
     }
 
     /**
@@ -87,7 +104,7 @@ public class NavigationActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         //if it's not the good request, return
-        if(requestCode == 100){
+        if(requestCode == REQUEST_POSITION_CODE){
             //permission to get the location
             for(int i = 0; i < permissions.length; ++i){
                 if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
@@ -103,57 +120,4 @@ public class NavigationActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Execs on activity start
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-
-    /**
-     * Update fragment depending on pressed navigation bar button
-     * @param id string defining pressed button
-     * @return Boolean true
-     */
-    private Boolean updateFragment(String id){
-        if(id.equals(PROFILE_PAGE)) {
-            //push profile fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container_view, ProfileFragment.class, null)
-                    .setReorderingAllowed(true)
-                    .addToBackStack(null)
-                    .commit();
-        }
-
-        else if(id.equals(GUESS_PAGE)) {
-            FragmentManager fragManager = getSupportFragmentManager();
-            fragManager.beginTransaction()
-                    .replace(R.id.fragment_container_view, SeekbarFragment.class, null)
-                    .setReorderingAllowed(true)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        else if(id.equals(TAKE_PICTURE_PAGE)){
-            // Alert Guest user and user no connected to the internet
-            if(GlobalUser.getUser() instanceof GuestUser){
-                AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), this)
-                        .show();
-            } else if(!networkInfo.isNetworkAvailable()){
-                AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this)
-                        .show();
-            }
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container_view, TakePictureFragment.class, null)
-
-                    .setReorderingAllowed(true)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        return true;
-    }
 }

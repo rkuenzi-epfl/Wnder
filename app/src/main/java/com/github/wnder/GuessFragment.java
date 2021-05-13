@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class SeekbarFragment extends Fragment implements OnSeekBarChangeListener {
+public class GuessFragment extends Fragment implements OnSeekBarChangeListener {
     //Different distances for the radius
     private final int[] distances = {5, 10, 20, 50, 100, 500, 1000};
 
@@ -32,7 +32,7 @@ public class SeekbarFragment extends Fragment implements OnSeekBarChangeListener
     private TextView radiusTextView;
     private FloatingActionButton guessButton;
 
-    public SeekbarFragment() {
+    public GuessFragment() {
         super(R.layout.fragment_seekbar);
     }
 

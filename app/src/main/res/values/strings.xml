@@ -49,6 +49,12 @@
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>
+    <string name="content_descr_history_location">Location icon</string>
+    <string name="content_descr_history_scoreboard">Scoreboard icon</string>
+    <string name="default_distance">0m</string>
+    <string name="default_score">0.0</string>
+    <string name="history_distance_meter">%1$dm</string>
+    <string name="history_distance_kilometer">%1$dkm</string>
 
     <!--History Picture Strings-->
     <string name="content_descr_history_display_picture">Previously guessed picture</string>

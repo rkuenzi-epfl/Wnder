@@ -13,7 +13,7 @@ import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
-import com.github.wnder.user.UserDatabase;
+import com.github.wnder.user.FirebaseUserDatabase;
 import com.github.wnder.user.UserDatabaseUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -58,7 +58,7 @@ public class ProfileFragment extends Fragment {
     //setup sign in client and userdb
     private GoogleSignInClient client;
     private final int RC_SIGN_IN = 10; // Arbitrary number
-    private UserDatabase userDb;
+    private FirebaseUserDatabase userDb;
     private UserDatabaseUtils userDbUtils;
 
     private View view;
@@ -224,8 +224,8 @@ public class ProfileFragment extends Fragment {
         username.setVisibility(View.VISIBLE);
 
         //update user database
-        userDb = new UserDatabase(this.getContext());
-        userDbUtils = new UserDatabaseUtils(userDb.getAllGuessedPictures(), userDb.getAllScores());
+        userDb = new FirebaseUserDatabase(this.getContext());
+        userDbUtils = new UserDatabaseUtils(userDb.getPictureList(GlobalUser.getUser(), "guessedPics"), userDb.getAllScores(GlobalUser.getUser()));
 
         //update network status
         updateNetworkStatus();
@@ -268,7 +268,7 @@ public class ProfileFragment extends Fragment {
      * Tells us if we are logged in or not
      * @return true if logged in, false otherwise
      */
-    private boolean areWeLoggedIn(){
+    private boolean areWeLoggedIn() {
         // just check that the global user is a signed in one
         return (GlobalUser.getUser() instanceof SignedInUser);
     }
