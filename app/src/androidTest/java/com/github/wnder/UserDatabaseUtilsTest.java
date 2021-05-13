@@ -24,6 +24,7 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 @HiltAndroidTest
 public class UserDatabaseUtilsTest {
@@ -71,5 +72,13 @@ public class UserDatabaseUtilsTest {
     @Test
     public void getAverageScoreWorks(){
         userDbUtils.getAverageScore().thenAccept(average -> assertThat(average, is((double)((250 + 200)/2))));
+    }
+
+    @Test
+    public void getGuessedPicsWorks(){
+        userDbUtils.getGuessedPics().thenAccept(pics -> {
+            assertTrue(pics.contains("pic1"));
+            assertTrue(pics.contains("pic2"));
+        });
     }
 }
