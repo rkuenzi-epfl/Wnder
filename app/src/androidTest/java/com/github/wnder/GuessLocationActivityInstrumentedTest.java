@@ -113,7 +113,6 @@ public class GuessLocationActivityInstrumentedTest  {
         onView(withId(R.id.compassMode)).perform(click());
 
         onView(withId(R.id.confirmButton)).perform(click());
-
         onView(withId(R.id.confirmButton)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
