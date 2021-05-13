@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.NewPicture;
 import com.github.wnder.user.GlobalUser;
@@ -69,7 +68,7 @@ public class TakePictureActivity extends AppCompatActivity {
         picture = findViewById(R.id.imageFromCamera);
 
         //button to take picture
-        takePictureButton = findViewById(R.id.takePictureButton);
+        takePictureButton = findViewById(R.id.oldTakePictureButton);
         takePictureButton.setOnClickListener((view) -> dispatchTakePictureIntent());
 
         //button to confirm the taken picture, once confirmed, stored in gallery
@@ -87,7 +86,7 @@ public class TakePictureActivity extends AppCompatActivity {
                 this.finish();
             }
             else{
-                AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+                AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
                 alert.show();
             }
         });

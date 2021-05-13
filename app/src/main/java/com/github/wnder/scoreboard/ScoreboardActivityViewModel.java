@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.scoreboard;
 
 
 import androidx.lifecycle.LiveData;
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.inject.Inject;
 

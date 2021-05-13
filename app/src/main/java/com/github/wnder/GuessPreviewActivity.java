@@ -165,7 +165,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
             finish();
         }
         else{
-            AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
             alert.show();
         }
     }
@@ -186,7 +186,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Create an alert popup to explain how to use this activity
      */
     private void helpMenu(){
-        AlertBuilder.noConnectionAlert(getString(R.string.help_title), getString(R.string.help_body), this).show();
+        AlertBuilder.okAlert(getString(R.string.help_title), getString(R.string.help_body), this).show();
     }
 
     /**
