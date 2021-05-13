@@ -87,10 +87,13 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                     Map<String, Location> convertedResult = new TreeMap<>();
                     for(Map.Entry<String, Object> e : documentSnapshot.getData().entrySet()){
                         GeoPoint geoPoint = documentSnapshot.getGeoPoint(e.getKey());
-                        Location locationEntry = new Location("");
-                        locationEntry.setLatitude(geoPoint.getLatitude());
-                        locationEntry.setLongitude(geoPoint.getLongitude());
-                        convertedResult.put(e.getKey(), locationEntry);
+                        if(geoPoint != null){
+
+                            Location locationEntry = new Location("");
+                            locationEntry.setLatitude(geoPoint.getLatitude());
+                            locationEntry.setLongitude(geoPoint.getLongitude());
+                            convertedResult.put(e.getKey(), locationEntry);
+                        }
                     }
 
                     cf.complete(convertedResult);
