@@ -31,6 +31,7 @@ public class SeekbarFragment extends Fragment implements OnSeekBarChangeListener
     public NetworkService networkInfo;
 
     private TextView radiusTextView;
+    private FloatingActionButton guessButton;
 
     public SeekbarFragment() {
         super(R.layout.fragment_seekbar);
@@ -45,7 +46,7 @@ public class SeekbarFragment extends Fragment implements OnSeekBarChangeListener
 
         radiusTextView = rootView.findViewById(R.id.radiusTextView);
 
-        FloatingActionButton guessButton = rootView.findViewById(R.id.navigationToGuessButton);
+        guessButton = rootView.findViewById(R.id.navigationToGuessButton);
 
         guessButton.setOnClickListener((view) -> openPreviewActivity());
 

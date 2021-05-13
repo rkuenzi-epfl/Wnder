@@ -103,15 +103,17 @@ public class NavigationActivityTest {
     public void guessButtonShowsSeekbar() {
         onView(withId(R.id.guess_page)).perform(click());
         onView(withText("Radius: 5km")).check(matches(isDisplayed()));
-        onView(withId(R.id.navigationToGuessButton)).perform(click());
     }
-    
+
     @Test
-    public void guessButtonGoesToGuessPreview() {
+    public void guessButtonWithoutConnectionLaunchesAlert() {
+        when(networkInfo.isNetworkAvailable()).thenReturn(false);
         onView(withId(R.id.guess_page)).perform(click());
         onView(withId(R.id.navigationToGuessButton)).perform(click());
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
+        when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
+    
 
     @Test
     public void informPictureCantBeUploadedAsGuest(){
