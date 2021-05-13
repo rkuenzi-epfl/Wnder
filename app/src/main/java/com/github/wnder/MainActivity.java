@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-
 /**
  * Main activity
  */
