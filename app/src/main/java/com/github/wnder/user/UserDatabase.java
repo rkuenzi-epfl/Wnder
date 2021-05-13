@@ -26,6 +26,7 @@ public interface UserDatabase {
 
     /**
      * get all the scores of a user
+     * @param user user from which we want the scores
      * @return a set of all the scores a user achieved
      */
     CompletableFuture<Set<Double>> getAllScores(User user);
