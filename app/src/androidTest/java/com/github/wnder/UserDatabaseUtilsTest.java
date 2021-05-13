@@ -2,6 +2,7 @@ package com.github.wnder;
 
 import android.net.Uri;
 
+import com.github.wnder.picture.UserModule;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
@@ -10,6 +11,7 @@ import com.github.wnder.user.UserDatabaseUtils;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -20,14 +22,22 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.UninstallModules;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @HiltAndroidTest
+@UninstallModules({UserModule.class})
 public class UserDatabaseUtilsTest {
+    @Rule
+    public HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
     private UserDatabaseUtils userDbUtils;
 
     @BindValue
@@ -47,10 +57,11 @@ public class UserDatabaseUtilsTest {
         allScores.add(200.);
         allScoresFuture.complete(allScores);
 
-        Mockito.when(userDb.getAllScores()).thenReturn(allScoresFuture);
-        Mockito.when(userDb.getAllGuessedPictures()).thenReturn(guessedPicturesFuture);
-        this.userDbUtils = new UserDatabaseUtils(userDb.getAllGuessedPictures(), userDb.getAllScores());
+        Mockito.when(userDb.getAllScores(any())).thenReturn(allScoresFuture);
+        Mockito.when(userDb.getPictureList(any(), anyString())).thenReturn(guessedPicturesFuture);
         User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        this.userDbUtils = new UserDatabaseUtils(userDb.getPictureList(user, "guessedPics"), userDb.getAllScores(user));
+
         GlobalUser.setUser(user);
     }
 
