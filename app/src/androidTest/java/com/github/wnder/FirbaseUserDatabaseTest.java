@@ -40,6 +40,7 @@ public class FirbaseUserDatabaseTest {
         String receivedPic = "";
         try {
             guessedPics = db.getPictureList(user, "guessedPics").get();
+            receivedPic = db.getNewPictureForUser(user, 100000).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

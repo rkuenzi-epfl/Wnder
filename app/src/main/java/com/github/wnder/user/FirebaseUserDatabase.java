@@ -58,8 +58,14 @@ public class FirebaseUserDatabase implements UserDatabase{
         }
         CompletableFuture<List<String>> guessedCf = new CompletableFuture<>();
         CompletableFuture<List<String>> uploadedCf = new CompletableFuture<>();
-        getPictureList(user,"guessedPics").thenAccept(guessedAndUploaded::addAll);
-        getPictureList(user,"uploadedPics").thenAccept(guessedAndUploaded::addAll);
+        getPictureList(user,"guessedPics").thenAccept(guessed -> {
+            guessedAndUploaded.addAll(guessed);
+            guessedCf.complete(guessed);
+        });
+        getPictureList(user,"uploadedPics").thenAccept(uploaded -> {
+            guessedAndUploaded.addAll(uploaded);
+            uploadedCf.complete(uploaded);
+        });
 
         return CompletableFuture.allOf(guessedCf, uploadedCf).thenApply(nothing -> guessedAndUploaded);
     }
@@ -68,11 +74,10 @@ public class FirebaseUserDatabase implements UserDatabase{
     public CompletableFuture<String> getNewPictureForUser(User user, int radius) {
         CompletableFuture<String> cf = new CompletableFuture<>();
         // Get all pictures and remove the ones not in radius
-        getAllIdsAndLocation().thenApply( idsAndLocation -> {
+        getAllIdsAndLocation().thenAccept( idsAndLocation -> {
             Location userLocation = user.getPositionFromGPS((LocationManager)context.getSystemService(Context.LOCATION_SERVICE),context);
 
-            return keepOnlyInRadius(userLocation, idsAndLocation, radius);
-        }).thenAccept(inRadius -> {
+            Set<String> inRadius = keepOnlyInRadius(userLocation, idsAndLocation, radius);
 
             // Get all guessed and uploaded pictures and remove them from the ones in radius
             getGuessedAndUploadedPictureList(user).thenAccept(guessedAndUploaded ->{
