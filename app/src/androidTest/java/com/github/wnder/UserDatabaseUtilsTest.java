@@ -70,6 +70,6 @@ public class UserDatabaseUtilsTest {
 
     @Test
     public void getAverageScoreWorks(){
-        userDbUtils.getAverageScore().thenAccept(average -> assertThat(average, is((double)(250 + 200)/2)));
+        userDbUtils.getAverageScore().thenAccept(average -> assertThat(average, is((double)((250 + 200)/2))));
     }
 }
