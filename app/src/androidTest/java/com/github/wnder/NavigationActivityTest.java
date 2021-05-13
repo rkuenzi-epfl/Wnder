@@ -101,15 +101,15 @@ public class NavigationActivityTest {
   
     @Test
     public void guessButtonShowsSeekbar() {
-        onView(withId(R.id.guess_page)).perform(ViewActions.click());
+        onView(withId(R.id.guess_page)).perform(click());
         onView(withText("Radius: 5km")).check(matches(isDisplayed()));
-        onView(withId(R.id.navigationToGuessButton)).perform(ViewActions.click());
+        onView(withId(R.id.navigationToGuessButton)).perform(click());
     }
     
     @Test
     public void guessButtonGoesToGuessPreview() {
-        onView(withId(R.id.guess_page)).perform(ViewActions.click());
-        onView(withId(R.id.navigationToGuessButton)).perform(ViewActions.click());
+        onView(withId(R.id.guess_page)).perform(click());
+        onView(withId(R.id.navigationToGuessButton)).perform(click());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
 
