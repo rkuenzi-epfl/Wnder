@@ -48,6 +48,9 @@ public class MapBoxHelper {
 
     private static final long POINT_ANIMATION_DURATION = 200;
 
+    private static final String COLOR_RED = "f84d4d";
+    private static final String COLOR_PURPLE = "7753eb";
+
     /**
      * Animate on a line a point from an origin to a destination for a MapBox GeoJsonSource.
      *
@@ -179,17 +182,8 @@ public class MapBoxHelper {
      * @return a Future of all user scores
      */
     protected static void onMapSnapshotAvailable(Context context, LatLng guessLatLng, LatLng pictureLatLng, Consumer<Bitmap> mapSnapshotAvailable) {
-        StaticMarkerAnnotation guessMarker = StaticMarkerAnnotation.builder()
-                .name(StaticMapCriteria.LARGE_PIN)
-                .color(255, 0, 0)
-                .lnglat(Point.fromLngLat(guessLatLng.getLongitude(), guessLatLng.getLatitude()))
-                .build();
-
-        StaticMarkerAnnotation pictureMarker = StaticMarkerAnnotation.builder()
-                .name(StaticMapCriteria.LARGE_PIN)
-                .color(255, 0, 0)
-                .lnglat(Point.fromLngLat(pictureLatLng.getLongitude(), pictureLatLng.getLatitude()))
-                .build();
+        StaticMarkerAnnotation guessMarker = buildMarker(guessLatLng, COLOR_RED);
+        StaticMarkerAnnotation pictureMarker = buildMarker(pictureLatLng, COLOR_PURPLE);
 
         MapboxStaticMap staticMap = MapboxStaticMap.builder()
                 .accessToken(context.getString(R.string.mapbox_access_token))
@@ -215,5 +209,13 @@ public class MapBoxHelper {
                 mapSnapshotAvailable.accept(finalMapSnapshot);
             });
         });
+    }
+
+    private static StaticMarkerAnnotation buildMarker(LatLng latLng, String color) {
+        return StaticMarkerAnnotation.builder()
+                .name(StaticMapCriteria.LARGE_PIN)
+                .color(color)
+                .lnglat(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()))
+                .build();
     }
 }
