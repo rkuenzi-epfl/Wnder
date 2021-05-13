@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.squareup.picasso.Picasso;
 
+import javax.annotation.Signed;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -34,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class ProfileFragment extends Fragment {
 
     //Setup buttons and google signin and texts
-    private boolean areWeLoggedIn;
     private View signInButton;
     private View logoutButton;
     private TextView noConnection;
@@ -108,21 +108,15 @@ public class ProfileFragment extends Fragment {
         //Checks if user has already signed in
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
         //If yes, skip this activity, else, give him the choice
-        if(account != null){
+        if(account != null) {
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
-            areWeLoggedIn = true;
-            updateLoginStatus();
-
-        } else {
-            areWeLoggedIn = false;
-            updateLoginStatus();
         }
+        updateLoginStatus();
     }
 
     private void logout(){
         client.signOut();
         GlobalUser.resetUser();
-        areWeLoggedIn = false;
         updateLoginStatus();
     }
 
@@ -164,7 +158,6 @@ public class ProfileFragment extends Fragment {
             // Signed in successfully, show authenticated UI.
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
 
-            areWeLoggedIn = true;
             updateLoginStatus();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -174,7 +167,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateLoginStatus(){
-        if(areWeLoggedIn){
+        if(areWeLoggedIn()){
             logoutButton.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.INVISIBLE);
         }
@@ -197,7 +190,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateNetworkStatus(){
-        if(networkInfo.isNetworkAvailable() && areWeLoggedIn){
+        if(networkInfo.isNetworkAvailable() && areWeLoggedIn()){
 
             userDb.getNbrOfGuessedPictures().thenAccept(nbr -> nbrOfGuessesText.setText(String.format("%d", nbr)));
             userDb.getAverageScore().thenAccept(average -> averageScoreText.setText(String.format("%,.2f", average)));
@@ -218,5 +211,9 @@ public class ProfileFragment extends Fragment {
             averageScoreText.setText("");
             totalScoreText.setText("");
         }
+    }
+
+    private boolean areWeLoggedIn(){
+        return (GlobalUser.getUser() instanceof SignedInUser);
     }
 }

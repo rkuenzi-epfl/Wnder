@@ -47,5 +47,5 @@ public class UserDatabaseTest {
     public void getAverageScoreWorks(){
         userDb.getAverageScore().thenAccept(average -> assertThat(average, is(156)));
     }
-    
+
 }
