@@ -79,5 +79,4 @@ public class UserDatabaseUtilsTest {
     public void getAverageScoreWorks(){
         userDbUtils.getAverageScore().thenAccept(average -> assertThat(average, is((double)(250 + 195 + 193.23)/3)));
     }
-
 }
