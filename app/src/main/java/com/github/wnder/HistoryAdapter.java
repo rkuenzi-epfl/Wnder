@@ -22,8 +22,8 @@ import java.util.Locale;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
-    private ArrayList<String> pictureList;
-    private PicturesDatabase picturesDb;
+    private final ArrayList<String> pictureList;
+    private final PicturesDatabase picturesDb;
 
     public HistoryAdapter(ArrayList<String> pictureList, PicturesDatabase picturesDatabase){
         this.pictureList = pictureList;
