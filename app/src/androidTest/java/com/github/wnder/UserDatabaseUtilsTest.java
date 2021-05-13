@@ -5,8 +5,6 @@ import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.github.wnder.networkService.NetworkInformation;
-import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
@@ -27,8 +25,8 @@ import java.util.concurrent.CompletableFuture;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @HiltAndroidTest
 public class UserDatabaseUtilsTest {

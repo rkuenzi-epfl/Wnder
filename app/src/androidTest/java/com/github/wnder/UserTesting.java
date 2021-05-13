@@ -1,39 +1,25 @@
 package com.github.wnder;
 
-import android.content.Context;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
 
-import androidx.annotation.NonNull;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -45,12 +31,7 @@ import dagger.hilt.android.testing.UninstallModules;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 @HiltAndroidTest
 @UninstallModules({NetworkModule.class})

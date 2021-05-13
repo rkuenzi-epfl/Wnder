@@ -2,7 +2,6 @@ package com.github.wnder.user;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -17,10 +16,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This class brings in useful methods to get user information

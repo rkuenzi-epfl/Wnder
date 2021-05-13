@@ -2,16 +2,13 @@ package com.github.wnder;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
@@ -29,7 +26,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
-import javax.annotation.Signed;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;

@@ -6,29 +6,14 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
-
-
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.User;
-
 
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
