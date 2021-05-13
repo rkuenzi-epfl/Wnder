@@ -43,14 +43,12 @@ public class UserDatabaseUtilsTest {
         List<String> guessedPictures = new ArrayList<>();
         guessedPictures.add("pic1");
         guessedPictures.add("pic2");
-        guessedPictures.add("pic3");
         guessedPicturesFuture.complete(guessedPictures);
 
         CompletableFuture<Set<Double>> allScoresFuture = new CompletableFuture<>();
         HashSet<Double> allScores = new HashSet<>();
         allScores.add(250.);
-        allScores.add(195.);
-        allScores.add(193.23);
+        allScores.add(200.);
         allScoresFuture.complete(allScores);
 
         Mockito.when(userDb.getAllScores()).thenReturn(allScoresFuture);
@@ -67,16 +65,16 @@ public class UserDatabaseUtilsTest {
 
     @Test
     public void getTotalScoreWorks(){
-        userDbUtils.getTotalScore().thenAccept(total -> assertThat(total, is(250 + 195 + 193.23)));
+        userDbUtils.getTotalScore().thenAccept(total -> assertThat(total, is(250 + 200)));
     }
 
     @Test
     public void getNbrOfGuessedPicsWorks(){
-        userDbUtils.getNbrOfGuessedPictures().thenAccept(nbr -> assertThat(nbr, is(3)));
+        userDbUtils.getNbrOfGuessedPictures().thenAccept(nbr -> assertThat(nbr, is(2)));
     }
 
     @Test
     public void getAverageScoreWorks(){
-        userDbUtils.getAverageScore().thenAccept(average -> assertThat(average, is((double)(250 + 195 + 193.23)/3)));
+        userDbUtils.getAverageScore().thenAccept(average -> assertThat(average, is((double)(250 + 200)/2)));
     }
 }
