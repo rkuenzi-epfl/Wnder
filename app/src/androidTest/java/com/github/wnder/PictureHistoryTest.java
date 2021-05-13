@@ -3,6 +3,7 @@ package com.github.wnder;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -60,8 +61,14 @@ public class PictureHistoryTest {
     public static void classSetUp(){
         dummyMap = new HashMap<>();
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        Location dummyLocation = new Location("");
+        dummyLocation.setLatitude(32);
+        dummyLocation.setLongitude(2);
         when(picturesDatabase.getScoreboard(anyString())).thenReturn(CompletableFuture.completedFuture(dummyMap));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
+        when(picturesDatabase.getMapSnapshot(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
+        when(picturesDatabase.getUserGuess(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLocation));
+        when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLocation));
         intent = new Intent(ApplicationProvider.getApplicationContext(), PictureHistoryActivity.class);
         intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, "picture1");
     }
