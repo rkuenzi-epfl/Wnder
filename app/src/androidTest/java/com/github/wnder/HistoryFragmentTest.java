@@ -3,6 +3,7 @@ package com.github.wnder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -77,11 +78,23 @@ public class HistoryFragmentTest {
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         List<String> dummyPicList = new ArrayList<>();
         dummyPicList.add("demo1");
+        Map<String,Double> dummyScoreboard = new HashMap<>();
+        dummyScoreboard.put("user", 45.5);
+        Location dummyLocation = new Location("");
+        dummyLocation.setLatitude(32);
+        dummyLocation.setLongitude(2);
+        Map<String,Location> dummyLocationList = new HashMap<>();
+        Location dummyLocation2 = new Location("");
+        dummyLocation2.setLatitude(32);
+        dummyLocation2.setLongitude(4);
+        dummyLocationList.put("user", dummyLocation2);
+
         when(userDb.getPictureList(any(),anyString())).thenReturn(CompletableFuture.completedFuture(dummyPicList));
         when(picturesDb.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
-        Map<String,Double> dummyScoreboard = new HashMap<>();
-        dummyScoreboard.put("demo1", 45.5);
         when(picturesDb.getScoreboard(anyString())).thenReturn(CompletableFuture.completedFuture(dummyScoreboard));
+        when(picturesDb.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLocation));
+        when(picturesDb.getUserGuesses(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLocationList));
+
 
 
         onView(withId(R.id.history_page)).perform(click());
