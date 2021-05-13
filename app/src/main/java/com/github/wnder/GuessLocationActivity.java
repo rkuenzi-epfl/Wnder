@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -357,7 +358,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void compassModeSetup(){
-        View compassModeButtonView = findViewById(R.id.compassMode);
+        FloatingActionButton compassModeButtonView = findViewById(R.id.compassMode);
 
         List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
 
