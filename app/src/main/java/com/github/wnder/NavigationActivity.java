@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
-import com.github.wnder.user.SignedInUser;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
@@ -61,6 +59,7 @@ public class NavigationActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateFragment(iconMap.get(item.getItemId())));
 
+        //rights for location services
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
     }
