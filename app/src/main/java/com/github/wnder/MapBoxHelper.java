@@ -25,10 +25,7 @@ import com.mapbox.turf.TurfTransformation;
 
 public class MapBoxHelper {
 
-    private static final long ANIMATION_DURATION = 200;
-
-    private static final String PICTURE_SOURCE_ID = "picture-source-id";
-    private static final String PICTURE_LAYER_ID = "picture-layer-id";
+    private static final long POINT_ANIMATION_DURATION = 200;
 
     /**
      * Animate on a line a point from an origin to a destination for a MapBox GeoJsonSource.
@@ -39,7 +36,7 @@ public class MapBoxHelper {
      * @param source of the GeoJsonSource on which to apply the animation
      * @return the new position reached at the end of the animation
      */
-    protected static LatLng updatePositionByLineAnimation(ValueAnimator animator, LatLng originPoint, @NonNull LatLng destinationPoint, GeoJsonSource source) {
+    protected static LatLng updatePositionByLineAnimation(GeoJsonSource source, ValueAnimator animator, LatLng originPoint, @NonNull LatLng destinationPoint) {
 
         if (animator != null && animator.isStarted()) {
             originPoint = (LatLng) animator.getAnimatedValue();
@@ -48,7 +45,7 @@ public class MapBoxHelper {
 
         animator = ObjectAnimator
                 .ofObject(latLngEvaluator, originPoint, destinationPoint)
-                .setDuration(ANIMATION_DURATION);
+                .setDuration(POINT_ANIMATION_DURATION);
         animator.addUpdateListener(animatorUpdateListenerForGJSource(source));
         animator.start();
 
@@ -78,7 +75,6 @@ public class MapBoxHelper {
         }
     };
 
-
     /**
      * Draw a hollow red circle on a MapBox
      *
@@ -94,7 +90,7 @@ public class MapBoxHelper {
         Polygon outerCirclePolygon = TurfTransformation.circle(center,  distanceDiameter + distanceDiameter/15.0, "kilometers");
         Polygon innerCirclePolygon = TurfTransformation.circle(center, (double) distanceDiameter, "kilometers");
 
-        GeoJsonSource outerCircleSource = new GeoJsonSource(PICTURE_SOURCE_ID, outerCirclePolygon);
+        GeoJsonSource outerCircleSource = new GeoJsonSource(String.valueOf(R.string.RED_CIRCLE_SOURCE_ID), outerCirclePolygon);
 
         //Create hollow circle
         if (outerCircleSource != null) {
@@ -107,7 +103,7 @@ public class MapBoxHelper {
         //Set mapbox style
         Style style = mapboxMap.getStyle();
         style.addSource(outerCircleSource);
-        style.addLayer(new FillLayer(PICTURE_LAYER_ID, PICTURE_SOURCE_ID).withProperties(
+        style.addLayer(new FillLayer(String.valueOf(R.string.RED_CIRCLE_LAYER_ID), String.valueOf(R.string.RED_CIRCLE_SOURCE_ID)).withProperties(
                 PropertyFactory.fillColor(ContextCompat.getColor(context, R.color.red)),
                 PropertyFactory.fillOpacity(0.4f)
         ));
