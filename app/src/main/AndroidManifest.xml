@@ -40,8 +40,6 @@
             android:noHistory="true" />
         <activity android:name=".MainActivity" />
         <activity android:name=".TakePictureActivity" />
-        <activity android:name=".LoginActivity">
-        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
