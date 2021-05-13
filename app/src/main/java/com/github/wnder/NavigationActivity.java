@@ -64,12 +64,14 @@ public class NavigationActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateFragment(iconMap.get(item.getItemId())));
 
+        //First displayed fragment is profile one
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container_view, ProfileFragment.class, null)
                 .setReorderingAllowed(true)
                 .addToBackStack(null)
                 .commit();
+
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
     }
@@ -89,6 +91,7 @@ public class NavigationActivity extends AppCompatActivity {
      */
     private Boolean updateFragment(String id){
         if(id.equals(PROFILE_PAGE)){
+            //push profile fragment
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.fragment_container_view, ProfileFragment.class, null)

@@ -26,11 +26,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.squareup.picasso.Picasso;
 
+import java.util.Locale;
+
 import javax.annotation.Signed;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * This class is the fragment for the profile page of the app
+ */
 @AndroidEntryPoint
 public class ProfileFragment extends Fragment {
 
@@ -39,16 +44,21 @@ public class ProfileFragment extends Fragment {
     private View logoutButton;
     private TextView noConnection;
 
+    //setup stat cards
     private MaterialCardView nbrOfGuessesCard;
     private MaterialCardView averageScoreCard;
     private MaterialCardView totalScoreCard;
 
+    //setup stat cards texts
     private TextView nbrOfGuessesText;
     private TextView averageScoreText;
     private TextView totalScoreText;
 
+    //setup username and profile pic
     private TextView username;
+    private ImageView profilePic;
 
+    //setup sign in client and userdb
     private GoogleSignInClient client;
     private final int RC_SIGN_IN = 10; // Arbitrary number
     private UserDatabase userDb;
@@ -58,20 +68,34 @@ public class ProfileFragment extends Fragment {
     @Inject
     public NetworkService networkInfo;
 
+    /**
+     * Constructor for the profile fragment
+     */
     public ProfileFragment(){
         super(R.layout.fragment_profile);
     }
 
+    /**
+     * Executes on view created
+     * @param view current view
+     * @param savedInstanceState saved instance state
+     */
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
 
+        //ALL VIEWS ARE INVISIBLE WHEN CREATED
+
         this.view = view;
 
+        //setup username and profile pic
         username = view.findViewById(R.id.username);
+        profilePic = view.findViewById(R.id.profile_picture);
 
+        //setup text for when no connection or when logged out
         noConnection = view.findViewById(R.id.no_connection_text);
         noConnection.setVisibility(View.INVISIBLE);
 
+        //Setup the stat cards
         nbrOfGuessesCard = view.findViewById(R.id.nbrOfGuessesCard);
         nbrOfGuessesCard.setVisibility(View.INVISIBLE);
 
@@ -81,10 +105,12 @@ public class ProfileFragment extends Fragment {
         totalScoreCard = view.findViewById(R.id.totalScoreCard);
         totalScoreCard.setVisibility(View.INVISIBLE);
 
+        //Setup the stat cards texts
         nbrOfGuessesText = view.findViewById(R.id.nbrOfGuesses);
         averageScoreText = view.findViewById(R.id.averageScore);
         totalScoreText = view.findViewById(R.id.totalScore);
 
+        //Sign in and logout buttons
         signInButton = view.findViewById(R.id.signInButton);
         signInButton.setVisibility(View.INVISIBLE);  // Hide the button
         signInButton.setOnClickListener(id -> signIn());
@@ -101,6 +127,9 @@ public class ProfileFragment extends Fragment {
         client = GoogleSignIn.getClient(this.getActivity(), gso);
     }
 
+    /**
+     * Executes on fragment start
+     */
     @Override
     public void onStart(){
         super.onStart();
@@ -111,12 +140,19 @@ public class ProfileFragment extends Fragment {
         if(account != null) {
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
         }
+        //update page status
         updateLoginStatus();
     }
 
+    /**
+     * Logs out the user
+     */
     private void logout(){
+        //log out
         client.signOut();
+        //global user becomes guest again
         GlobalUser.resetUser();
+        //update page status
         updateLoginStatus();
     }
 
@@ -166,7 +202,11 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * To call when the logged in/logged out or connection/no connection states change
+     */
     private void updateLoginStatus(){
+        //Choose right button (sign in or logout)
         if(areWeLoggedIn()){
             logoutButton.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.INVISIBLE);
@@ -176,44 +216,60 @@ public class ProfileFragment extends Fragment {
             signInButton.setVisibility(View.VISIBLE);
         }
 
+        //setup right profile picture
         User user = GlobalUser.getUser();
-        ImageView profilePic = view.findViewById(R.id.profile_picture);
-
         Picasso.get().load(user.getProfilePicture()).into(profilePic);
 
+        //setup right username
         username.setText(user.getName());
         username.setVisibility(View.VISIBLE);
 
+        //update user database
         userDb = new UserDatabase(this.getContext());
 
+        //update network status
         updateNetworkStatus();
     }
 
+    /**
+     * ONLY TO BE CALLED AT THE END OF UPDATELOGINSTATUS()
+     * update ui depending on logged in/out and connection/no connection state
+     */
     private void updateNetworkStatus(){
+        //if connection and logged in
         if(networkInfo.isNetworkAvailable() && areWeLoggedIn()){
 
-            userDb.getNbrOfGuessedPictures().thenAccept(nbr -> nbrOfGuessesText.setText(String.format("%d", nbr)));
-            userDb.getAverageScore().thenAccept(average -> averageScoreText.setText(String.format("%,.2f", average)));
-            userDb.getTotalScore().thenAccept(total -> totalScoreText.setText(String.format("%,.2f", total)));
+            //fill in cards with user info
+            userDb.getNbrOfGuessedPictures().thenAccept(nbr -> nbrOfGuessesText.setText(String.format(Locale.getDefault(), "%d", nbr)));
+            userDb.getAverageScore().thenAccept(average -> averageScoreText.setText(String.format(Locale.getDefault(), "%,.2f", average)));
+            userDb.getTotalScore().thenAccept(total -> totalScoreText.setText(String.format(Locale.getDefault(), "%,.2f", total)));
 
+            //display cards
             nbrOfGuessesCard.setVisibility(View.VISIBLE);
             totalScoreCard.setVisibility(View.VISIBLE);
             averageScoreCard.setVisibility(View.VISIBLE);
             noConnection.setVisibility(View.INVISIBLE);
         }
         else{
+            //make cards invisible
             nbrOfGuessesCard.setVisibility(View.INVISIBLE);
             totalScoreCard.setVisibility(View.INVISIBLE);
             averageScoreCard.setVisibility(View.INVISIBLE);
             noConnection.setVisibility(View.VISIBLE);
 
+            //empty cards
             nbrOfGuessesText.setText("");
             averageScoreText.setText("");
             totalScoreText.setText("");
         }
     }
 
+    /**
+     * Tells us if we are logged in or not
+     * @return true if logged in, false otherwise
+     */
     private boolean areWeLoggedIn(){
+        // just check that the global user is a signed in one
         return (GlobalUser.getUser() instanceof SignedInUser);
     }
 }
