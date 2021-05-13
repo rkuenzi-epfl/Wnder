@@ -78,7 +78,7 @@ public class NavigationActivity extends AppCompatActivity {
 
         //rights for location services
         String[] ss = {Manifest.permission.ACCESS_FINE_LOCATION};
-        ActivityCompat.requestPermissions(this, ss, 100); //Very important to have permission for future call
+        ActivityCompat.requestPermissions(this, ss, REQUEST_POSITION_CODE); //Very important to have permission for future call
     }
 
     /**
