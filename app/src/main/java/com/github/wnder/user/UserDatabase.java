@@ -54,76 +54,10 @@ public class UserDatabase {
     }
 
     /**
-     * Gets total score of a user
-     * @return added scores of all user's guesses
-     */
-    public CompletableFuture<Double> getTotalScore(){
-        CompletableFuture<Double> totalScoreFuture = new CompletableFuture<>();
-
-        //Get all scores
-        getAllScores().thenAccept(scores -> {
-            double totalScore = 0;
-            //for each score, add it to the total
-            for(double score: scores){
-                totalScore = totalScore + score;
-            }
-            //Then complete with the total
-            totalScoreFuture.complete(totalScore);
-        });
-
-        return totalScoreFuture;
-    }
-
-    /**
-     * Get a user's number of guessed pictures
-     * @return user's number of guessed pictures
-     */
-    public CompletableFuture<Integer> getNbrOfGuessedPictures(){
-        CompletableFuture<Integer> toRet = new CompletableFuture<>();
-
-        //get the pics
-        guessedPics.thenAccept(pics -> {
-            //complete with the size of the list, once the pics gotten
-           toRet.complete(pics.size());
-        });
-        return toRet;
-    }
-
-    /**
-     * Get a user's average score
-     * @return user's guess average score
-     */
-    public CompletableFuture<Double> getAverageScore(){
-        CompletableFuture<Double> averageScore = new CompletableFuture<>();
-
-        //Get the nbr of guessed pictures
-        getNbrOfGuessedPictures().thenAccept(nbr -> {
-            //if not pic, then the average score returned is 0
-            if(nbr == 0){
-                averageScore.complete(0.);
-            }
-            //if pics, get the total score, then compute average and complete the future with it
-            else{
-                getTotalScore().thenAccept(total -> averageScore.complete((double) total/nbr));
-            }
-        });
-
-        return averageScore;
-    }
-
-    /**
-     * Get a user's guessed pics
-     * @return list of all uniqueIds of the pictures a user guessed
-     */
-    public CompletableFuture<List<String>> getGuessedPics(){
-        return guessedPics;
-    }
-
-    /**
      * get all the scores of a user
      * @return a set of all the scores a user achieved
      */
-    private CompletableFuture<Set<Double>> getAllScores(){
+    public CompletableFuture<Set<Double>> getAllScores(){
         CompletableFuture<Set<Double>> allScoresFuture = new CompletableFuture<>();
         Set<Double> allScores = new HashSet<>();
 
@@ -154,10 +88,10 @@ public class UserDatabase {
      * Get all the guessed pictures of a user directly from the database
      * @return a list of all the uniqueIds of the pictures a user guessed
      */
-    private CompletableFuture<List<String>> getAllGuessedPictures(){
+    public CompletableFuture<List<String>> getAllGuessedPictures(){
         CompletableFuture<List<String>> guessedPicsFuture = new CompletableFuture<>();
 
-        //download the guessed pics from firestor
+        //download the guessed pics from firestore
         Task<DocumentSnapshot> guessedPics = Storage.downloadFromFirestore("users", GlobalUser.getUser().getName());
         guessedPics.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             //if success, complete future with it

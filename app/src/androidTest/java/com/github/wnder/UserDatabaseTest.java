@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class UserDatabaseTest {
     private UserDatabase userDb;
@@ -34,18 +35,18 @@ public class UserDatabaseTest {
     }
 
     @Test
-    public void getTotalScoreWorks(){
-        userDb.getTotalScore().thenAccept(total -> assertThat(total, is(156)));
+    public void getGuessedPicsWorks(){
+        userDb.getAllGuessedPictures().thenAccept(pics -> {
+            assertTrue(pics.contains("testPicDontRm"));
+            assertTrue(pics.contains("demo4"));
+        });
     }
 
     @Test
-    public void getNbrOfGuessedPicsWorks(){
-        userDb.getNbrOfGuessedPictures().thenAccept(nbr -> assertThat(nbr, is(2)));
+    public void getAllScoresWorks(){
+        userDb.getAllScores().thenAccept(scores -> {
+            assertTrue(scores.contains(156.));
+            assertTrue(scores.contains(200.));
+        });
     }
-
-    @Test
-    public void getAverageScoreWorks(){
-        userDb.getAverageScore().thenAccept(average -> assertThat(average, is(156)));
-    }
-
 }

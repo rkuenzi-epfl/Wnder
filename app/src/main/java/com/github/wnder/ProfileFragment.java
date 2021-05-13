@@ -17,6 +17,7 @@ import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 import com.github.wnder.user.UserDatabase;
+import com.github.wnder.user.UserDatabaseUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -62,6 +63,7 @@ public class ProfileFragment extends Fragment {
     private GoogleSignInClient client;
     private final int RC_SIGN_IN = 10; // Arbitrary number
     private UserDatabase userDb;
+    private UserDatabaseUtils userDbUtils;
 
     private View view;
 
@@ -136,7 +138,8 @@ public class ProfileFragment extends Fragment {
 
         //Checks if user has already signed in
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
-        //If yes, skip this activity, else, give him the choice
+
+        //If yes, retrieve this account and set the user
         if(account != null) {
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
         }
@@ -226,6 +229,7 @@ public class ProfileFragment extends Fragment {
 
         //update user database
         userDb = new UserDatabase(this.getContext());
+        userDbUtils = new UserDatabaseUtils(userDb.getAllGuessedPictures(), userDb.getAllScores());
 
         //update network status
         updateNetworkStatus();
@@ -240,9 +244,9 @@ public class ProfileFragment extends Fragment {
         if(networkInfo.isNetworkAvailable() && areWeLoggedIn()){
 
             //fill in cards with user info
-            userDb.getNbrOfGuessedPictures().thenAccept(nbr -> nbrOfGuessesText.setText(String.format(Locale.getDefault(), "%d", nbr)));
-            userDb.getAverageScore().thenAccept(average -> averageScoreText.setText(String.format(Locale.getDefault(), "%,.2f", average)));
-            userDb.getTotalScore().thenAccept(total -> totalScoreText.setText(String.format(Locale.getDefault(), "%,.2f", total)));
+            userDbUtils.getNbrOfGuessedPictures().thenAccept(nbr -> nbrOfGuessesText.setText(String.format(Locale.getDefault(), "%d", nbr)));
+            userDbUtils.getAverageScore().thenAccept(average -> averageScoreText.setText(String.format(Locale.getDefault(), "%,.2f", average)));
+            userDbUtils.getTotalScore().thenAccept(total -> totalScoreText.setText(String.format(Locale.getDefault(), "%,.2f", total)));
 
             //display cards
             nbrOfGuessesCard.setVisibility(View.VISIBLE);

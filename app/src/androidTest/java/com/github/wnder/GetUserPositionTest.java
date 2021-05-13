@@ -67,6 +67,7 @@ public class GetUserPositionTest {
     public void PositionIsWithinRange(){
 
         LocationManager locationManager = (LocationManager) InstrumentationRegistry.getInstrumentation().getTargetContext().getSystemService(Context.LOCATION_SERVICE);
+
         com.github.wnder.user.User user = new SignedInUser("test", null);
 
         Looper.prepare();
