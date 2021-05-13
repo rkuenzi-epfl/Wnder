@@ -18,6 +18,7 @@ import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.SignedInUser;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @HiltAndroidTest
 @UninstallModules({NetworkModule.class})
 public class GetUserPositionTest {
+    private LocationManager locationManager;
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
@@ -53,7 +55,7 @@ public class GetUserPositionTest {
     @Before
     public void setup(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("appops set " + InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName() + " android:mock_location allow");
+            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("appops set " + InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName() + " android:mock_location allow");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -61,17 +63,17 @@ public class GetUserPositionTest {
             }
         }
         Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
+
+        locationManager = (LocationManager) InstrumentationRegistry.getInstrumentation().getTargetContext().getSystemService(Context.LOCATION_SERVICE);
+        locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false, false, false, false, false, false, 1, 1);
     }
 
     @Test
     public void PositionIsWithinRange(){
-
-        LocationManager locationManager = (LocationManager) InstrumentationRegistry.getInstrumentation().getTargetContext().getSystemService(Context.LOCATION_SERVICE);
         com.github.wnder.user.User user = new SignedInUser("test", null);
 
         Looper.prepare();
 
-        locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false, false, false, false, false, false, 1, 1);
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(50);
         location.setLongitude(30);
@@ -106,5 +108,11 @@ public class GetUserPositionTest {
 
         assertThat(l1.getLatitude(), Matchers.is(50.0));
         assertThat(l2.getLatitude(), Matchers.is(60.0));
+
+    }
+
+    @After
+    public void tearDown() {
+        locationManager.removeTestProvider(LocationManager.GPS_PROVIDER);
     }
 }
