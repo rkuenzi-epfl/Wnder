@@ -37,6 +37,7 @@ import dagger.hilt.android.testing.UninstallModules;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
+import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -106,7 +107,7 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButton(){
-        onView(withId(R.id.guessButton)).perform(click());
+        onView(withId(R.id.imagePreview)).perform(click());
 
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
@@ -117,7 +118,7 @@ public class GuessPreviewActivityTest {
     public void testGuessLocationButtonWhenNoInternet(){
         when(networkInfo.isNetworkAvailable()).thenReturn(false);
 
-        onView(withId(R.id.guessButton)).perform(click());
+        onView(withId(R.id.imagePreview)).perform(click());
 
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
         onView(withText(R.string.no_connection)).perform(pressBack());
@@ -128,7 +129,7 @@ public class GuessPreviewActivityTest {
         SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         GlobalUser.setUser(u);
 
-        onView(withId(R.id.skipButton)).perform(click());
+        onView(withId(R.id.imagePreview)).perform(swipeRight());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
 
         Intents.release();
@@ -137,15 +138,31 @@ public class GuessPreviewActivityTest {
 
         Intents.init();
 
-        onView(withId(R.id.skipButton)).perform(click());
+        onView(withId(R.id.imagePreview)).perform(swipeRight());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
 
     @Test
     public void testReportButton(){
-        onView(withId(R.id.reportButton)).perform(click());
+        onView(withId(R.id.helperButton)).perform(click());
+
+        onView(withText("Report")).perform(click());
 
         onView(withText("Confirm")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testHelpButton(){
+        onView(withId(R.id.helperButton)).perform(click());
+
+        onView(withText("Help")).perform(click());
+
+        onView(withText("Ok")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testSaveButtonIsClickable(){
+        onView(withId(R.id.SaveToGallery)).perform(click());
     }
 }

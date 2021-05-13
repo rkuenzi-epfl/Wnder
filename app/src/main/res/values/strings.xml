@@ -22,11 +22,17 @@
 
     <!--Guess Preview Strings-->
     <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
-    <string name="guess_location">Guess Location</string>
-    <string name="skip_location">Skip</string>
-    <string name="report_location">Report</string>
+    <string name="report">Report</string>
+    <string name="help">Help</string>
+    <string name="popup_menu">Popup menu</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
+    <string name="bar_save_is_impossible">"Impossible to save this picture."</string>
+    <string name="bar_save_is_ok">"This picture has been saved."</string>
+    <string name="help_title">"Actions possible:"</string>
+    <string name="help_body">"Guess: Click on the picture if you want to guess it's location. \n\nSkip: " +
+                "Swipe left to skip the actual image and search an other one."</string>
+    <string name="bar_report">"This picture has been reported."</string>
 
     <!--Guess Location Strings-->
     <string name="switchCompassModeText">Exit Compass Mode</string>
@@ -74,6 +80,7 @@
     <string name="no_guessed_pictures">No guessed pictures</string>
     <string name="SensorNotAvailableTitle">Sensor not available</string>
     <string name="SensorNotAvailable">The sensor to get information about the phone 3D position is not available. You can\'t access the compass mode.</string>
+    <string name="save_to_gallery">Save to gallery</string>
 
     <!--Navigation Activity Strings-->
     <string name="profile_destination">Profile</string>
