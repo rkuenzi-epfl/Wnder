@@ -3,39 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    app:cardCornerRadius="4dp">
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardProfilePic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.15"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardCornerRadius="200dp"
-        app:cardBackgroundColor="@color/purple_500">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardProfilePic2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardCornerRadius="200dp"
-            android:layout_gravity="center"
-            android:layout_margin="5dp">
-
-            <ImageView
-                android:id="@+id/profile_picture"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/content_descr_profile_picture"/>
-
-        </androidx.cardview.widget.CardView>
-    </androidx.cardview.widget.CardView>
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="5dp"
+    app:cardCornerRadius="4dp"
+    app:cardBackgroundColor="@color/purple_200">
 
     <RelativeLayout
         android:layout_width="match_parent"

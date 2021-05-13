@@ -44,7 +44,7 @@ public class ScoreboardOwnRankAdapter extends RecyclerView.Adapter<ScoreboardVie
     @NonNull
     @Override
     public ScoreboardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.scoreboard_entry, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_scoreboard_entry, parent, false);
         return new ScoreboardViewHolder(view);
     }
 
