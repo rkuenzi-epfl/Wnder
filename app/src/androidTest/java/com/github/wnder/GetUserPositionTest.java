@@ -108,4 +108,5 @@ public class GetUserPositionTest {
         assertThat(l1.getLatitude(), Matchers.is(50.0));
         assertThat(l2.getLatitude(), Matchers.is(60.0));
     }*/
+    
 }
