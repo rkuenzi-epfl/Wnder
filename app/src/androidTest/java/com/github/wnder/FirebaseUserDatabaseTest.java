@@ -49,6 +49,7 @@ public class FirebaseUserDatabaseTest {
 
         assertFalse(guessedPics.isEmpty());
         assertFalse(guessedPics.contains(receivedPic));
+        GlobalUser.resetUser();
     }
 
 }

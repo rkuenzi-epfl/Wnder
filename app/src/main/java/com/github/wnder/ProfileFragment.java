@@ -14,6 +14,7 @@ import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 import com.github.wnder.user.FirebaseUserDatabase;
+import com.github.wnder.user.UserDatabase;
 import com.github.wnder.user.UserDatabaseUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -58,10 +59,10 @@ public class ProfileFragment extends Fragment {
     //setup sign in client and userdb
     private GoogleSignInClient client;
     private final int RC_SIGN_IN = 10; // Arbitrary number
-    private FirebaseUserDatabase userDb;
-    private UserDatabaseUtils userDbUtils;
+    @Inject
+    public UserDatabase userDb;
 
-    private View view;
+    private UserDatabaseUtils userDbUtils;
 
     @Inject
     public NetworkService networkInfo;
@@ -82,8 +83,6 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
 
         //ALL VIEWS ARE INVISIBLE WHEN CREATED
-
-        this.view = view;
 
         //setup username and profile pic
         username = view.findViewById(R.id.username);
@@ -223,8 +222,6 @@ public class ProfileFragment extends Fragment {
         username.setText(user.getName());
         username.setVisibility(View.VISIBLE);
 
-        //update user database
-        userDb = new FirebaseUserDatabase(this.getContext());
         userDbUtils = new UserDatabaseUtils(userDb.getPictureList(GlobalUser.getUser(), "guessedPics"), userDb.getAllScores(GlobalUser.getUser()));
 
         //update network status
