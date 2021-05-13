@@ -1,6 +1,8 @@
 package com.github.wnder;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -26,8 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -106,7 +106,7 @@ public class UserTesting {
         });
     }
 
-    //    @Test
+//    @Test
 //    public void getNewPictureForSignedInUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
 //        SignedInUser realUser = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
 //        SignedInUser u = spy(realUser);

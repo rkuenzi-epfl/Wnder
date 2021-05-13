@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.NewPicture;
 import com.github.wnder.user.GlobalUser;
@@ -27,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -69,7 +69,7 @@ public class TakePictureActivity extends AppCompatActivity {
         picture = findViewById(R.id.imageFromCamera);
 
         //button to take picture
-        takePictureButton = findViewById(R.id.takePictureButton);
+        takePictureButton = findViewById(R.id.oldTakePictureButton);
         takePictureButton.setOnClickListener((view) -> dispatchTakePictureIntent());
 
         //button to confirm the taken picture, once confirmed, stored in gallery
@@ -87,7 +87,7 @@ public class TakePictureActivity extends AppCompatActivity {
                 this.finish();
             }
             else{
-                AlertDialog alert = AlertBuilder.noConnectionAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
+                AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_body), this);
                 alert.show();
             }
         });
@@ -141,7 +141,7 @@ public class TakePictureActivity extends AppCompatActivity {
      */
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
