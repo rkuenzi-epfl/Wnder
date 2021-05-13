@@ -23,6 +23,19 @@
     <string name="see_history">See History</string>
     <string name="no_internet_guess">You cannot guess pictures without an internet connection.</string>
 
+    <!--Mapbox Image for Layers Strings-->
+    <string name="GUESS_SOURCE_ID">guess-source-id</string>
+    <string name="GUESS_LAYER_ID">guess-layer-id</string>
+    <string name="GUESS_ICON_ID">guess-icon-id</string>
+    <string name="PICTURE_SOURCE_ID">picture-source-id</string>
+    <string name="PICTURE_LAYER_ID">picture-layer-id</string>
+    <string name="PICTURE_ICON_ID">picture-icon-id</string>
+    <string name="ORANGE_ARROW_SOURCE_ID">orange-arrow-source-id</string>
+    <string name="ORANGE_ARROW_LAYER_ID">orange-arrow-layer-id</string>
+    <string name="ORANGE_ARROW_ICON_ID">orange-arrow-icon-id</string>
+    <string name="RED_CIRCLE_SOURCE_ID">red-circle-source-id</string>
+    <string name="RED_CIRCLE_LAYER_ID">red-circle-layer-id</string>
+
     <!--Guess Preview Strings-->
     <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
     <string name="report">Report</string>
@@ -38,6 +51,9 @@
     <string name="bar_report">"This picture has been reported."</string>
 
     <!--Guess Location Strings-->
+    <string name="content_descr_compass_button_image">This is the image shown on the compass button</string>
+    <string name="content_descr_confirm_button_image">This is the image shown on the confirm button</string>
+    <string name="content_descr_guess_hotbar_image">This is the image of the hotbar shown in Compass Mode when close to the picture</string>
     <string name="switchCompassModeText">Exit Compass Mode</string>
     <string name="switchNormalModeText">Compass Mode</string>
     <string name="confirmButtonPressedOnce">See Scoreboard</string>
@@ -60,6 +76,7 @@
     <string name="content_descr_history_display_picture">Previously guessed picture</string>
 
     <!--Scoreboard strings-->
+    <string name="leave_scoreboard">Leave Scoreboard</string>
     <string name="scoreboard_username_placeholder">Username</string>
     <string name="scoreboard_score_placeholder">Score</string>
     <string name="scoreboard_rank_placeholder">1</string>
