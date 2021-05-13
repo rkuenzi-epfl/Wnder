@@ -3,7 +3,16 @@ package com.github.wnder.user;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 
+import androidx.annotation.NonNull;
+
+import com.github.wnder.Storage;
+import com.github.wnder.networkService.NetworkInformation;
+import com.github.wnder.picture.InternalCachePictureDatabase;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,11 +35,19 @@ public class FirebaseUserDatabase implements UserDatabase{
     private final CollectionReference usersCollection;
     private final Context context;
 
+    private NetworkInformation networkInfo;
+    private final InternalCachePictureDatabase ICPD;
+
     @Inject
     public FirebaseUserDatabase(Context context){
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
         this.context = context;
+
+        //setup network info
+        networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        ICPD = new InternalCachePictureDatabase(context);
+
     }
 
     @Override
@@ -215,5 +232,48 @@ public class FirebaseUserDatabase implements UserDatabase{
         int randomNumber = rand.nextInt(sumKarma);
 
         return findAssociatedRandomId(randomNumber, correctedMap);
+    }
+
+    /**
+     * get all the scores of a user
+     * @return a set of all the scores a user achieved
+     */
+    @Override
+    public CompletableFuture<Set<Double>> getAllScores(User user){
+        CompletableFuture<Set<Double>> allScoresFuture = new CompletableFuture<>();
+        Set<Double> allScores = new HashSet<>();
+
+        CompletableFuture<List<String>> guessedPics = new CompletableFuture<>();
+
+        //only available if there's an internet connection, else every return will be empty
+        if(networkInfo.isNetworkAvailable()){
+            guessedPics = getPictureList(user, "guessedPics");
+        }
+        else{
+            Set<Double> emptySet = new HashSet<>();
+            allScoresFuture.complete(emptySet);
+            return allScoresFuture;
+        }
+        //get all the guessed pics
+        guessedPics.thenAccept(pics ->{
+            //create an array to store all the score futures
+            CompletableFuture[] futureScores = new CompletableFuture[pics.size()];
+
+            //for each guessed pic, get its score and store this future into the array
+            for(String uniqueId: pics){
+                futureScores[pics.indexOf(uniqueId)] = (ICPD.getScoreboard(uniqueId).thenApply(s -> s.get(user.getName())));
+            }
+
+            //Once a score is completed, complete add it to all the scores already completed
+            for(CompletableFuture<Double> futureScore: futureScores){
+                futureScore.thenAccept(score -> allScores.add(score));
+            }
+
+            //once all scores have been completed, complete the future
+            CompletableFuture<Void> allScoresReceived = CompletableFuture.allOf(futureScores);
+            allScoresReceived.thenAccept(empty -> allScoresFuture.complete(allScores));
+        });
+
+        return allScoresFuture;
     }
 }

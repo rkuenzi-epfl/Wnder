@@ -9,8 +9,11 @@
     <string name="guest_not_allowed">Feature not available as Guest user!</string>
 
     <!--Login Activity Strings-->
-    <string name="please_login">Please sign in.</string>
-    <string name="guest">Guest</string>
+    <string name="logout">Logout</string>
+    <string name="nbr_of_guesses_string">pictures guessed.</string>
+    <string name="average_score_string">of average score.</string>
+    <string name="total_score_string">of total score.</string>
+    <string name="not_signed_in_stats">You must sign in and get an internet connection to see your stats.</string>
 
     <!--Main Activity Strings -->
     <string name="content_descr_profile_picture">Profile picture</string>
