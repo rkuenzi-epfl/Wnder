@@ -7,7 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
+import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -64,6 +66,9 @@ public class NavigationActivityTest {
     @Before
     public void setUp() {
         Intents.init();
+
+        //Check that first displayed fragment is the profile page
+        onView(withId(R.id.profile_picture)).check(matches(isDisplayed()));
     }
 
     @After
