@@ -1,5 +1,10 @@
 package com.github.wnder;
 
+
+import android.view.View;
+
+import androidx.test.espresso.action.ViewActions;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
@@ -10,24 +15,32 @@ import android.net.Uri;
 import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.action.ViewActions;
+
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
+
+
+import org.hamcrest.Matcher;
+
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 
 import org.junit.After;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
+
 import java.util.concurrent.CompletableFuture;
+
 
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -35,6 +48,13 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
+
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
@@ -43,6 +63,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,12 +74,18 @@ import static org.mockito.Mockito.when;
 public class NavigationActivityTest {
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
+    @BindValue
+    public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
+
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
             .around(new ActivityScenarioRule<>(NavigationActivity.class));
 
-    @BindValue
-    public static NetworkService networkInfo = Mockito.mock(NetworkService.class);
+    @Before
+    public void before(){
+        Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
+    }
+
 
     @BindValue
     public static PicturesDatabase picturesDb = Mockito.mock(PicturesDatabase.class);
@@ -76,38 +103,22 @@ public class NavigationActivityTest {
         Intents.release();
     }
 
+  
     @Test
-    public void clickingOnBarDoesNothing(){
-
-        // Clicking on bar now does something so we need to be a bit more careful
-
-//        //When profile is selected
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 0));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 0));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 0));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 0));
-//
-//        //When take_picture is selected
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 1));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 1));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 1));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 1));
-//
-//        //When guess is selected
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 2));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 2));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 2));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 2));
-//
-//        //When history is selected
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(0, 3));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(1, 3));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(2, 3));
-//        onView(withId(R.id.bottom_navigation)).perform(ViewActions.click(3, 3));
-
-        //All those should do nothing for now
-        assertTrue(true);
+    public void guessButtonShowsSeekbar() {
+        onView(withId(R.id.guess_page)).perform(click());
+        onView(withText("Radius: 5km")).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void guessButtonWithoutConnectionLaunchesAlert() {
+        when(networkInfo.isNetworkAvailable()).thenReturn(false);
+        onView(withId(R.id.guess_page)).perform(click());
+        onView(withId(R.id.navigationToGuessButton)).perform(click());
+        onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
+        when(networkInfo.isNetworkAvailable()).thenReturn(true);
+    }
+    
 
     @Test
     public void informPictureCantBeUploadedAsGuest(){
@@ -217,6 +228,5 @@ public class NavigationActivityTest {
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_successful)).check(matches(isDisplayed()));
         onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
-
     }
 }
