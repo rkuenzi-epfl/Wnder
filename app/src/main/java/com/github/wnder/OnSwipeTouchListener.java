@@ -52,6 +52,14 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
             return result;
         }
 
+        /**
+         * Retrieve the movement being done by checking the MotionEvents and the velocities associated to it.
+         * @param e1 the beginning of the global movement
+         * @param e2 The end of the global movement
+         * @param velocityX The velocity in the x axis
+         * @param velocityY The velocity in the y axis
+         * @return true if the function has correctly determined the movement and it was an implemented one, false otherwise.
+         */
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             boolean result = false;

@@ -89,6 +89,11 @@ public class GuessPreviewActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * The function is used directly on the xml file of this activity as an onCLick function and show the popupMenu under
+     * the button pressed.
+     * @param v The view used as the popup menu (the button pressed).
+     */
     public void showPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         popup.setOnMenuItemClickListener(item -> {
@@ -222,6 +227,9 @@ public class GuessPreviewActivity extends AppCompatActivity{
         pictureID = newPictureID;
     }
 
+    /**
+     * private function to be used when we want to save an image to the gallery
+     */
     private void saveToGallery(){
         if(pictureID.equals(Picture.UNINITIALIZED_ID)){
             //Snack bar
