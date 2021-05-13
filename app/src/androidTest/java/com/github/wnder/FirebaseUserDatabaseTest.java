@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(JUnit4.class)
-public class FirbaseUserDatabaseTest {
+public class FirebaseUserDatabaseTest {
 
     private static FirebaseUserDatabase db = new FirebaseUserDatabase(ApplicationProvider.getApplicationContext());
 
