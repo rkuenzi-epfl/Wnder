@@ -181,7 +181,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Create an alert popup to explain how to use this activity
      */
     private void helpMenu(){
-        AlertBuilder.noConnectionAlert(getString(R.string.help_title), getString(R.string.help_body), this).show();
+        AlertBuilder.okAlert(getString(R.string.help_title), getString(R.string.help_body), this).show();
     }
 
     /**
