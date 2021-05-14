@@ -37,3 +37,9 @@ Next time, I'll try to have less work assigned (both to me and the other as a sc
 
 
 ## Overall team
+
+This week we successfully completed the the user stories. Two of them had clear objective for which the feature was properly implemented. The last one had a more vague objective but in short it involed improving the UI and making it more uniform/consistent and easier to use. This was well done too with a navigation page that allow access to the main feature of the app, and round buttons with icon to perform the main possible action.
+
+Howerver, as the user story about the UI was very open to interpretation we assigned quite a lot of work to every member of the team to be able to rework the whole UI. Most of us faced some issues while completing our tasks and because we already had enough (or more) work assigned we had to spend more time than what was planned on just completing these tasks and didn't have much time to be nitpicky about design details (colors, margins, etc.).
+
+Next time we should make sure that the user story we want to complete is doable in one week or agree with the product owner that it will take some more time to be completed up to the details.
