@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,9 +15,11 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -24,10 +27,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.github.wnder.picture.InternalCachePictureDatabase;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.UserDatabase;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -43,6 +49,7 @@ import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Timer;
@@ -61,6 +68,10 @@ import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
  */
 @AndroidEntryPoint
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnCameraMoveListener {
+
+    @Inject
+    public FirebasePicturesDatabase db;
+
     //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
@@ -92,6 +103,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private TimerTask updateGuessPositionFromGPS;
     private SensorManager sensorManager;
     private SensorEventListener listener;
+
+    private ImageView littleImage;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -186,6 +199,15 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
+
+        //Setup preview
+        littleImage = findViewById(R.id.imageToGuess);
+        db.getBitmap(pictureID).thenAccept(bmp -> {
+            Log.d("CACACA", pictureID);
+            Log.d("CACACA", String.valueOf(bmp.getWidth()));
+            littleImage.setImageBitmap(bmp);
+            littleImage.setVisibility(View.VISIBLE);
+        });
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
