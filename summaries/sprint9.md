@@ -3,7 +3,11 @@
 
 ## Aloïs 
 
+This week I implemented the the UI for the map activity and did some factoring.
 
+This week I finished by wednesday all my tasks. Since we worked on the UI this week I was hoping that we could homogenized our work more notably on the floating buttons design.
+
+Next time I should encourage more my team, during the last meating, to work on homogenizing our work. I should have for example came up in the last meating with proposal for the design of floating buttons for example.
 
 ## Jeremy
 
@@ -29,11 +33,7 @@ Next time I will reflect more about my tasks and their needs before making time 
 
 ## Pablo 
 
-This week I implemented a feature to take a snapshot of the map with the user guess and the actual position of the picture so that it can be used in the history even if the user is offline.
 
-However, I had major issues because the method I was using to take the snapshot was failing silently so I ended up rewriting some of my code.
-
-Next time I will try to start with the hardest part of the task instead of the easiest one so that I can manage my time better if something goes wrong.
 
 ## Romain (Scrum Master)
 
