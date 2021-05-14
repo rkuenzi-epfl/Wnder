@@ -13,7 +13,11 @@ The scoreboard was done without problem and the second fragment could have conta
 
 ## Léonard 
 
+This week, I modified the activity that shows the picture to be guessed.
 
+It took me the time expected but design choice were probably not optimal (color, view type, etc).
+
+Next time, I should talk with the team to be sure we are accorded on the design to make.
 
 ## Nicolas 
 
