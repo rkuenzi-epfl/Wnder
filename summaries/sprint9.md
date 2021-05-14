@@ -3,7 +3,7 @@
 
 ## Aloïs 
 
-This week I implemented the the UI for the map activity and did some factoring.
+This week I implemented the UI for the map activity and did some refactoring.
 
 This week I finished by wednesday all my tasks. Since we worked on the UI this week I was hoping that we could homogenized our work more notably on the floating buttons design.
 
