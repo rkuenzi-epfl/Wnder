@@ -17,7 +17,11 @@ The scoreboard was done without problem and the second fragment could have conta
 
 ## Nicolas 
 
+This week I made a bottom navigation bar for the main menu of our app and a login/profile page.
 
+I finished both those tasks, however I didn't expect it to be so time consuming: I had to refractor methods regarding the database, I had tests that wouldn't pass etc. That's why I greatly undersestimated the time I would need to do it.
+
+Next time I will reflect more about my tasks and their needs before making time estimates.
 
 ## Pablo 
 
