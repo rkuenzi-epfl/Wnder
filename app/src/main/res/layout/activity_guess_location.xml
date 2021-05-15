@@ -115,8 +115,6 @@
             android:id="@+id/imageToGuessZoomedIn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:adjustViewBounds="true"
             android:contentDescription="@string/content_descr_history_image"
             android:scaleType="fitCenter"
             tools:srcCompat="@tools:sample/backgrounds/scenic[0]" />
