@@ -53,7 +53,7 @@ public class UserTesting {
     public void initLoc(){
         Intents.init();
         Mockito.when(networkInfo.isNetworkAvailable()).thenReturn(true);
-        onView(withId(R.id.getPictureButton)).perform(click());
+        //onView(withId(R.id.getPictureButton)).perform(click());
     }
 
     @After
@@ -75,7 +75,7 @@ public class UserTesting {
 //        GlobalUser.resetUser();
 //    }
 
-    private void ensureInRadius(String id, User u) throws InterruptedException, ExecutionException, TimeoutException {
+   /* private void ensureInRadius(String id, User u) throws InterruptedException, ExecutionException, TimeoutException {
         Task<DocumentSnapshot> task = Storage.downloadFromFirestore("pictures", id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -85,7 +85,7 @@ public class UserTesting {
                 assertTrue(result[0] <= u.getRadius()*1000);
             }
         });
-    }
+    }*/
 
 //    @Test
 //    public void getNewPictureForSignedInUserWorks() throws ExecutionException, InterruptedException, TimeoutException {
