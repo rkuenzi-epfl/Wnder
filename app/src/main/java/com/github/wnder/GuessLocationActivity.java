@@ -616,7 +616,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             zoomOut(startState, endState, startScale);
         }
 
-        littleCard.setAlpha(0f);
+        littleCard.setVisibility(View.INVISIBLE);
         bigCard.setVisibility(View.VISIBLE);
         bigCard.setPivotX(0f);
         bigCard.setPivotY(0f);
@@ -652,7 +652,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                littleCard.setAlpha(1f);
+                littleCard.setVisibility(View.VISIBLE);
                 bigCard.setVisibility(View.GONE);
                 findViewById(R.id.compassMode).setVisibility(View.VISIBLE);
                 findViewById(R.id.confirmButton).setVisibility(View.VISIBLE);

@@ -1,6 +1,10 @@
 package com.github.wnder;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -74,17 +78,43 @@ public class GuessLocationActivityInstrumentedTest  {
 
     @BeforeClass
     public static void beforeAll(){
-        dummyMap = new HashMap<>();
-        dummyMap.put("User0", 32.);
-        dummyMap.put("User1", 44.);
-        when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
-        when(picturesDatabase.getBitmap(any())).thenReturn();
+
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
+
+        dummyMap = new HashMap<>();
+        dummyMap.put("User0", 32.);
+        dummyMap.put("User1", 44.);
+        when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        Bitmap imageBitmap = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        when(picturesDatabase.getBitmap(any())).thenReturn(CompletableFuture.completedFuture(imageBitmap));
+
+
+    }
+
+    @Test
+    public void goodThingsAreVisibleWhenZooming(){
+        //Before zooming
+        onView(withId(R.id.imageToGuessCard)).check(matches(isDisplayed()));
+        onView(withId(R.id.imageToGuessCardZoomedIn)).check(matches(not(isDisplayed())));
+
+        //Try zooming in
+        onView(withId(R.id.imageToGuessCard)).perform(click());
+        onView(withId(R.id.imageToGuessCard)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.imageToGuessCardZoomedIn)).check(matches(isDisplayed()));
+        onView(withId(R.id.compassMode)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.confirmButton)).check(matches(not(isDisplayed())));
+
+        //Zoom out again
+        onView(withId(R.id.imageToGuessCardZoomedIn)).perform(click());
+        onView(withId(R.id.imageToGuessCard)).check(matches(isDisplayed()));
+        onView(withId(R.id.imageToGuessCardZoomedIn)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.compassMode)).check(matches(isDisplayed()));
+        onView(withId(R.id.confirmButton)).check(matches(isDisplayed()));
     }
 
     @Test
