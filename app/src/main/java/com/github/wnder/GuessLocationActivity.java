@@ -1,5 +1,9 @@
 package com.github.wnder;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -7,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,6 +32,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.InternalCachePictureDatabase;
@@ -72,12 +79,18 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     @Inject
     public FirebasePicturesDatabase db;
 
+    private int zoomAnimationTime;
+
     //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
     public static final String EXTRA_PICTURE_ID = "picture_id";
+    private static final String ZOOM_IN = "zoom_in";
+    private static final String ZOOM_OUT = "zoom_out";
+
+    private static final float END_SCALE = 1f;
 
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
@@ -105,6 +118,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private SensorEventListener listener;
 
     private ImageView littleImage;
+    private ImageView bigImage;
+    private CardView littleCard;
+    private CardView bigCard;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -200,15 +216,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
 
-        //Setup preview
-        littleImage = findViewById(R.id.imageToGuess);
-        db.getBitmap(pictureID).thenAccept(bmp -> {
-            Log.d("CACACA", pictureID);
-            Log.d("CACACA", String.valueOf(bmp.getWidth()));
-            littleImage.setImageBitmap(bmp);
-            littleImage.setVisibility(View.VISIBLE);
-        });
-
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -233,6 +240,22 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             }
         };
         timer = new Timer(true);
+
+        //Setup preview
+        littleCard = findViewById(R.id.imageToGuessCard);
+        bigCard = findViewById(R.id.imageToGuessCardZoomedIn);
+        bigCard.setVisibility(View.INVISIBLE);
+        littleImage = findViewById(R.id.imageToGuess);
+        bigImage = findViewById(R.id.imageToGuessZoomedIn);
+        db.getBitmap(pictureID).thenAccept(bmp -> {
+            littleImage.setImageBitmap(bmp);
+            littleImage.setVisibility(View.VISIBLE);
+            bigImage.setImageBitmap(bmp);
+        });
+        //Setup zoom animation
+        littleCard.setOnClickListener(id -> zoom(ZOOM_IN));
+        bigCard.setOnClickListener(id -> zoom(ZOOM_OUT));
+        zoomAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
     }
 
     /**
@@ -439,6 +462,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             if (compassMode) switchMode();
             guessConfirmed = true;
 
+            //don't show little image anymore
+            findViewById(R.id.imageToGuessCard).setVisibility(View.INVISIBLE);
+
             findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
             View confirmButtonView = findViewById(R.id.confirmButton);
             confirmButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
@@ -561,5 +587,73 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+    }
+
+    private void zoom(String zoomId){
+        //setup beginning and end of animation
+        final Rect startState = new Rect();
+        littleCard.getGlobalVisibleRect(startState);
+        final Rect endState = new Rect();
+        final android.graphics.Point offset = new android.graphics.Point();
+        findViewById(R.id.guessLocationLayout).getGlobalVisibleRect(endState, offset);
+        startState.offset(-offset.x, -offset.y);
+        endState.offset(-offset.x, -offset.y);
+
+        //avoid undesirable stretching during animation
+        //calculate start scaling factor
+        float startScale;
+        if((float) endState.width() / endState.height() > (float) startState.width() / startState.height()){
+            startScale = (float) startState.height() / endState.height();
+        }
+        else{
+            startScale = (float) startState.width() / endState.width();
+        }
+
+        if(zoomId == ZOOM_IN){
+            zoomIn(startState, endState, startScale);
+        }
+        else{
+            zoomOut(startState, endState, startScale);
+        }
+
+        littleCard.setAlpha(0f);
+        bigCard.setVisibility(View.VISIBLE);
+        bigCard.setPivotX(0f);
+        bigCard.setPivotY(0f);
+    }
+
+    private void zoomIn(Rect startState, Rect endState, float startScale){
+        AnimatorSet set = new AnimatorSet();
+
+        set.play(ObjectAnimator.ofFloat(bigCard, View.X, startState.left, endState.left))
+                .with(ObjectAnimator.ofFloat(bigCard, View.Y, startState.top, endState.top))
+                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_X, startScale, END_SCALE))
+                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_Y, startScale, END_SCALE));
+
+        set.setDuration(zoomAnimationTime);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.start();
+    }
+
+    private void zoomOut(Rect startState, Rect endState, float startScale){
+        AnimatorSet set = new AnimatorSet();
+
+        set.play(ObjectAnimator.ofFloat(bigCard, View.X, endState.left, startState.left))
+                .with(ObjectAnimator.ofFloat(bigCard, View.Y, endState.top, startState.top))
+                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_X, END_SCALE, startScale))
+                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_Y, END_SCALE, startScale));
+
+        set.setDuration(zoomAnimationTime);
+        set.setInterpolator(new DecelerateInterpolator());
+
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                littleCard.setAlpha(1f);
+                bigCard.setVisibility(View.GONE);
+            }
+        });
+
+        set.start();
     }
 }

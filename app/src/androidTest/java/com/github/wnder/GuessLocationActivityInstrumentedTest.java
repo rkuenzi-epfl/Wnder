@@ -29,8 +29,11 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -75,6 +78,7 @@ public class GuessLocationActivityInstrumentedTest  {
         dummyMap.put("User0", 32.);
         dummyMap.put("User1", 44.);
         when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        when(picturesDatabase.getBitmap(any())).thenReturn();
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
@@ -84,8 +88,12 @@ public class GuessLocationActivityInstrumentedTest  {
     }
 
     @Test
-    public void testConfirmButtonPress() {
+    public void testConfirmButtonPressAndLittleImageUpdatesStatus() {
+        onView(withId(R.id.imageToGuessCard)).check(matches(isDisplayed()));
+
         onView(withId(R.id.confirmButton)).perform(click());
+
+        onView(withId(R.id.imageToGuessCard)).check(matches(not(isDisplayed())));
 
         Intents.assertNoUnverifiedIntents();
 
