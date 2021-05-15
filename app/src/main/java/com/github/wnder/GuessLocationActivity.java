@@ -241,7 +241,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         };
         timer = new Timer(true);
 
-        //Setup preview
+        //Setup image preview
+        //littleImage, encapsulated in littleCard, is the image shown when zoomed out
+        //bigImage, encapsulated in bigCard, is the image shown when zoomed in
         littleCard = findViewById(R.id.imageToGuessCard);
         bigCard = findViewById(R.id.imageToGuessCardZoomedIn);
         bigCard.setVisibility(View.INVISIBLE);
@@ -589,8 +591,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.onDestroy();
     }
 
+    /**
+     * Zooms in or out of a card depending on the argument
+     * @param zoomId "zoom_in" to zoom in, "zoom_out" otherwise
+     */
     private void zoom(String zoomId){
-        //setup beginning and end of animation
+        //setup beginning and end forms of the card for the animation.
         final Rect startState = new Rect();
         littleCard.getGlobalVisibleRect(startState);
         final Rect endState = new Rect();
@@ -599,7 +605,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         startState.offset(-offset.x, -offset.y);
         endState.offset(-offset.x, -offset.y);
 
-        //avoid undesirable stretching during animation
         //calculate start scaling factor
         float startScale;
         if((float) endState.width() / endState.height() > (float) startState.width() / startState.height()){
@@ -609,6 +614,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             startScale = (float) startState.width() / endState.width();
         }
 
+        //Start animation from top right corner
+        bigCard.setPivotX(0f);
+        bigCard.setPivotY(0f);
+
+        //Choose between zooming in and zooming out
         if(zoomId == ZOOM_IN){
             zoomIn(startState, endState, startScale);
         }
@@ -616,16 +626,25 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             zoomOut(startState, endState, startScale);
         }
 
-        littleCard.setVisibility(View.INVISIBLE);
-        bigCard.setVisibility(View.VISIBLE);
-        bigCard.setPivotX(0f);
-        bigCard.setPivotY(0f);
+
     }
 
+    /**
+     * Zooms in the image card
+     * @param startState Rectangle denoting the start emplacement of the card
+     * @param endState Rectangle denoting the end emplacement of the card
+     * @param startScale Scale of the start card w.r.t the end card
+     */
     private void zoomIn(Rect startState, Rect endState, float startScale){
+        //Hide the buttons
         findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
         findViewById(R.id.confirmButton).setVisibility(View.INVISIBLE);
 
+        //Change visibility of the cards
+        littleCard.setVisibility(View.INVISIBLE);
+        bigCard.setVisibility(View.VISIBLE);
+
+        //Animation setup
         AnimatorSet set = new AnimatorSet();
 
         set.play(ObjectAnimator.ofFloat(bigCard, View.X, startState.left, endState.left))
@@ -635,10 +654,19 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         set.setDuration(zoomAnimationTime);
         set.setInterpolator(new DecelerateInterpolator());
+
+        //Animation start
         set.start();
     }
 
+    /**
+     * Zooms in the image card
+     * @param startState Rectangle denoting the start of the little card
+     * @param endState Rectangle denoting the emplacement of the big card
+     * @param startScale Scale of the little start card w.r.t the big card
+     */
     private void zoomOut(Rect startState, Rect endState, float startScale){
+        //Setup animator
         AnimatorSet set = new AnimatorSet();
 
         set.play(ObjectAnimator.ofFloat(bigCard, View.X, endState.left, startState.left))
@@ -649,6 +677,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         set.setDuration(zoomAnimationTime);
         set.setInterpolator(new DecelerateInterpolator());
 
+        //When finished, switch visible cards + show the buttons again
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -659,6 +688,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             }
         });
 
+        //Animation start
         set.start();
     }
 }
