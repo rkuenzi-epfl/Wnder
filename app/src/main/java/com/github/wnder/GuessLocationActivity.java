@@ -466,7 +466,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             dText = getString(R.string.distance_kilometer,(int)distanceFromPicture/1000);
         }
 
-        double score = Score.calculationScore(distanceFromPicture, GlobalUser.getUser().getRadius() * 1000);
+        double score = Score.calculationScore(distanceFromPicture, GlobalUser.getUser().getRadius() * 1000, GlobalUser.getUser().getRadius());
         TextView scoreText = findViewById(R.id.scoreText);
         scoreText.setText(getString(R.string.score, (int)score) + "\n" + dText);
 

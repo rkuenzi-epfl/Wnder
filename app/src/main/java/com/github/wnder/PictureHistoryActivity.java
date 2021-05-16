@@ -182,7 +182,7 @@ public class PictureHistoryActivity extends AppCompatActivity implements OnMapRe
         }
         distanceText.setText(dText);
 
-        double score = Score.calculationScore(distanceFromPicture, radius * 1000);
+        double score = Score.calculationScore(distanceFromPicture, radius * 1000, radius);
         TextView scoreText = findViewById(R.id.pictureHistoryScoreText);
         scoreText.setText(getString(R.string.score,(int)score));
     }
