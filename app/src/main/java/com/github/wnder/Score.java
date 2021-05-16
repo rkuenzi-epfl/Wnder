@@ -17,6 +17,7 @@ public final class Score {
      * Calculate a score
      * @param distance Distance between real location and guess location
      * @param distanceReference radius, "permitted error" in KM
+     * @param radiusCircle radius selected by the user
      * @return score
      */
     public static double calculationScore(double distance, double distanceReference, int radiusCircle){
