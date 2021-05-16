@@ -197,9 +197,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.getMapAsync(this);
 
         //Buttons
-        //on touch to avoid problems with the animation
         nextGuessButton = findViewById(R.id.backToGuessPreview);
+        //Invisible at first
         nextGuessButton.setVisibility(View.INVISIBLE);
+
         nextGuessButton.setOnClickListener(id -> nextGuess());
         findViewById(R.id.compassMode).setOnClickListener(id -> switchMode());
         findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
@@ -395,11 +396,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Switch between compass mode and normal mode
      */
     private void switchMode() {
-        //If the guess has already been done or that the map didn't load yet do not switch mode
+        //If the map didn't load yet do not switch mode
         if (mapboxMap.getStyle() == null) {
             return;
         }
 
+        //If guess hasn't been confirmed, then just switch mode
         if (!guessConfirmed) {
             View compassModeButtonView = findViewById(R.id.compassMode);
 
@@ -412,6 +414,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
                 compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
             }
+        //If guess has been confirmed, compass button becomes button leading to scoreboard
         } else {
             //Open the scoreboard activity
             Intent intent = new Intent(this, ScoreboardActivity.class);
@@ -432,6 +435,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (compassMode) switchMode();
         guessConfirmed = true;
 
+        //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
         findViewById(R.id.confirmButton).setVisibility(View.INVISIBLE);
         View compassButtonView = findViewById(R.id.compassMode);
         compassButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
@@ -556,6 +560,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapView.onDestroy();
     }
 
+    /**
+     * Goes to the next guest preview activity
+     */
     private void nextGuess(){
         Intent intent = new Intent(this, GuessPreviewActivity.class);
         startActivity(intent);
