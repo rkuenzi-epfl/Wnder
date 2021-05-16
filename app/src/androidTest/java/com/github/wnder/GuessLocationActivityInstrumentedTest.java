@@ -1,6 +1,11 @@
 package com.github.wnder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -11,6 +16,7 @@ import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -30,8 +36,12 @@ import dagger.hilt.android.testing.UninstallModules;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.mockito.ArgumentMatchers.any;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -64,16 +74,22 @@ public class GuessLocationActivityInstrumentedTest  {
         Intents.init();
     }
 
-    @After //Clears Intents state. Must be called after each test case.
-    public void tearDown() {
+    @After
+    public void tearDown(){
         Intents.release();
     }
 
     @BeforeClass
     public static void beforeAll(){
+        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        Location dummyLoc = new Location("");
+        dummyLoc.setLatitude(0.);
+        dummyLoc.setLongitude(0.);
         dummyMap = new HashMap<>();
         dummyMap.put("User0", 32.);
         dummyMap.put("User1", 44.);
+        when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
+        when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLoc));
         when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
@@ -84,12 +100,21 @@ public class GuessLocationActivityInstrumentedTest  {
     }
 
     @Test
+    public void nextGuessButtonLeadsToGuessPreview(){
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        onView(withId(R.id.backToGuessPreview)).perform(click());
+
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+    }
+
+    @Test
     public void testConfirmButtonPress() {
         onView(withId(R.id.confirmButton)).perform(click());
 
         Intents.assertNoUnverifiedIntents();
 
-        onView(withId(R.id.confirmButton)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
@@ -102,7 +127,7 @@ public class GuessLocationActivityInstrumentedTest  {
 
         Intents.assertNoUnverifiedIntents();
 
-        onView(withId(R.id.confirmButton)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
@@ -113,9 +138,18 @@ public class GuessLocationActivityInstrumentedTest  {
         onView(withId(R.id.compassMode)).perform(click());
 
         onView(withId(R.id.confirmButton)).perform(click());
-        onView(withId(R.id.confirmButton)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
+    }
+
+    @Test
+    public void nextGuessButtonIsDisplayedAtRightTime(){
+        onView(withId(R.id.backToGuessPreview)).check(matches(not(isDisplayed())));
+
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        onView(withId(R.id.backToGuessPreview)).check(matches(isDisplayed()));
     }
 }
 

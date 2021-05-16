@@ -62,6 +62,7 @@
     <string name="distance_meter">Distance: %1$dm</string>
     <string name="distance_kilometer">Distance: %1$dkm</string>
     <string name="score">Score: %1$d</string>
+    <string name="next_guess">NEXT GUESS</string>
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>
