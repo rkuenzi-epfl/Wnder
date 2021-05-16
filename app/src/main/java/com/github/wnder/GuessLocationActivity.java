@@ -28,6 +28,7 @@ import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -422,7 +423,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             confirmButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
 
             //Send guess and update karma
-            if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+            if(!pictureID.equals(Picture.UNINITIALIZED_ID) && !(GlobalUser.getUser() instanceof GuestUser)){
                 Location guessedLocation = new Location("");
                 guessedLocation.setLatitude(guessPosition.getLatitude());
                 guessedLocation.setLongitude(guessPosition.getLongitude());
