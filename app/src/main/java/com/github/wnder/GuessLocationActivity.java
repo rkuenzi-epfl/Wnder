@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
@@ -471,9 +472,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         scoreText.setText(getString(R.string.score, (int)score) + "\n" + dText);
 
         //Animate the text
-        scoreText.setVisibility(View.VISIBLE);
+        CardView scoreCard = findViewById(R.id.scoreCard);
+        scoreCard.setVisibility(View.VISIBLE);
         Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
-        scoreText.startAnimation(score_animation);
+        scoreCard.startAnimation(score_animation);
     }
 
     //Necessary overwrites for MapView lifecycle methods
