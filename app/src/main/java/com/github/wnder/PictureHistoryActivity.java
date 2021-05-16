@@ -92,7 +92,7 @@ public class PictureHistoryActivity extends AppCompatActivity implements OnMapRe
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         ExistingPicture picture = new ExistingPicture(pictureID);
-        String user = GlobalUser.getUser().getName();
+        String user = GlobalUser.getUser().getUniqueId();
         picture.onUserPositionAvailable(user, (userLocation) -> {
             picture.onUserGuessAvailable(user, (guessLocation) -> {
                 picture.onLocationAvailable((pictureLocation) -> {

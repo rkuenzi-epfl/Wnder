@@ -34,7 +34,7 @@ public class FirebaseUserDatabaseTest {
 
     @Test
     public void gettingNewPicturesReturnAPictureNotGuessed(){
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser"));
         User user = GlobalUser.getUser();
         List<String> guessedPics = new ArrayList<>();
         String receivedPic = "";

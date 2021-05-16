@@ -34,6 +34,15 @@ public class GuestUser extends User{
     }
 
     /**
+     * Get unique Id of the user
+     * @return empty string for guest user
+     */
+    @Override
+    public String getUniqueId(){
+        return "";
+    }
+
+    /**
      * Get a new picture id that the user can guess
      * @param pictureIdAvailable function to apply
      */

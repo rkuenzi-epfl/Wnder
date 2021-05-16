@@ -57,7 +57,7 @@ public class FirebaseUserDatabase implements UserDatabase{
             cf.complete(new ArrayList<>());
         } else{
 
-            usersCollection.document(user.getName()).get().addOnSuccessListener(documentSnapshot -> {
+            usersCollection.document(user.getUniqueId()).get().addOnSuccessListener(documentSnapshot -> {
                 List<String> pictureList = (List<String>) documentSnapshot.get(picturesListName);
                 if(pictureList == null){
                     pictureList = new ArrayList<>();
@@ -261,7 +261,7 @@ public class FirebaseUserDatabase implements UserDatabase{
 
             //for each guessed pic, get its score and store this future into the array
             for(String uniqueId: pics){
-                futureScores[pics.indexOf(uniqueId)] = (ICPD.getScoreboard(uniqueId).thenApply(s -> s.get(user.getName())));
+                futureScores[pics.indexOf(uniqueId)] = (ICPD.getScoreboard(uniqueId).thenApply(s -> s.get(user.getUniqueId())));
             }
 
             //Once a score is completed, complete add it to all the scores already completed

@@ -33,7 +33,7 @@ public class ScoreboardOwnRankAdapter extends RecyclerView.Adapter<ScoreboardVie
     public void updateScoreboard(List<Map.Entry<String, Double>> scoreboard) {
         int count = 1;
         for(Map.Entry<String, Double> entry : scoreboard){
-            if(entry.getKey().equals(GlobalUser.getUser().getName())){
+            if(entry.getKey().equals(GlobalUser.getUser().getUniqueId())){
                 scoreboardOnlyForUser.add(entry);
                 rank = count;
             }

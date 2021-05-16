@@ -123,7 +123,7 @@ public class TakePictureActivity extends AppCompatActivity {
     private boolean storeBitmapInDB(){
         try {
             Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager)getSystemService(Context.LOCATION_SERVICE), this);
-            NewPicture picture = new NewPicture(GlobalUser.getUser().getName(), loc, imageUri);
+            NewPicture picture = new NewPicture(GlobalUser.getUser().getUniqueId(), loc, imageUri);
 
             CompletableFuture<Void> futur = picture.sendPictureToDb();
 

@@ -36,6 +36,7 @@ public abstract class User {
 
     protected String name;
     protected Uri profilePicture;
+    protected String uniqueId;
 
     /**
      * Returns name of user
@@ -48,6 +49,12 @@ public abstract class User {
      * @return profile picture of user
      */
     public abstract Uri getProfilePicture();
+
+    /**
+     * Returns uniqueId of a user
+     * @return uniqueId of a user
+     */
+    public abstract String getUniqueId();
 
     /**
      * Returns last know location of user

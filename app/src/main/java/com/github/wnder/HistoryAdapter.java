@@ -43,13 +43,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         String pictureId = pictureList.get(position);
         picturesDb.getBitmap(pictureId).thenAccept(bitmap -> holder.getHistoryImageView().setImageBitmap(bitmap));
         picturesDb.getScoreboard(pictureId).thenAccept(scoreboard -> {
-            String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getName(), 0.));
+            String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getUniqueId(), 0.));
             holder.getYourScoreView().setText(score);
         });
         picturesDb.getLocation(pictureId).thenAccept(location -> {
 
             picturesDb.getUserGuesses(pictureId).thenAccept(guesses -> {
-                Location userGuess = guesses.get(GlobalUser.getUser().getName());
+                Location userGuess = guesses.get(GlobalUser.getUser().getUniqueId());
                 int distanceFromPicture = 0;
                 if (userGuess != null) {
                     distanceFromPicture = (int) userGuess.distanceTo(location);

@@ -136,7 +136,7 @@ public class ProfileFragment extends Fragment {
 
         //If yes, retrieve this account and set the user
         if(account != null) {
-            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
+            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl(), account.getId()));
         }
         //update page status
         updateLoginStatus();
@@ -190,7 +190,7 @@ public class ProfileFragment extends Fragment {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
+            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl(), account.getId()));
 
             updateLoginStatus();
         } catch (ApiException e) {

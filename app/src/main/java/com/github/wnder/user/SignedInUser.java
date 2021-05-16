@@ -31,10 +31,11 @@ public class SignedInUser extends User{
      * @param name name of the user
      * @param profilePicture profile picture of the user
      */
-    public SignedInUser(String name, Uri profilePicture){
+    public SignedInUser(String name, Uri profilePicture, String uniqueId){
 
         this.name = name;
         this.profilePicture = profilePicture;
+        this.uniqueId = uniqueId;
         //By default, radius is set at 5 km
         this.radius = 5;
     }
@@ -55,6 +56,15 @@ public class SignedInUser extends User{
     @Override
     public Uri getProfilePicture(){
         return profilePicture;
+    }
+
+    /**
+     * Get unique id of user
+     * @return unique id of user
+     */
+    @Override
+    public String getUniqueId(){
+        return uniqueId;
     }
 
     /**

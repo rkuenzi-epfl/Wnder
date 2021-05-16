@@ -78,7 +78,7 @@ public class GuessPreviewActivityTest {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
-        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "allGuessedUser");
         GlobalUser.setUser(u);
         boolean[] isDone = new boolean[1];
         isDone[0] = false;
@@ -126,7 +126,7 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testSkipButton(){
-        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "allGuessedUser");
         GlobalUser.setUser(u);
 
         onView(withId(R.id.imagePreview)).perform(swipeRight());

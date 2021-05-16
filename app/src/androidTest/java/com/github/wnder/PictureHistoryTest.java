@@ -79,7 +79,7 @@ public class PictureHistoryTest {
 
     @Test
     public void testScoreboardButton() {
-        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        SignedInUser u = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser");
         GlobalUser.setUser(u);
         onView(withId(R.id.pictureHistoryToScoreboardButton)).perform(click());
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));

@@ -40,7 +40,7 @@ public class ExistingPicture extends Picture{
         User user = GlobalUser.getUser();
         if(user instanceof SignedInUser){
 
-            addToUserGuessedPictures(user.getName());
+            addToUserGuessedPictures(user.getUniqueId());
         }
     }
 

@@ -53,7 +53,7 @@ public class TakePictureFragment extends Fragment {
     private FloatingActionButton uploadButton;
 
     private User user;
-    private String userName;
+    private String userId;
 
     private Uri takenPictureUri;
     private String takenPictureId;
@@ -71,7 +71,7 @@ public class TakePictureFragment extends Fragment {
         uploadButton = view.findViewById(R.id.uploadButton);
 
         user = GlobalUser.getUser();
-        userName = user.getName();
+        userId = user.getUniqueId();
 
         // Prepare to open the camera
         takePictureLauncher = registerForActivityResult(new TakePicture(), (stored) -> onTakePictureResult(stored));
@@ -92,7 +92,7 @@ public class TakePictureFragment extends Fragment {
      */
     private void openCamera() {
         // Create an id and the Uri where to store the resulting picture
-        takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
+        takenPictureId = userId + Calendar.getInstance().getTimeInMillis();
 
         takenPictureUri = setupGalleryFile();
         if (takenPictureUri != null) {
@@ -134,7 +134,7 @@ public class TakePictureFragment extends Fragment {
                     .show();
         } else {
             takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
-            CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, userName, takenPictureLocation, takenPictureUri);
+            CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, userId, takenPictureLocation, takenPictureUri);
             uploadResult.thenAccept(res -> {
 
                 // Move takePictureButton to the right

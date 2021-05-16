@@ -426,7 +426,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 Location guessedLocation = new Location("");
                 guessedLocation.setLatitude(guessPosition.getLatitude());
                 guessedLocation.setLongitude(guessPosition.getLongitude());
-                picturesDb.sendUserGuess(pictureID, GlobalUser.getUser().getName(), guessedLocation);
+                picturesDb.sendUserGuess(pictureID, GlobalUser.getUser().getUniqueId(), guessedLocation);
                 picturesDb.updateKarma(pictureID, 1);
             }
 
