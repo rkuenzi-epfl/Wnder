@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -185,13 +186,19 @@ public class MapBoxHelper {
         StaticMarkerAnnotation guessMarker = buildMarker(guessLatLng, COLOR_RED);
         StaticMarkerAnnotation pictureMarker = buildMarker(pictureLatLng, COLOR_PURPLE);
 
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+        boolean retina = displayMetrics.densityDpi >= DisplayMetrics.DENSITY_HIGH;
+
         MapboxStaticMap staticMap = MapboxStaticMap.builder()
                 .accessToken(context.getString(R.string.mapbox_access_token))
                 .styleId(StaticMapCriteria.SATELLITE_STREETS_STYLE)
                 .staticMarkerAnnotations(Arrays.asList(guessMarker, pictureMarker))
                 .cameraAuto(true)
-                .width(1024)
-                .height(1024)
+                .width(width)
+                .height(height)
+                .retina(retina)
                 .build();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
