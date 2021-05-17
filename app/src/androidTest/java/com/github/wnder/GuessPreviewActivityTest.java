@@ -107,7 +107,7 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButton(){
-        onView(withId(R.id.imagePreview)).perform(click());
+        onView(withId(R.id.guessButton)).perform(click());
 
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
 
@@ -118,7 +118,7 @@ public class GuessPreviewActivityTest {
     public void testGuessLocationButtonWhenNoInternet(){
         when(networkInfo.isNetworkAvailable()).thenReturn(false);
 
-        onView(withId(R.id.imagePreview)).perform(click());
+        onView(withId(R.id.guessButton)).perform(click());
 
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
         onView(withText(R.string.no_connection)).perform(pressBack());
@@ -163,6 +163,8 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testSaveButtonIsClickable(){
-        onView(withId(R.id.SaveToGallery)).perform(click());
+        onView(withId(R.id.helperButton)).perform(click());
+
+        onView(withText("Save to gallery")).perform(click());
     }
 }

@@ -109,5 +109,6 @@
     <string name="history_destination">History</string>
     <string name="take_picture_destination">Upload</string>
     <string name="guess_a_new_image">Guess a new image</string>
+    <string name="begin_guess">Guess</string>
 
 </resources>
