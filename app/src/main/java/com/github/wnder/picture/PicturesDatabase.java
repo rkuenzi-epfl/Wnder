@@ -60,14 +60,14 @@ public interface PicturesDatabase {
      * @param uniqueId the picture unique Id
      * @return a Future of Bitmap
      */
-    public CompletableFuture<Bitmap> getMapSnapshot(String uniqueId);
+    CompletableFuture<Bitmap> getMapSnapshot(String uniqueId);
 
     /**
      * Provides (later) a user guess for a picture
      * @param uniqueId id of the image
      * @return a Future of Location
      */
-    public CompletableFuture<Location> getUserGuess(String uniqueId);
+    CompletableFuture<Location> getUserGuess(String uniqueId);
 
     /**
      * Upload a picture with all it's initial information to the database
