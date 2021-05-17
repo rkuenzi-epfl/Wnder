@@ -46,7 +46,7 @@
     <string name="bar_save_is_impossible">"Impossible to save this picture."</string>
     <string name="bar_save_is_ok">"This picture has been saved."</string>
     <string name="help_title">"Actions possible:"</string>
-    <string name="help_body">"Guess: Click on the picture if you want to guess it's location. \n\nSkip: " +
+    <string name="help_body">"Guess: Click on the lower button if you want to guess it's location. \n\nSkip: " +
                 "Swipe left to skip the actual image and search an other one."</string>
     <string name="bar_report">"This picture has been reported."</string>
 
