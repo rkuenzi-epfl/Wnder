@@ -130,6 +130,7 @@ public class GuessPreviewActivityTest {
         GlobalUser.setUser(u);
 
         onView(withId(R.id.imagePreview)).perform(swipeRight());
+
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
 
         Intents.release();

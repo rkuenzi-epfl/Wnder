@@ -75,7 +75,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
 
         //Setup swipe and guess
-        imageDisplayed.setOnClickListener(id -> openGuessActivity());
+        imageDisplayed.setOnClickListener(id -> {});
         imageDisplayed.setOnTouchListener(new OnSwipeTouchListener(this){
             @Override
             public boolean onSwipeRight() {
