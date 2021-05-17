@@ -200,12 +200,16 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     @Override
     public CompletableFuture<Bitmap> getMapSnapshot(String uniqueId) {
-        throw new IllegalStateException("This method is only available on the local database");
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new IllegalStateException("This method is only available on the local database"));
+        return cf;
     }
 
     @Override
     public CompletableFuture<Location> getUserGuess(String uniqueId) {
-        throw new IllegalStateException("This method is only available on the local database");
+        CompletableFuture<Location> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new IllegalStateException("This method is only available on the local database"));
+        return cf;
     }
 
     @Override
