@@ -23,11 +23,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -94,6 +97,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private SensorEventListener listener;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
+
+    private User user;
+    private Context context;
 
     @Inject
     public PicturesDatabase picturesDb;
@@ -187,6 +193,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
 
+        user = GlobalUser.getUser();
+        context = this;
+
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -201,7 +210,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void run() {
                 handler.post(() -> {
-                    Location loc = GlobalUser.getUser().getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
+                    Location loc = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
                     if (compassMode) {
                         LatLng destinationPoint = new LatLng(loc.getLatitude(), loc.getLongitude());
                         updatePositionByLineAnimation(guessSource, guessAnimator, guessPosition, destinationPoint);
@@ -211,6 +220,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             }
         };
         timer = new Timer(true);
+
+
     }
 
     /**
@@ -224,7 +235,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //Set camera position
         CameraPosition position = new CameraPosition.Builder()
                 .target(cameraPosition)
-                .zoom(zoomFromKilometers(cameraPosition, GlobalUser.getUser().getRadius()))
+                .zoom(zoomFromKilometers(cameraPosition, user.getRadius()))
                 .build();
         this.mapboxMap.setCameraPosition(position);
 
@@ -333,7 +344,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
         View hotbarView = findViewById(R.id.hotbarView);
         //Arbitrary value based on the radius to check if we are close enough
-        double referenceDistance = GlobalUser.getUser().getRadius() * 1000 / 100;
+        double referenceDistance = user.getRadius() * 1000 / 100;
 
         if (!compassMode) {
             layer.setProperties(PropertyFactory.visibility(Property.NONE));
@@ -378,7 +389,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
             updateGuessPositionFromGPS.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
-            compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_24));
+            compassModeButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_outline_explore_24));
         }
     }
 
@@ -400,7 +411,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             updateCompassMode();
             sensorManager.unregisterListener(listener);
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
-            compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
+            compassModeButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_outline_explore_off_24));
         }
     }
 
@@ -419,16 +430,16 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
             findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
             View confirmButtonView = findViewById(R.id.confirmButton);
-            confirmButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
+            confirmButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_baseline_military_tech_24));
 
             //Send guess and update karma
-            if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+            if(!pictureID.equals(Picture.UNINITIALIZED_ID) && !(user instanceof GuestUser)){
                 Location guessedLocation = new Location("");
                 guessedLocation.setLatitude(guessPosition.getLatitude());
                 guessedLocation.setLongitude(guessPosition.getLongitude());
-                picturesDb.sendUserGuess(pictureID, GlobalUser.getUser().getName(), guessedLocation);
-                picturesDb.updateKarma(pictureID, 1);
+                picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation);
             }
+            picturesDb.updateKarma(pictureID, 1);
 
             showActualLocation();
         } else {
