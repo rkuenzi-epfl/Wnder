@@ -53,10 +53,6 @@
     <!--Guess Location Strings-->
     <string name="content_descr_compass_button_image">This is the image shown on the compass button</string>
     <string name="content_descr_confirm_button_image">This is the image shown on the confirm button</string>
-    <string name="content_descr_guess_hotbar_image">This is the image of the hotbar shown in Compass Mode when close to the picture</string>
-    <string name="switchCompassModeText">Exit Compass Mode</string>
-    <string name="switchNormalModeText">Compass Mode</string>
-    <string name="confirmButtonPressedOnce">See Scoreboard</string>
     <string name="mapClickOnCompassMode_confirm_title">You are in Compass Mode</string>
     <string name="mapClickOnCompassMode_confirm_message">In Compass Mode you are supposed to walk to the picture location you are currently guessing.\nExit the Compass Mode if you want to simply guess by clicking</string>
     <string name="distance_meter">Distance: %1$dm</string>
@@ -77,7 +73,6 @@
     <string name="content_descr_history_display_picture">Previously guessed picture</string>
 
     <!--Scoreboard strings-->
-    <string name="leave_scoreboard">Leave Scoreboard</string>
     <string name="scoreboard_username_placeholder">Username</string>
     <string name="scoreboard_score_placeholder">Score</string>
     <string name="scoreboard_rank_placeholder">1</string>
