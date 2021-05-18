@@ -3,7 +3,9 @@ package com.github.wnder.guessLocation;
 import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.widget.ProgressBar;
 
@@ -19,8 +21,11 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
+import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.style.sources.Source;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
@@ -148,5 +153,60 @@ public class MapBoxHelper {
         else if (barValue > ONE_QUARTER && barValue <= TWO_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
         }
+    }
+
+    /**
+     * Adds the guess source to the style
+     * @param context context
+     * @param style style to add source to
+     * @param guessSource guess source to add
+     */
+    protected static void addGuessToStyle(Context context, Style style, Source guessSource){
+        style.addImage((String.valueOf(R.string.GUESS_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.mapbox_marker_icon_20px_red));
+        style.addSource(guessSource);
+        style.addLayer(new SymbolLayer(String.valueOf(R.string.GUESS_LAYER_ID), String.valueOf(R.string.GUESS_SOURCE_ID))
+                .withProperties(
+                        PropertyFactory.iconImage(String.valueOf(R.string.GUESS_ICON_ID)),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
+    }
+
+    /**
+     * Adds the arrow source to the style
+     * @param context context
+     * @param style style to add source to
+     * @param arrowSource arrow source to add
+     * @param mapboxMap mapbox map
+     */
+    protected static void addArrowToStyle(Context context, Style style, Source arrowSource, MapboxMap mapboxMap){
+        style.addImage((String.valueOf(R.string.ORANGE_ARROW_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.fleche_orange));
+        style.addSource(arrowSource);
+        style.addLayer(new SymbolLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID), String.valueOf(R.string.ORANGE_ARROW_SOURCE_ID))
+                .withProperties(
+                        PropertyFactory.visibility(Property.NONE),
+                        PropertyFactory.iconImage(String.valueOf(R.string.ORANGE_ARROW_ICON_ID)),
+                        PropertyFactory.iconRotate((float) mapboxMap.getCameraPosition().bearing),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
+    }
+
+    /**
+     * Adds the picture source to the style
+     * @param context context
+     * @param style style to add source to
+     * @param pictureSource picture source to add
+     */
+    protected static void addPictureToStyle(Context context, Style style, Source pictureSource){
+        style.addImage((String.valueOf(R.string.PICTURE_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.mapbox_marker_icon_20px_purple));
+        style.addSource(pictureSource);
+        style.addLayer(new SymbolLayer(String.valueOf(R.string.PICTURE_LAYER_ID), String.valueOf(R.string.PICTURE_SOURCE_ID))
+                .withProperties(
+                        PropertyFactory.visibility(Property.NONE),
+                        PropertyFactory.iconImage(String.valueOf(R.string.PICTURE_ICON_ID)),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true)
+                ));
     }
 }

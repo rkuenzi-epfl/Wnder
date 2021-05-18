@@ -64,6 +64,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.github.wnder.guessLocation.MapBoxHelper.addArrowToStyle;
+import static com.github.wnder.guessLocation.MapBoxHelper.addGuessToStyle;
+import static com.github.wnder.guessLocation.MapBoxHelper.addPictureToStyle;
 import static com.github.wnder.guessLocation.MapBoxHelper.drawCircle;
 import static com.github.wnder.guessLocation.MapBoxHelper.updatePositionByLineAnimation;
 import static com.github.wnder.guessLocation.MapBoxHelper.zoomFromKilometers;
@@ -166,6 +169,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //Sensor initialization
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         listener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -213,6 +217,15 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         hotbarView = findViewById(R.id.hotbarView);
 
+        zoomAnimation = setupZoomAnimation();
+
+        compass = new GuessLocationCompass(hotbarView, picturePosition);
+    }
+
+    /**
+     * To call in onCreate to setup the zoom animation correctly.
+     */
+    private GuessLocationZoom setupZoomAnimation(){
         //Setup image preview
         //littleImage, encapsulated in littleCard, is the image shown when zoomed out
         //bigImage, encapsulated in bigCard, is the image shown when zoomed in
@@ -232,9 +245,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         List<View> toHide = new ArrayList<>();
         toHide.add(findViewById(R.id.compassMode));
         toHide.add(findViewById(R.id.confirmButton));
-        zoomAnimation = new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
-
-        compass = new GuessLocationCompass(hotbarView, picturePosition);
+        return new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
     }
 
     /**
@@ -258,7 +269,14 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         pictureSource = new GeoJsonSource(String.valueOf(R.string.PICTURE_SOURCE_ID), Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
 
         //Set mapbox style
+        mapboxMap.getUiSettings().setCompassEnabled(false); //Hide the default mapbox compass because we use our compass
+
         mapboxMap.setStyle(Style.SATELLITE_STREETS, style -> onStyleLoaded(style));
+
+        mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
+        mapboxMap.addOnCameraMoveListener(GuessLocationActivity.this);
+
+        timer.scheduleAtFixedRate(updateGuessPositionFromGPS, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
     }
 
     /**
@@ -266,44 +284,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * @param style on the mapbox map
      */
     private void onStyleLoaded(Style style){
-        mapboxMap.getUiSettings().setCompassEnabled(false); //Hide the default mapbox compass because we use our compass
-
         drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
 
-        style.addImage((String.valueOf(R.string.GUESS_ICON_ID)), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_20px_red));
-        style.addSource(guessSource);
-        style.addLayer(new SymbolLayer(String.valueOf(R.string.GUESS_LAYER_ID), String.valueOf(R.string.GUESS_SOURCE_ID))
-                .withProperties(
-                        PropertyFactory.iconImage(String.valueOf(R.string.GUESS_ICON_ID)),
-                        PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconAllowOverlap(true)
-                ));
-
-        style.addImage((String.valueOf(R.string.ORANGE_ARROW_ICON_ID)), BitmapFactory.decodeResource(getResources(), R.drawable.fleche_orange));
-        style.addSource(arrowSource);
-        style.addLayer(new SymbolLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID), String.valueOf(R.string.ORANGE_ARROW_SOURCE_ID))
-                .withProperties(
-                        PropertyFactory.visibility(Property.NONE),
-                        PropertyFactory.iconImage(String.valueOf(R.string.ORANGE_ARROW_ICON_ID)),
-                        PropertyFactory.iconRotate((float) mapboxMap.getCameraPosition().bearing),
-                        PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconAllowOverlap(true)
-                ));
-
-        style.addImage((String.valueOf(R.string.PICTURE_ICON_ID)), BitmapFactory.decodeResource(getResources(), R.drawable.mapbox_marker_icon_20px_purple));
-        style.addSource(pictureSource);
-        style.addLayer(new SymbolLayer(String.valueOf(R.string.PICTURE_LAYER_ID), String.valueOf(R.string.PICTURE_SOURCE_ID))
-                .withProperties(
-                        PropertyFactory.visibility(Property.NONE),
-                        PropertyFactory.iconImage(String.valueOf(R.string.PICTURE_ICON_ID)),
-                        PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconAllowOverlap(true)
-                ));
-
-        mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
-        mapboxMap.addOnCameraMoveListener(GuessLocationActivity.this);
-
-        timer.scheduleAtFixedRate(updateGuessPositionFromGPS, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
+        addGuessToStyle(this, style, guessSource);
+        addArrowToStyle(this, style, arrowSource, mapboxMap);
+        addPictureToStyle(this, style, pictureSource);
     }
 
     /**
@@ -380,29 +365,27 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     private void compassButton() {
         //If the map didn't load yet do not switch mode
-        if (mapboxMap.getStyle() == null) {
-            return;
-        }
+        if (mapboxMap.getStyle() != null) {
+            //If guess hasn't been confirmed, then just switch mode
+            if (!guessConfirmed) {
+                View compassModeButtonView = findViewById(R.id.compassMode);
 
-        //If guess hasn't been confirmed, then just switch mode
-        if (!guessConfirmed) {
-            View compassModeButtonView = findViewById(R.id.compassMode);
-
-            compassMode = !compassMode;
-            if(compassMode) {
-                enableCompassMode();
+                compassMode = !compassMode;
+                if (compassMode) {
+                    enableCompassMode();
+                } else {
+                    compass.updateCompass(mapboxMap, guessPosition, compassMode);
+                    sensorManager.unregisterListener(listener);
+                    mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
+                    compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
+                }
+                //If guess has been confirmed, compass button becomes button leading to scoreboard
             } else {
-                compass.updateCompass(mapboxMap, guessPosition, compassMode);
-                sensorManager.unregisterListener(listener);
-                mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
-                compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
+                //Open the scoreboard activity
+                Intent intent = new Intent(this, ScoreboardActivity.class);
+                intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
+                startActivity(intent);
             }
-        //If guess has been confirmed, compass button becomes button leading to scoreboard
-        } else {
-            //Open the scoreboard activity
-            Intent intent = new Intent(this, ScoreboardActivity.class);
-            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
-            startActivity(intent);
         }
     }
 
