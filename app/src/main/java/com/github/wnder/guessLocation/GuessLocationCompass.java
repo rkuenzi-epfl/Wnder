@@ -1,25 +1,15 @@
 package com.github.wnder.guessLocation;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-
 import com.github.wnder.R;
 import com.github.wnder.user.GlobalUser;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-
-import java.util.List;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -38,7 +28,10 @@ public class GuessLocationCompass {
     }
 
     /**
-     *  Update the compass and the hotbar according to the mode and the distance between the current guess and picture location
+     * Update the compass and the hotbar according to the mode and the distance between the current guess and picture location
+     * @param mapboxMap mapbox map
+     * @param guessPosition guess location
+     * @param compassMode current compass mode state
      */
     protected static void updateCompass(MapboxMap mapboxMap, LatLng guessPosition, boolean compassMode){
         SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));

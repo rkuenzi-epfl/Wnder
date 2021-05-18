@@ -1,8 +1,6 @@
 package com.github.wnder.guessLocation;
 
-import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.github.wnder.R;
