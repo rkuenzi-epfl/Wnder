@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.guessLocation;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -28,6 +28,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.github.wnder.GuessPreviewActivity;
+import com.github.wnder.R;
+import com.github.wnder.Score;
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
@@ -62,9 +65,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
-import static com.github.wnder.MapBoxHelper.drawCircle;
-import static com.github.wnder.MapBoxHelper.updatePositionByLineAnimation;
-import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
+import static com.github.wnder.guessLocation.MapBoxHelper.drawCircle;
+import static com.github.wnder.guessLocation.MapBoxHelper.updatePositionByLineAnimation;
+import static com.github.wnder.guessLocation.MapBoxHelper.zoomFromKilometers;
 
 /**
  * Location activity
@@ -165,49 +168,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         listener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                float[] vectorPosition = event.values;
-                float[] quat = new float[4];
-                float[] rotMat = new float[9];
-                float[] result = new float[3];
-                SensorManager.getQuaternionFromVector(quat, vectorPosition);
-                SensorManager.getRotationMatrixFromVector(rotMat, quat);
-                SensorManager.getOrientation(rotMat, result);
-
-                double guessY = mapboxMap.getProjection().getProjectedMetersForLatLng(guessPosition).getNorthing();
-                double guessX = mapboxMap.getProjection().getProjectedMetersForLatLng(guessPosition).getEasting();
-
-                double imageY = mapboxMap.getProjection().getProjectedMetersForLatLng(picturePosition).getNorthing();
-                double imageX = mapboxMap.getProjection().getProjectedMetersForLatLng(picturePosition).getEasting();
-
-                double vectorX = imageX - guessX;
-                double vectorY = imageY - guessY;
-                double vectorLength = Math.sqrt(vectorX*vectorX + vectorY*vectorY);
-
-                //This is the vector going from the position of the phone to a random position in the north
-                double vectorReferenceX = 0;
-                double vectorReferenceY = 5;
-                double vectorReferenceLength = Math.sqrt(vectorReferenceX*vectorReferenceX + vectorReferenceY*vectorReferenceY);
-
-                double numerator = (vectorX*vectorReferenceX + vectorY*vectorReferenceY);
-                double denominator = vectorLength*vectorReferenceLength;
-
-                double cosValue = numerator / denominator;
-
-                float angleFromNorthToImagePosition = (float) (Math.acos(cosValue)*180/Math.PI);
-                angleFromNorthToImagePosition = vectorX < 0 ? -angleFromNorthToImagePosition : angleFromNorthToImagePosition; //To take account of the sign
-
-                float angleAroundZ = (float) (result[2]*180/Math.PI + 180); //Value of the sensor
-
-                SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
-                layer.setProperties(PropertyFactory.iconRotate(angleFromNorthToImagePosition - angleAroundZ)); //Arrow angle
-
-                CameraPosition position = new CameraPosition.Builder()
-                        .target(guessPosition)
-                        .bearing(angleAroundZ)
-                        .build();
-                mapboxMap.setCameraPosition(position);
+                mapboxMap.setCameraPosition(GuessLocationSensor.calculateNewPosition(event, mapboxMap, picturePosition, guessPosition));
             }
-
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy){}
         };
@@ -261,6 +223,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             littleImage.setVisibility(VISIBLE);
             bigImage.setImageBitmap(bmp);
         });
+
         //Setup zoom animation
         zoomAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         List<View> toHide = new ArrayList<>();

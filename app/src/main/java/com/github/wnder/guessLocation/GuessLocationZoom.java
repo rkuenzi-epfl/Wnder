@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.guessLocation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
