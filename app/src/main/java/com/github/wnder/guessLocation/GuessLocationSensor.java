@@ -28,7 +28,7 @@ public class GuessLocationSensor{
      * @param guessPosition guess location
      * @return CameraPosition new position of the camera
      */
-    public static CameraPosition calculateNewPosition(SensorEvent event, MapboxMap mapboxMap, LatLng picturePosition, LatLng guessPosition) {
+    protected static CameraPosition calculateNewPosition(SensorEvent event, MapboxMap mapboxMap, LatLng picturePosition, LatLng guessPosition) {
 
         float[] vectorPosition = event.values;
         float[] quat = new float[4];

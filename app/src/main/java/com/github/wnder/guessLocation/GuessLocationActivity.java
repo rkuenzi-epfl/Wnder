@@ -119,6 +119,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private ImageView bigImage;
     private CardView littleCard;
     private CardView bigCard;
+    private View hotbarView;
+    private GuessLocationCompass compass;
 
     private String pictureID = Picture.UNINITIALIZED_ID;
 
@@ -190,7 +192,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         nextGuessButton.setVisibility(INVISIBLE);
 
         nextGuessButton.setOnClickListener(id -> nextGuess());
-        findViewById(R.id.compassMode).setOnClickListener(id -> switchMode());
+        findViewById(R.id.compassMode).setOnClickListener(id -> compassButton());
         findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
 
         //Timer setup
@@ -209,6 +211,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             }
         };
         timer = new Timer(true);
+
+        hotbarView = findViewById(R.id.hotbarView);
 
         //Setup image preview
         //littleImage, encapsulated in littleCard, is the image shown when zoomed out
@@ -231,6 +235,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         toHide.add(findViewById(R.id.confirmButton));
         zoomAnimation = new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
 
+        compass = new GuessLocationCompass(hotbarView, picturePosition);
     }
 
     /**
@@ -343,42 +348,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     @Override
     public void onCameraMove() {
-        if(compassMode) updateCompassMode();
+        if(compassMode) compass.updateCompass(mapboxMap, guessPosition, compassMode);
     }
 
-    /**
-     *  Update the compass and the hotbar according to the mode and the distance between the current guess and picture location
-     */
-    private void updateCompassMode(){
-        SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
-        View hotbarView = findViewById(R.id.hotbarView);
-        //Arbitrary value based on the radius to check if we are close enough
-        double referenceDistance = user.getRadius() * 1000 / 100;
 
-        if (!compassMode) {
-            layer.setProperties(PropertyFactory.visibility(Property.NONE));
-            hotbarView.setVisibility(INVISIBLE);
-
-        } else {
-            double distanceDiff = guessPosition.distanceTo(picturePosition);
-            if (referenceDistance < distanceDiff) { //compass update
-                layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
-                hotbarView.setVisibility(INVISIBLE);
-
-            } else { //hotbar update
-                layer.setProperties(PropertyFactory.visibility(Property.NONE));
-                hotbarView.setVisibility(VISIBLE);
-
-                double ratio = distanceDiff / referenceDistance;
-
-                ProgressBar bar = (ProgressBar) hotbarView;
-                int barValue = (int) (bar.getMax() - (ratio * bar.getMax()));
-                MapBoxHelper.setHotBarColor(bar, barValue);
-            }
-        }
-    }
-
-    private void compassModeSetup(){
+    private void enableCompassMode(){
         FloatingActionButton compassModeButtonView = findViewById(R.id.compassMode);
 
         List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
@@ -394,7 +368,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             dialog.show();
         }
         else{
-            updateCompassMode();
+            compass.updateCompass(mapboxMap, guessPosition, compassMode);
             sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
             updateGuessPositionFromGPS.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
@@ -405,7 +379,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     /**
      * Switch between compass mode and normal mode
      */
-    private void switchMode() {
+    private void compassButton() {
         //If the map didn't load yet do not switch mode
         if (mapboxMap.getStyle() == null) {
             return;
@@ -417,9 +391,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
             compassMode = !compassMode;
             if(compassMode) {
-                compassModeSetup();
+                enableCompassMode();
             } else {
-                updateCompassMode();
+                compass.updateCompass(mapboxMap, guessPosition, compassMode);
                 sensorManager.unregisterListener(listener);
                 mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
                 compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
@@ -442,7 +416,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
-        if (compassMode) switchMode();
+        if (compassMode) compassButton();
         guessConfirmed = true;
 
         //don't show little image anymore
@@ -569,6 +543,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     @Override
     protected void onDestroy() {
+        //unregister listener!
+        sensorManager.unregisterListener(listener);
         super.onDestroy();
         mapView.onDestroy();
     }
