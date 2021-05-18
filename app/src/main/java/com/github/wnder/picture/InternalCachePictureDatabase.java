@@ -30,7 +30,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      */
     @Inject
     public InternalCachePictureDatabase(Context context){
-        remoteDatabase = new FirebasePicturesDatabase();
+        remoteDatabase = new FirebasePicturesDatabase(context);
         localDatabase = new LocalPictureDatabase(context);
         this.context = context;
         networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
@@ -131,14 +131,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) throws IllegalStateException{
-        if (isOnline()) {
-            return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
-        }
-        else {
-            CompletableFuture<Void> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
-        }
+
+        return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
+
     }
 
     @Override

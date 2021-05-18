@@ -1,9 +1,11 @@
 package com.github.wnder.picture;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 
 import com.github.wnder.Score;
 import com.google.firebase.firestore.CollectionReference;
@@ -12,7 +14,19 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +34,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import javax.inject.Inject;
 
@@ -28,13 +43,59 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private final StorageReference storage;
     private final CollectionReference picturesCollection;
     private final CollectionReference usersCollection;
+    private final Context context;
+
+    private final String ACTIVE_UPLOAD_URI_DIR_NAME = "active_uploads";
+    private final File activeUploadDirectory;
 
     @Inject
-    public FirebasePicturesDatabase(){
+    public FirebasePicturesDatabase(Context context){
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
+        this.context = context;
 
+        activeUploadDirectory = context.getDir(ACTIVE_UPLOAD_URI_DIR_NAME, Context.MODE_PRIVATE);
+
+        // List all files waiting that we resume upload
+        String[] activeUploadFiles = activeUploadDirectory.list();
+        for (String uniqueId: activeUploadFiles) {
+            Log.d("File", uniqueId);
+            JSONObject json = loadUploadMetadata(uniqueId);
+            if(json != null){
+                Double latitude = null;
+                Double longitude = null;
+                Location location = new Location("");
+                String userName = null;
+                String pictureUri = null;
+                String uploadSessionUri = null;
+                try {
+                    latitude = json.getDouble("latitude");
+                    longitude= json.getDouble("longitude");
+                    userName = json.getString("user_name");
+                    pictureUri = json.getString("file_uri");
+                    uploadSessionUri = json.getString("upload_session_uri");
+                } catch (JSONException e){
+
+                }
+
+                if(latitude != null && longitude != null && userName != null && pictureUri != null){
+                    location.setLatitude(latitude);
+                    location.setLongitude(longitude);
+                    // Resume uploads of found in files
+                    if(uploadSessionUri != null){
+                        Log.d("Upload", "RESUME");
+
+                        UploadTask pictureTask = storage.putFile(Uri.parse(pictureUri), new StorageMetadata.Builder().build(), Uri.parse(uploadSessionUri));
+                        attachUploadListener(uniqueId, userName, location, pictureTask);
+                    } else {
+
+                        Log.d("Upload", "START UNSTARTED");
+                        uploadPicture(uniqueId, userName, location, Uri.parse(pictureUri));
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -199,13 +260,86 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         return cf;
     }
 
+    private void storeUploadMetadata(String uniqueId, String userName, Location location, Uri pictureUri, Uri uploadSessionUri) throws IOException, JSONException{
+        //Create json
+        JSONObject json = new JSONObject();
+        json.put("id", uniqueId);
+        json.put("latitude", location.getLatitude());
+        json.put("longitude", location.getLongitude());
+        json.put("user_name", userName);
+        json.put("file_uri", pictureUri);
+        json.put("upload_session_uri", uploadSessionUri);
+
+        // Store in file
+        File file = new File(activeUploadDirectory, uniqueId);
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(json.toString().getBytes());
+        fos.close();
+    }
+
+    private JSONObject loadUploadMetadata(String uniqueId){
+        File file = new File(activeUploadDirectory, uniqueId);
+        if(file.exists()) {
+
+            StringBuilder stringBuilder = new StringBuilder();
+            try {
+
+                FileInputStream fis = new FileInputStream(file);
+                InputStreamReader inputStreamReader =
+                        new InputStreamReader(fis, StandardCharsets.UTF_8);
+                try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                    String line = reader.readLine();
+                    while (line != null) {
+                        stringBuilder.append(line);
+                        line = reader.readLine();
+                    }
+                    fis.close();
+                } catch (IOException e) {
+                    return null;
+                }
+
+            } catch (Exception e) {
+                return null;
+            }
+            try{
+                Log.d("Json", stringBuilder.toString());
+                return new JSONObject(stringBuilder.toString());
+            } catch(Exception e){
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private void deleteUploadMetadata(String uniqueId){
+        new File(activeUploadDirectory, uniqueId).delete();
+    }
+
     @Override
-    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) {
+    public CompletableFuture<Void> uploadPicture(String uniqueId, String userName, Location location, Uri uri) {
+        // Start upload
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
+        UploadTask pictureTask = storage.child("pictures/"+uniqueId+".jpg").putFile(uri, metadata);
+
+        // Write json to file
+        try{
+            // uploadSessionUri might be null
+            storeUploadMetadata(uniqueId, userName, location, uri, pictureTask.getSnapshot().getUploadSessionUri());
+        } catch (Exception e) {
+            CompletableFuture<Void> cf = new CompletableFuture<>();
+            cf.completeExceptionally(e);
+            return cf;
+        }
+
+        // Attach upload SuccessListener
+        return attachUploadListener(uniqueId, userName, location, pictureTask);
+    }
+
+    private CompletableFuture<Void> attachUploadListener(String uniqueId, String userName, Location location, UploadTask task){
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
-        CompletableFuture<Void> pictureCf = new CompletableFuture<>();
-        CompletableFuture<Void> userUploadListCf = addPhotoToUploadedUserPhoto(uniqueId, user);
+        CompletableFuture<Void> userUploadListCf = addPhotoToUploadedUserPhoto(uniqueId, userName);
 
         //coordinates
         Map<String, Object> attributes = new HashMap<>();
@@ -219,22 +353,19 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         //necessary to have the correct documents created in firestore
         Map<String, GeoPoint> emptyGuesses = new HashMap<>();
         GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
-        emptyGuesses.put(user, defaultGuess);
+        emptyGuesses.put(userName, defaultGuess);
         picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(emptyGuesses)
                 .addOnSuccessListener(result -> userGuessesCf.complete(null)).addOnFailureListener(userGuessesCf::completeExceptionally);
 
 
         //necessary to have the correct documents created in firestore
         Map<String, Double> emptyScoreboard= new HashMap<>();
-        emptyScoreboard.put(user, -1.);
+        emptyScoreboard.put(userName, -1.);
         picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
                 .addOnSuccessListener(result -> userScoresCf.complete(null)).addOnFailureListener(userScoresCf::completeExceptionally);
 
-        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
-        storage.child("pictures/"+uniqueId+".jpg").putFile(uri, metadata)
-                .addOnSuccessListener(result -> pictureCf.complete(null)).addOnFailureListener(pictureCf::completeExceptionally);
-
-        return CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf, pictureCf);
+        return CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf)
+                .thenAccept(nothing -> deleteUploadMetadata(uniqueId));
     }
 
     /**
