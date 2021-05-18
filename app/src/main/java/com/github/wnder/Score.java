@@ -1,7 +1,6 @@
 package com.github.wnder;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.github.wnder.user.GlobalUser;
 

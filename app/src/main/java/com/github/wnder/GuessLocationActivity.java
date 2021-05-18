@@ -18,14 +18,17 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
@@ -48,6 +51,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,6 +71,12 @@ import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
  */
 @AndroidEntryPoint
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnCameraMoveListener {
+
+    @Inject
+    public FirebasePicturesDatabase db;
+
+    private int zoomAnimationTime;
+
     //Define all necessary and recurrent strings
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
@@ -102,10 +112,16 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private SensorManager sensorManager;
     private SensorEventListener listener;
 
+    private ImageView littleImage;
+    private ImageView bigImage;
+    private CardView littleCard;
+    private CardView bigCard;
+
     private String pictureID = Picture.UNINITIALIZED_ID;
 
     private User user;
     private Context context;
+    private GuessLocationZoom zoomAnimation;
 
     @Inject
     public PicturesDatabase picturesDb;
@@ -232,6 +248,25 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         };
         timer = new Timer(true);
 
+        //Setup image preview
+        //littleImage, encapsulated in littleCard, is the image shown when zoomed out
+        //bigImage, encapsulated in bigCard, is the image shown when zoomed in
+        littleCard = findViewById(R.id.imageToGuessCard);
+        bigCard = findViewById(R.id.imageToGuessCardZoomedIn);
+        bigCard.setVisibility(INVISIBLE);
+        littleImage = findViewById(R.id.imageToGuess);
+        bigImage = findViewById(R.id.imageToGuessZoomedIn);
+        db.getBitmap(pictureID).thenAccept(bmp -> {
+            littleImage.setImageBitmap(bmp);
+            littleImage.setVisibility(VISIBLE);
+            bigImage.setImageBitmap(bmp);
+        });
+        //Setup zoom animation
+        zoomAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        List<View> toHide = new ArrayList<>();
+        toHide.add(findViewById(R.id.compassMode));
+        toHide.add(findViewById(R.id.confirmButton));
+        zoomAnimation = new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
 
     }
 
@@ -443,9 +478,27 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (mapboxMap.getStyle() == null) {
             return;
         }
+        if (!guessConfirmed) {
+            if (compassMode) switchMode();
+            guessConfirmed = true;
 
-        if (compassMode) switchMode();
-        guessConfirmed = true;
+            //don't show little image anymore
+            findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
+
+            //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
+            findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
+            View compassButtonView = findViewById(R.id.compassMode);
+            compassButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
+
+            //Send guess and update karma
+            if (!pictureID.equals(Picture.UNINITIALIZED_ID) && !(user instanceof GuestUser)) {
+                Location guessedLocation = new Location("");
+                guessedLocation.setLatitude(guessPosition.getLatitude());
+                guessedLocation.setLongitude(guessPosition.getLongitude());
+                picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation);
+            }
+            picturesDb.updateKarma(pictureID, 1);
+        }
 
         //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
         findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
@@ -469,7 +522,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Shows the real location of the picture
      */
     @SuppressLint("SetTextI18n")
-    private void showActualLocation() {
+    private void showActualLocation(){
         //Make the icon of the picture visible
         Style style = mapboxMap.getStyle();
         style.getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.VISIBLE));

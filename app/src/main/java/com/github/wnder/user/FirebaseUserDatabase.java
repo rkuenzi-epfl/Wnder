@@ -5,14 +5,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 
-import androidx.annotation.NonNull;
-
-import com.github.wnder.Storage;
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.picture.InternalCachePictureDatabase;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
