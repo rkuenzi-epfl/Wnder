@@ -606,6 +606,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     @Override
     protected void onDestroy() {
+        //unregister listener!
+        sensorManager.unregisterListener(listener);
         super.onDestroy();
         mapView.onDestroy();
     }
