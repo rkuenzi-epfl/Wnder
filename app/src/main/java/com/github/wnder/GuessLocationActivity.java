@@ -478,32 +478,26 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (mapboxMap.getStyle() == null) {
             return;
         }
-        if (!guessConfirmed) {
-            if (compassMode) switchMode();
-            guessConfirmed = true;
+        
+        if (compassMode) switchMode();
+        guessConfirmed = true;
 
-            //don't show little image anymore
-            findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
-
-            //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
-            findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
-            View compassButtonView = findViewById(R.id.compassMode);
-            compassButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
-
-            //Send guess and update karma
-            if (!pictureID.equals(Picture.UNINITIALIZED_ID) && !(user instanceof GuestUser)) {
-                Location guessedLocation = new Location("");
-                guessedLocation.setLatitude(guessPosition.getLatitude());
-                guessedLocation.setLongitude(guessPosition.getLongitude());
-                picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation);
-            }
-            picturesDb.updateKarma(pictureID, 1);
-        }
+        //don't show little image anymore
+        findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
 
         //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
         findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
         View compassButtonView = findViewById(R.id.compassMode);
         compassButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
+
+        //Send guess and update karma
+        if (!pictureID.equals(Picture.UNINITIALIZED_ID) && !(user instanceof GuestUser)) {
+            Location guessedLocation = new Location("");
+            guessedLocation.setLatitude(guessPosition.getLatitude());
+            guessedLocation.setLongitude(guessPosition.getLongitude());
+            picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation);
+        }
+        picturesDb.updateKarma(pictureID, 1);
 
         showActualLocation();
     }
