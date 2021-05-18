@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.github.wnder.user.GlobalUser;
 
@@ -16,9 +17,10 @@ public final class Score {
      * Calculate a score
      * @param distance Distance between real location and guess location
      * @param distanceReference radius, "permitted error" in KM
+     * @param radiusCircle radius selected by the user
      * @return score
      */
-    public static double calculationScore(double distance, double distanceReference){
+    public static double calculationScore(double distance, double distanceReference, int radiusCircle){
 
         if(distance > distanceReference){
             return 0; //The given distance is bigger than what we expected with the reference
@@ -26,8 +28,9 @@ public final class Score {
 
         double normalized = distance / distanceReference; //a value between 1 and 0
         double sqrtDistribution = 1 - Math.sqrt(normalized);
+        double difficultyBonus = Math.pow(radiusCircle, 0.25);
 
-        return MAX_SCORE * sqrtDistribution;
+        return Math.floor(MAX_SCORE * sqrtDistribution * difficultyBonus);
     }
 
     /**
@@ -38,6 +41,6 @@ public final class Score {
      */
     public static double computeScore(Location realPos, Location guessedPos){
         double distance = guessedPos.distanceTo(realPos);
-        return calculationScore(distance, GlobalUser.getUser().getRadius() * 1000);
+        return calculationScore(distance, GlobalUser.getUser().getRadius() * 1000, GlobalUser.getUser().getRadius());
     }
 }

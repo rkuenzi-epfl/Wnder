@@ -15,8 +15,9 @@ public class ScoreTest {
     public void scoreCalculatedIsWithinRange(){
         double dist1 = 100;
         double dist2 = 1000;
+        int radius = 1;
 
-        assertEquals(135, Score.calculationScore(dist1, dist2), 5);
+        assertEquals(135, Score.calculationScore(dist1, dist2, radius), 5);
     }
 
     @Test
@@ -28,6 +29,6 @@ public class ScoreTest {
         guessedLocation.setLongitude(46.46250);
         guessedLocation.setLatitude(6.34003);
 
-        assertEquals(193, Score.computeScore(realLocation, guessedLocation), 2);
+        assertEquals(288, Score.computeScore(realLocation, guessedLocation), 2);
     }
 }
