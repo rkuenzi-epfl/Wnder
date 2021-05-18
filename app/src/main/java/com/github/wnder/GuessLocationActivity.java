@@ -61,6 +61,7 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,6 +70,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 import static com.github.wnder.MapBoxHelper.drawCircle;
 import static com.github.wnder.MapBoxHelper.updatePositionByLineAnimation;
 import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
@@ -90,10 +93,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
     public static final String EXTRA_PICTURE_ID = "picture_id";
-    private static final String ZOOM_IN = "zoom_in";
-    private static final String ZOOM_OUT = "zoom_out";
-
-    private static final float END_SCALE = 1f;
 
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
@@ -129,6 +128,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private User user;
     private Context context;
+    private GuessLocationZoom zoomAnimation;
 
     @Inject
     public PicturesDatabase picturesDb;
@@ -255,18 +255,20 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //bigImage, encapsulated in bigCard, is the image shown when zoomed in
         littleCard = findViewById(R.id.imageToGuessCard);
         bigCard = findViewById(R.id.imageToGuessCardZoomedIn);
-        bigCard.setVisibility(View.INVISIBLE);
+        bigCard.setVisibility(INVISIBLE);
         littleImage = findViewById(R.id.imageToGuess);
         bigImage = findViewById(R.id.imageToGuessZoomedIn);
         db.getBitmap(pictureID).thenAccept(bmp -> {
             littleImage.setImageBitmap(bmp);
-            littleImage.setVisibility(View.VISIBLE);
+            littleImage.setVisibility(VISIBLE);
             bigImage.setImageBitmap(bmp);
         });
         //Setup zoom animation
-        littleCard.setOnClickListener(id -> zoom(ZOOM_IN));
-        bigCard.setOnClickListener(id -> zoom(ZOOM_OUT));
         zoomAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        List<View> toHide = new ArrayList<>();
+        toHide.add(findViewById(R.id.compassMode));
+        toHide.add(findViewById(R.id.confirmButton));
+        zoomAnimation = new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
 
     }
 
@@ -394,17 +396,17 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         if (!compassMode) {
             layer.setProperties(PropertyFactory.visibility(Property.NONE));
-            hotbarView.setVisibility(View.INVISIBLE);
+            hotbarView.setVisibility(INVISIBLE);
 
         } else {
             double distanceDiff = guessPosition.distanceTo(picturePosition);
             if (referenceDistance < distanceDiff) { //compass update
                 layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
-                hotbarView.setVisibility(View.INVISIBLE);
+                hotbarView.setVisibility(INVISIBLE);
 
             } else { //hotbar update
                 layer.setProperties(PropertyFactory.visibility(Property.NONE));
-                hotbarView.setVisibility(View.VISIBLE);
+                hotbarView.setVisibility(VISIBLE);
 
                 double ratio = distanceDiff / referenceDistance;
 
@@ -475,9 +477,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             guessConfirmed = true;
 
             //don't show little image anymore
-            findViewById(R.id.imageToGuessCard).setVisibility(View.INVISIBLE);
+            findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
 
-            findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
+            findViewById(R.id.compassMode).setVisibility(INVISIBLE);
             View confirmButtonView = findViewById(R.id.confirmButton);
             confirmButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_baseline_military_tech_24));
 
@@ -531,7 +533,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         scoreText.setText(getString(R.string.score, (int)score) + "\n" + dText);
 
         //Animate the text
-        scoreText.setVisibility(View.VISIBLE);
+        scoreText.setVisibility(VISIBLE);
         Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
         scoreText.startAnimation(score_animation);
     }
@@ -599,106 +601,5 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-    }
-
-    /**
-     * Zooms in or out of a card depending on the argument
-     * @param zoomId "zoom_in" to zoom in, "zoom_out" otherwise
-     */
-    private void zoom(String zoomId){
-        //setup beginning and end forms of the card for the animation.
-        final Rect startState = new Rect();
-        littleCard.getGlobalVisibleRect(startState);
-        final Rect endState = new Rect();
-        final android.graphics.Point offset = new android.graphics.Point();
-        findViewById(R.id.guessLocationLayout).getGlobalVisibleRect(endState, offset);
-        startState.offset(-offset.x, -offset.y);
-        endState.offset(-offset.x, -offset.y);
-
-        //calculate start scaling factor
-        float startScale;
-        if((float) endState.width() / endState.height() > (float) startState.width() / startState.height()){
-            startScale = (float) startState.height() / endState.height();
-        }
-        else{
-            startScale = (float) startState.width() / endState.width();
-        }
-
-        //Start animation from top right corner
-        bigCard.setPivotX(0f);
-        bigCard.setPivotY(0f);
-
-        //Choose between zooming in and zooming out
-        if(zoomId == ZOOM_IN){
-            zoomIn(startState, endState, startScale);
-        }
-        else{
-            zoomOut(startState, endState, startScale);
-        }
-
-
-    }
-
-    /**
-     * Zooms in the image card
-     * @param startState Rectangle denoting the start emplacement of the card
-     * @param endState Rectangle denoting the end emplacement of the card
-     * @param startScale Scale of the start card w.r.t the end card
-     */
-    private void zoomIn(Rect startState, Rect endState, float startScale){
-        //Hide the buttons
-        findViewById(R.id.compassMode).setVisibility(View.INVISIBLE);
-        findViewById(R.id.confirmButton).setVisibility(View.INVISIBLE);
-
-        //Change visibility of the cards
-        littleCard.setVisibility(View.INVISIBLE);
-        bigCard.setVisibility(View.VISIBLE);
-
-        //Animation setup
-        AnimatorSet set = new AnimatorSet();
-
-        set.play(ObjectAnimator.ofFloat(bigCard, View.X, startState.left, endState.left))
-                .with(ObjectAnimator.ofFloat(bigCard, View.Y, startState.top, endState.top))
-                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_X, startScale, END_SCALE))
-                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_Y, startScale, END_SCALE));
-
-        set.setDuration(zoomAnimationTime);
-        set.setInterpolator(new DecelerateInterpolator());
-
-        //Animation start
-        set.start();
-    }
-
-    /**
-     * Zooms in the image card
-     * @param startState Rectangle denoting the start of the little card
-     * @param endState Rectangle denoting the emplacement of the big card
-     * @param startScale Scale of the little start card w.r.t the big card
-     */
-    private void zoomOut(Rect startState, Rect endState, float startScale){
-        //Setup animator
-        AnimatorSet set = new AnimatorSet();
-
-        set.play(ObjectAnimator.ofFloat(bigCard, View.X, endState.left, startState.left))
-                .with(ObjectAnimator.ofFloat(bigCard, View.Y, endState.top, startState.top))
-                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_X, END_SCALE, startScale))
-                .with(ObjectAnimator.ofFloat(bigCard, View.SCALE_Y, END_SCALE, startScale));
-
-        set.setDuration(zoomAnimationTime);
-        set.setInterpolator(new DecelerateInterpolator());
-
-        //When finished, switch visible cards + show the buttons again
-        set.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                littleCard.setVisibility(View.VISIBLE);
-                bigCard.setVisibility(View.GONE);
-                findViewById(R.id.compassMode).setVisibility(View.VISIBLE);
-                findViewById(R.id.confirmButton).setVisibility(View.VISIBLE);
-            }
-        });
-
-        //Animation start
-        set.start();
     }
 }

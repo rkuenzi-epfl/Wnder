@@ -90,10 +90,10 @@
             android:id="@+id/imageToGuess"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:adjustViewBounds="true"
             android:contentDescription="@string/content_descr_history_image"
-            android:maxHeight="150dp"
+            android:maxHeight="100dp"
             android:scaleType="fitCenter"
             tools:srcCompat="@tools:sample/backgrounds/scenic[0]" />
 
