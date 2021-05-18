@@ -24,7 +24,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import com.github.wnder.picture.Picture;
@@ -57,6 +56,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 import static com.github.wnder.MapBoxHelper.drawCircle;
 import static com.github.wnder.MapBoxHelper.updatePositionByLineAnimation;
 import static com.github.wnder.MapBoxHelper.zoomFromKilometers;
@@ -208,7 +209,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //Buttons
         nextGuessButton = findViewById(R.id.backToGuessPreview);
         //Invisible at first
-        nextGuessButton.setVisibility(View.INVISIBLE);
+        nextGuessButton.setVisibility(INVISIBLE);
 
         nextGuessButton.setOnClickListener(id -> nextGuess());
         findViewById(R.id.compassMode).setOnClickListener(id -> switchMode());
@@ -358,17 +359,17 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         if (!compassMode) {
             layer.setProperties(PropertyFactory.visibility(Property.NONE));
-            hotbarView.setVisibility(View.INVISIBLE);
+            hotbarView.setVisibility(INVISIBLE);
 
         } else {
             double distanceDiff = guessPosition.distanceTo(picturePosition);
             if (referenceDistance < distanceDiff) { //compass update
                 layer.setProperties(PropertyFactory.visibility(Property.VISIBLE));
-                hotbarView.setVisibility(View.INVISIBLE);
+                hotbarView.setVisibility(INVISIBLE);
 
             } else { //hotbar update
                 layer.setProperties(PropertyFactory.visibility(Property.NONE));
-                hotbarView.setVisibility(View.VISIBLE);
+                hotbarView.setVisibility(VISIBLE);
 
                 double ratio = distanceDiff / referenceDistance;
 
@@ -447,7 +448,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         guessConfirmed = true;
 
         //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
-        findViewById(R.id.confirmButton).setVisibility(View.INVISIBLE);
+        findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
         View compassButtonView = findViewById(R.id.compassMode);
         compassButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
 
@@ -496,13 +497,13 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         scoreText.setText(getString(R.string.score, (int)score) + "\n" + dText);
 
         //Animate the text
-        scoreText.setVisibility(View.VISIBLE);
+        scoreText.setVisibility(VISIBLE);
         Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
 
         scoreText.startAnimation(score_animation);
 
         //Animate the next guess button
-        nextGuessButton.setVisibility(View.VISIBLE);
+        nextGuessButton.setVisibility(VISIBLE);
         Animation button_animation = AnimationUtils.loadAnimation(this, R.anim.next_guess_button_anim);
         nextGuessButton.startAnimation(button_animation);
     }
