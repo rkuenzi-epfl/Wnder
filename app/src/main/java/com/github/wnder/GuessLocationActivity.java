@@ -505,16 +505,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         View compassButtonView = findViewById(R.id.compassMode);
         compassButtonView.setForeground(getDrawable(R.drawable.ic_baseline_military_tech_24));
 
-
-        //Send guess and update karma
-        if(!pictureID.equals(Picture.UNINITIALIZED_ID) && !(user instanceof GuestUser)){
-            Location guessedLocation = new Location("");
-            guessedLocation.setLatitude(guessPosition.getLatitude());
-            guessedLocation.setLongitude(guessPosition.getLongitude());
-            picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation);
-        }
-        picturesDb.updateKarma(pictureID, 1);
-
         showActualLocation();
     }
 
