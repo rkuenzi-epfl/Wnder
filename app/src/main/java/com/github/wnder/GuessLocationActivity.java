@@ -478,7 +478,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (mapboxMap.getStyle() == null) {
             return;
         }
-        
+
         if (compassMode) switchMode();
         guessConfirmed = true;
 
