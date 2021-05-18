@@ -365,28 +365,34 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      */
     private void compassButton() {
         //If the map didn't load yet do not switch mode
-        if (mapboxMap.getStyle() != null) {
-            //If guess hasn't been confirmed, then just switch mode
-            if (!guessConfirmed) {
-                View compassModeButtonView = findViewById(R.id.compassMode);
-
-                compassMode = !compassMode;
-                if (compassMode) {
-                    enableCompassMode();
-                } else {
-                    compass.updateCompass(mapboxMap, guessPosition, compassMode);
-                    sensorManager.unregisterListener(listener);
-                    mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
-                    compassModeButtonView.setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
-                }
-                //If guess has been confirmed, compass button becomes button leading to scoreboard
-            } else {
-                //Open the scoreboard activity
-                Intent intent = new Intent(this, ScoreboardActivity.class);
-                intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
-                startActivity(intent);
-            }
+        if (mapboxMap.getStyle() == null) {
+            return;
         }
+
+        //If guess has been confirmed, compass button becomes button leading to scoreboard
+        if (guessConfirmed) {
+            //Open the scoreboard activity
+            Intent intent = new Intent(this, ScoreboardActivity.class);
+            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
+            startActivity(intent);
+            return;
+        }
+
+        //If guess hasn't been confirmed, then just switch mode
+        compassMode = !compassMode;
+
+        //if we're now in compass mode, enable it
+        if (compassMode) {
+            enableCompassMode();
+        }
+        //else, update it one last time and disable it
+        else {
+            compass.updateCompass(mapboxMap, guessPosition, compassMode);
+            sensorManager.unregisterListener(listener);
+            mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
+            findViewById(R.id.compassMode).setForeground(getDrawable(R.drawable.ic_outline_explore_off_24));
+        }
+
     }
 
     /**
