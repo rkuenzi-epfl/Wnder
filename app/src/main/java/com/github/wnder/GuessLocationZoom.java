@@ -4,9 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.graphics.Rect;
-import android.text.Layout;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
