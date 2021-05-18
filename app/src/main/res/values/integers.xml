@@ -1,0 +1,6 @@
+<resources>
+    <!--Multiple usage-->
+    <integer name="one">1</integer>
+    <integer name="zero">0</integer>
+    <integer name="one_thousand">1000</integer>
+</resources>
