@@ -134,8 +134,8 @@ public class MapBoxHelper {
 
     /**
      * Set the Progress bar to a predefined set of color (red, yellow, cyan and blue)
-     * @param bar
-     * @param barValue
+     * @param bar progress bar
+     * @param barValue bar value
      */
     protected static void setHotBarColor(ProgressBar bar, int barValue){
         final int ONE_QUARTER = 25;
@@ -147,10 +147,10 @@ public class MapBoxHelper {
         if (barValue > THREE_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.RED));
         }
-        else if (barValue > TWO_QUARTER && barValue <= THREE_QUARTER){
+        else if (barValue > TWO_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
         }
-        else if (barValue > ONE_QUARTER && barValue <= TWO_QUARTER){
+        else if (barValue > ONE_QUARTER){
             bar.setProgressTintList(ColorStateList.valueOf(Color.CYAN));
         }
     }

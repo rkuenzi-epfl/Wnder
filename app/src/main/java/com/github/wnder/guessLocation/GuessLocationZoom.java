@@ -23,11 +23,11 @@ import static android.view.View.Y;
  */
 public class GuessLocationZoom {
 
-    private View startPoint;
-    private View endPoint;
-    private View layout;
-    private int zoomAnimationTime;
-    private List<View> toHideWhenZoomedIn;
+    private final View startPoint;
+    private final View endPoint;
+    private final View layout;
+    private final int zoomAnimationTime;
+    private final List<View> toHideWhenZoomedIn;
     private final static float ZERO = 0f;
     private final static float ONE = 1f;
     private final static String ZOOM_IN = "zoom_in";
@@ -80,7 +80,7 @@ public class GuessLocationZoom {
         endPoint.setPivotY(ZERO);
 
         //Choose between zooming in and zooming out
-        if(zoomId == ZOOM_IN){
+        if(zoomId.equals(ZOOM_IN)){
             zoomIn(littlePic, bigPic, littlePicScale);
         }
         else{

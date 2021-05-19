@@ -16,8 +16,8 @@ import static android.view.View.VISIBLE;
 
 public class GuessLocationCompass {
 
-    private static View hotbarView;
-    private static LatLng picturePosition;
+    private final View hotbarView;
+    private final LatLng picturePosition;
 
     /**
      * non-instantiable
@@ -33,11 +33,11 @@ public class GuessLocationCompass {
      * @param guessPosition guess location
      * @param compassMode current compass mode state
      */
-    protected static void updateCompass(MapboxMap mapboxMap, LatLng guessPosition, boolean compassMode){
+    protected void updateCompass(MapboxMap mapboxMap, LatLng guessPosition, boolean compassMode){
         SymbolLayer layer = (SymbolLayer) mapboxMap.getStyle().getLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID));
 
         //Arbitrary value based on the radius to check if we are close enough
-        double referenceDistance = GlobalUser.getUser().getRadius() * 1000 / 100;
+        double referenceDistance = GlobalUser.getUser().getRadius() * 1000. / 100.;
 
         if (!compassMode) {
             layer.setProperties(PropertyFactory.visibility(Property.NONE));
