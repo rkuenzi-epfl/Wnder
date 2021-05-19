@@ -13,7 +13,6 @@ import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
-import com.github.wnder.user.FirebaseUserDatabase;
 import com.github.wnder.user.UserDatabase;
 import com.github.wnder.user.UserDatabaseUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;

@@ -1,20 +1,5 @@
 package com.github.wnder.user;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-
-import androidx.annotation.NonNull;
-
-import com.github.wnder.Storage;
-import com.github.wnder.networkService.NetworkInformation;
-import com.github.wnder.picture.InternalCachePictureDatabase;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
