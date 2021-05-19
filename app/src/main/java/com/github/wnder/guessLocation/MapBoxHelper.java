@@ -37,6 +37,7 @@ import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -257,21 +258,7 @@ public class MapBoxHelper {
                 .retina(retina)
                 .build();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        executor.execute(() -> {
-            Bitmap mapSnapshot = null;
-            try {
-                mapSnapshot = BitmapFactory.decodeStream(staticMap.url().url().openConnection().getInputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Bitmap finalMapSnapshot = mapSnapshot;
-            handler.post(() -> {
-                mapSnapshotAvailable.accept(finalMapSnapshot);
-            });
-        });
+        onDownloadedBitmapAvailable(staticMap.url().url(), mapSnapshotAvailable);
     }
 
     private static StaticMarkerAnnotation buildMarker(LatLng latLng, String color) {
@@ -280,5 +267,21 @@ public class MapBoxHelper {
                 .color(color)
                 .lnglat(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()))
                 .build();
+    }
+
+    private static void onDownloadedBitmapAvailable(URL url, Consumer<Bitmap> downloadedBitmapAvailable) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            try {
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                handler.post(() -> {
+                    downloadedBitmapAvailable.accept(bitmap);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
