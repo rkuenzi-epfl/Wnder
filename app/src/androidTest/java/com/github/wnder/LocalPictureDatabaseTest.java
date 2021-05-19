@@ -107,14 +107,14 @@ public class LocalPictureDatabaseTest {
     }
 
     @Test
-    public void getBitmapWorks() throws FileNotFoundException {
-        Bitmap storedBmp = LPD.getBitmap(uniqueId);
+    public void getBitmapWorks() throws ExecutionException, InterruptedException {
+        Bitmap storedBmp = LPD.getBitmap(uniqueId).get();
         assert(storedBmp.sameAs(bmp));
     }
 
     @Test
-    public void getMapSnapshotWorks() throws FileNotFoundException {
-        Bitmap storedMapSnapshot = LPD.getMapSnapshot(uniqueId);
+    public void getMapSnapshotWorks() throws ExecutionException, InterruptedException {
+        Bitmap storedMapSnapshot = LPD.getMapSnapshot(null, null, null, uniqueId).get();
         assert(storedMapSnapshot.sameAs(mapSnapshot));
     }
 }

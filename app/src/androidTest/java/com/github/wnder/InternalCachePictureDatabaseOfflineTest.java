@@ -51,7 +51,7 @@ public class InternalCachePictureDatabaseOfflineTest {
     private static InternalCachePictureDatabase ICPD;
 
     @BeforeClass
-    public static void setup() throws ExecutionException, InterruptedException {
+    public static void setup() {
         // Mock offline check
         ICPD = Mockito.spy(new InternalCachePictureDatabase(context));
         Mockito.doReturn(false).when(ICPD).isOnline();
@@ -126,7 +126,7 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void getMapSnapshotWorks() throws ExecutionException, InterruptedException {
-        Bitmap storedMapSnapshot = ICPD.getMapSnapshot(uniqueId).get();
+        Bitmap storedMapSnapshot = ICPD.getMapSnapshot(null, uniqueId).get();
         assert(storedMapSnapshot.sameAs(mapSnapshot));
     }
 
