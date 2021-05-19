@@ -17,6 +17,7 @@ import android.widget.PopupMenu;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
@@ -72,14 +73,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
         imageDisplayed = findViewById(R.id.imagePreview);
 
         //Setup buttons
-        findViewById(R.id.SaveToGallery).setOnClickListener(id -> saveToGallery());
+        findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
 
-
-
-        //Setup swipe and click action
-        imageDisplayed.setOnClickListener(view -> {
-            openGuessActivity();
-        });
+        //Setup swipe
+        imageDisplayed.setOnClickListener(id -> {});
         imageDisplayed.setOnTouchListener(new OnSwipeTouchListener(this){
             @Override
             public boolean onSwipeRight() {
@@ -105,6 +102,9 @@ public class GuessPreviewActivity extends AppCompatActivity{
             else if(id == R.id.help){
                 helpMenu();
                 return true;
+            }
+            else if(id == R.id.save){
+                saveToGallery();
             }
             return false;
         });
