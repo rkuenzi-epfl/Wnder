@@ -28,7 +28,7 @@ import static org.hamcrest.core.Is.is;
 @RunWith(JUnit4.class)
 public class LocalPictureDatabaseTest {
 
-    private static FirebasePicturesDatabase db = new FirebasePicturesDatabase();
+    private static FirebasePicturesDatabase db;
     private static Context context = ApplicationProvider.getApplicationContext();
     private static LocalPictureDatabase LPD = new LocalPictureDatabase(context);
 
@@ -45,6 +45,7 @@ public class LocalPictureDatabaseTest {
 
     @BeforeClass
     public static void setup() throws ExecutionException, InterruptedException {
+        db  = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
         //SETUP TEST IMAGE
         uniqueId = "testPicDontRm";
         bmp = db.getBitmap("testPicDontRm").get();

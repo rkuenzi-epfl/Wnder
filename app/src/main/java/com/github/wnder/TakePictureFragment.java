@@ -2,13 +2,16 @@ package com.github.wnder;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts.TakePicture;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.transition.TransitionManager;
 
@@ -49,8 +53,10 @@ public class TakePictureFragment extends Fragment {
 
     private ActivityResultLauncher<Uri> takePictureLauncher;
 
-    private ConstraintLayout constraintLayout;
+    private CoordinatorLayout coordinatorLayout;
     private FloatingActionButton takePictureButton;
+    private ViewGroup.MarginLayoutParams takePictureButtonParams;
+    private int takePictureButtonOffset;
     private FloatingActionButton uploadButton;
 
     private User user;
@@ -67,9 +73,17 @@ public class TakePictureFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        constraintLayout = view.findViewById(R.id.takePictureConstraint);
+        coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
+        takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
+
+        // Convert button size to dp
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56f, r.getDisplayMetrics());
+        takePictureButtonOffset = takePictureButtonParams.bottomMargin*2 + (int) px;
+
         uploadButton = view.findViewById(R.id.uploadButton);
+        uploadButton.hide();
 
         user = GlobalUser.getUser();
         userName = user.getName();
@@ -83,7 +97,7 @@ public class TakePictureFragment extends Fragment {
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
         } else if(!networkInfo.isNetworkAvailable()){
-            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_SHORT)
+            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG)
                     .show();
         }
     }
@@ -112,10 +126,10 @@ public class TakePictureFragment extends Fragment {
         if (stored) {
 
             // Move takePictureButton up and display upload button
-            TransitionManager.beginDelayedTransition(constraintLayout);
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.load(getContext(), R.layout.fragment_take_picture_upload);
-            constraintSet.applyTo(constraintLayout);
+            TransitionManager.beginDelayedTransition(coordinatorLayout);
+            takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonOffset);
+            coordinatorLayout.requestLayout();
+            uploadButton.show();
 
             ImageView takenPictureView = getView().findViewById(R.id.takenPicture);
             takenPictureView.setImageURI(takenPictureUri);
@@ -142,11 +156,10 @@ public class TakePictureFragment extends Fragment {
                 Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT)
                         .show();
                 // Move takePictureButton down and hide upload button
-                TransitionManager.beginDelayedTransition(constraintLayout);
-                ConstraintSet constraintSet = new ConstraintSet();
-                constraintSet.load(getContext(), R.layout.fragment_take_picture);
-                constraintSet.applyTo(constraintLayout);
-                uploadButton.setClickable(false);
+                uploadButton.hide();
+                TransitionManager.beginDelayedTransition(coordinatorLayout);
+                takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonParams.leftMargin);
+                coordinatorLayout.requestLayout();
 
                 uploadResult.thenAccept(res -> {
                     Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT)

@@ -8,6 +8,7 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.InternalCachePictureDatabase;
+import com.github.wnder.picture.UploadInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -50,7 +51,7 @@ public class InternalCachePictureDatabaseOnlineTest {
         location.setLongitude(15);
         user = "testUser";
         uniqueId = user + Calendar.getInstance().getTimeInMillis();
-        CompletableFuture<Void> uploaded = ICPD.uploadPicture(uniqueId, user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        CompletableFuture<Void> uploaded = ICPD.uploadPicture(uniqueId, new UploadInfo(user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         try {
             uploaded.get();
         } catch (Exception e) {

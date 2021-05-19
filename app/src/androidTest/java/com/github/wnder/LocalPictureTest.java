@@ -3,6 +3,8 @@ package com.github.wnder;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.LocalPicture;
 
@@ -21,7 +23,7 @@ import static org.hamcrest.core.Is.is;
 @RunWith(JUnit4.class)
 public class LocalPictureTest {
 
-    private static FirebasePicturesDatabase db = new FirebasePicturesDatabase();
+    private static FirebasePicturesDatabase db;
 
     private static String uniqueId;
     private static Bitmap bmp;
@@ -33,6 +35,7 @@ public class LocalPictureTest {
 
     @BeforeClass
     public static void setup() throws ExecutionException, InterruptedException {
+        db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
         uniqueId = "testPic";
         bmp = db.getBitmap("testPicDontRm").get();
         realLoc = new Location("");

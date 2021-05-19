@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.InternalCachePictureDatabase;
 import com.github.wnder.picture.LocalPicture;
+import com.github.wnder.picture.UploadInfo;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,8 +34,8 @@ import static org.junit.Assert.fail;
 //TODO delete this later
 @RunWith(JUnit4.class)
 public class InternalCachePictureDatabaseOfflineTest {
-    private static FirebasePicturesDatabase fdb = new FirebasePicturesDatabase();
     private static Context context = ApplicationProvider.getApplicationContext();
+    private static FirebasePicturesDatabase fdb;
 
     private static String uniqueId;
     private static Bitmap bmp;
@@ -54,7 +55,7 @@ public class InternalCachePictureDatabaseOfflineTest {
         //Mock offline check
         ICPD = Mockito.spy(new InternalCachePictureDatabase(context));
         Mockito.doReturn(false).when(ICPD).isOnline();
-
+        fdb = new FirebasePicturesDatabase(context);
         //SETUP TEST IMAGE
         uniqueId = "testPicDontRm";
         bmp = fdb.getBitmap("testPicDontRm").get();
@@ -138,12 +139,6 @@ public class InternalCachePictureDatabaseOfflineTest {
     @Test
     public void sendUserGuessesThrows(){
         assertTrue(ICPD.sendUserGuess(uniqueId, "testUser", realLoc).isCompletedExceptionally());
-
-    }
-
-    @Test
-    public void uploadPictureThrows(){
-        assertTrue(ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)).isCompletedExceptionally());
 
     }
 
