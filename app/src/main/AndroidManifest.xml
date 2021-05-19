@@ -26,7 +26,7 @@
         <activity android:name=".HistoryMapActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".scoreboard.ScoreboardActivity" />
-        <activity android:name=".GuessLocationActivity" />
+        <activity android:name=".guessLocation.GuessLocationActivity" />
         <activity android:name=".ImageFromGalleryActivity" />
         <activity
             android:name=".GuessPreviewActivity"

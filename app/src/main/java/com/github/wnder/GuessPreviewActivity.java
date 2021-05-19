@@ -17,6 +17,7 @@ import android.widget.PopupMenu;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
