@@ -509,7 +509,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * @param outState output
      */
     @Override
-    protected void onSaveInstanceState(@NotNull Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
