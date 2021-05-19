@@ -308,9 +308,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 builder.setMessage(R.string.mapClickOnCompassMode_confirm_message);
 
                 //What to do when OK is pressed
-                builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
-                    mapClickOnCompassMode = true;
-                });
+                builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> mapClickOnCompassMode = true);
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
@@ -342,15 +340,13 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             //We can't use the sensor, so we inform the user
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(true).setTitle(R.string.SensorNotAvailableTitle).setMessage(R.string.SensorNotAvailable)
-            .setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
-                compassMode = false;
-            });
+            .setPositiveButton("Ok", (DialogInterface dialog, int which) -> compassMode = false);
             AlertDialog dialog = builder.create();
             dialog.show();
         }
         else{
             compass.updateCompass(mapboxMap, guessPosition, compassMode);
-            sensorManager.registerListener(listener, (Sensor) list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(listener, list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
             updateGuessPositionFromGPS.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
             compassModeButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_outline_explore_24));
