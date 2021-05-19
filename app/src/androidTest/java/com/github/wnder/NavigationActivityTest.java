@@ -132,8 +132,6 @@ public class NavigationActivityTest {
         when(networkInfo.isNetworkAvailable()).thenReturn(false);
         CompletableFuture<Void> cf = new CompletableFuture<>();
 
-
-
         when(picturesDb.uploadPicture(anyString(), any())).thenReturn(cf);
 
         //Goto take picture
@@ -151,6 +149,7 @@ public class NavigationActivityTest {
         onView(withId(R.id.takePictureButton)).perform(click());
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_started)).check(matches(isDisplayed()));
+
 
     }
     @Test
