@@ -22,17 +22,12 @@
             android:name="com.google.android.actions"
             android:resource="@drawable/bottom_navigation_colors"/>
 
-        <activity android:name=".HistoryActivity" />
         <activity android:name=".PictureHistoryActivity" />
-        <activity android:name=".UploadActivity" />
         <activity android:name=".scoreboard.ScoreboardActivity" />
         <activity android:name=".guessLocation.GuessLocationActivity" />
-        <activity android:name=".ImageFromGalleryActivity" />
         <activity
             android:name=".GuessPreviewActivity"
             android:noHistory="true" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".TakePictureActivity" />
         <activity android:name=".NavigationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
