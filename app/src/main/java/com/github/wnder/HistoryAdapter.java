@@ -108,13 +108,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private void saveToGallery(String pictureID, Bitmap bmp, ViewHolder holder){
         if(pictureID.equals(Picture.UNINITIALIZED_ID)){
             //Snack bar
-            Snackbar snackbar = Snackbar.make(holder.itemView, R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT);
-            snackbar.show();
+            Snackbar.make(holder.itemView, R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
         }
         else{
             MediaStore.Images.Media.insertImage(holder.itemView.getContext().getContentResolver(), bmp, pictureID, "");
-            Snackbar snackbar = Snackbar.make(holder.itemView, R.string.bar_save_is_ok, BaseTransientBottomBar.LENGTH_SHORT);
-            snackbar.show();
+            Snackbar.make(holder.itemView, R.string.bar_save_is_ok, BaseTransientBottomBar.LENGTH_SHORT).show();
         }
     }
 
