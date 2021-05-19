@@ -34,11 +34,11 @@
         android:focusable="true" />
 
     <Button
-        android:id="@+id/SaveToGallery"
+        android:id="@+id/guessButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="@string/save_to_gallery"
+        android:text="@string/begin_guess"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
