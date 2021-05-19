@@ -67,8 +67,8 @@ public class HistoryActivity extends AppCompatActivity {
         //When clicked open activity for specific picture history
         image.setOnClickListener((view) -> {
             if (!(pictureId.equals(Picture.UNINITIALIZED_ID))) {
-                Intent intent = new Intent(this, PictureHistoryActivity.class);
-                intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
+                Intent intent = new Intent(this, HistoryMapActivity.class);
+                intent.putExtra(HistoryMapActivity.EXTRA_PICTURE_ID, pictureId);
                 startActivity(intent);
             }
         });

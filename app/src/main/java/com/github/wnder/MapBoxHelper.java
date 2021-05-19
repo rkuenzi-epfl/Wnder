@@ -190,6 +190,10 @@ public class MapBoxHelper {
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
         boolean retina = displayMetrics.densityDpi >= DisplayMetrics.DENSITY_HIGH;
+        if (retina) {
+            width /= 2;
+            height /= 2;
+        }
 
         MapboxStaticMap staticMap = MapboxStaticMap.builder()
                 .accessToken(context.getString(R.string.mapbox_access_token))

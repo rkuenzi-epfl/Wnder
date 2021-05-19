@@ -23,7 +23,7 @@
             android:resource="@drawable/bottom_navigation_colors"/>
 
         <activity android:name=".HistoryActivity" />
-        <activity android:name=".PictureHistoryActivity" />
+        <activity android:name=".HistoryMapActivity" />
         <activity android:name=".UploadActivity" />
         <activity android:name=".scoreboard.ScoreboardActivity" />
         <activity android:name=".GuessLocationActivity" />
