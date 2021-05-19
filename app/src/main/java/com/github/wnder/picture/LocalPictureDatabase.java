@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 
+import com.github.wnder.guessLocation.MapBoxHelper;
 import com.google.gson.Gson;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Class serving the interaction with the local db
@@ -121,20 +124,15 @@ public class LocalPictureDatabase {
      * @param uniqueId the id of the picture
      * @return a bitmap of the picture
      */
-    private Bitmap loadBitmapFile(File directory, String uniqueId) {
+    private Bitmap loadBitmapFile(File directory, String uniqueId) throws IOException {
         File file = new File(directory, uniqueId);
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            byte[] bytes = new byte[(int) file.length()];
+        FileInputStream fis = new FileInputStream(file);
+        byte[] bytes = new byte[(int) file.length()];
 
-            fis.read(bytes, 0, bytes.length);
-            fis.close();
+        fis.read(bytes, 0, bytes.length);
+        fis.close();
 
-            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-            return null;
-        }
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
     /**
@@ -186,8 +184,15 @@ public class LocalPictureDatabase {
      * @param uniqueId id of the image
      * @return the bitmap of the image
      */
-    public Bitmap getBitmap(String uniqueId) {
-        return loadBitmapFile(bitmapDirectory, uniqueId);
+    public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        try {
+            Bitmap bitmap = loadBitmapFile(bitmapDirectory, uniqueId);
+            cf.complete(bitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cf;
     }
 
     /**
@@ -195,8 +200,19 @@ public class LocalPictureDatabase {
      * @param uniqueId id of the image
      * @return the map of the image
      */
-    public Bitmap getMapSnapshot(String uniqueId) {
-        return loadBitmapFile(mapSnapshotDirectory, uniqueId);
+    public CompletableFuture<Bitmap> getMapSnapshot(Context context, Location guessLocation, Location pictureLocation, String uniqueId) {
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        try {
+            Bitmap mapSnapshot = loadBitmapFile(mapSnapshotDirectory, uniqueId);
+            cf.complete(mapSnapshot);
+        } catch (IOException e) {
+            LatLng guessLatLng = new LatLng(guessLocation.getLatitude(), guessLocation.getLongitude());
+            LatLng pictureLatLng = new LatLng(pictureLocation.getLatitude(), pictureLocation.getLongitude());
+            MapBoxHelper.onMapSnapshotAvailable(context, guessLatLng, pictureLatLng, (mapSnapshot) -> {
+                cf.complete(mapSnapshot);
+            });
+        }
+        return cf;
     }
 
     /**
@@ -207,7 +223,13 @@ public class LocalPictureDatabase {
      */
     private Location getRealOrGuessed(String uniqueId, LocationType type){
         String serializedData = loadMetadataFile(uniqueId);
+        if (serializedData == null) {
+            return null;
+        }
         JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+        if (json == null) {
+            return null;
+        }
 
         if (type == LocationType.REAL) {
             return LocalPictureSerializer.getRealLocation(json);

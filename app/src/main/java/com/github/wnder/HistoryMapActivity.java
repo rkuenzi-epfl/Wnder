@@ -59,7 +59,7 @@ public class HistoryMapActivity extends AppCompatActivity {
         pictureID = extras.getString(EXTRA_PICTURE_ID);
 
         ImageView mapSnapshotView = findViewById(R.id.mapSnapshot);
-        picturesDb.getMapSnapshot(pictureID).thenAccept(mapSnapshot -> mapSnapshotView.setImageBitmap(mapSnapshot));
+        picturesDb.getMapSnapshot(this.getApplicationContext(), pictureID).thenAccept(mapSnapshot -> mapSnapshotView.setImageBitmap(mapSnapshot));
 
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(

@@ -3,11 +3,13 @@ package com.github.wnder.picture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.user.GlobalUser;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -115,23 +117,26 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.getBitmap(uniqueId);
         }
         else {
-            CompletableFuture<Bitmap> cf = new CompletableFuture<>();
-            cf.complete(localDatabase.getBitmap(uniqueId));
-            return cf;
+            return localDatabase.getBitmap(uniqueId);
         }
     }
 
     @Override
-    public CompletableFuture<Bitmap> getMapSnapshot(String uniqueId) {
-        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
-        cf.complete(localDatabase.getMapSnapshot(uniqueId));
-        return cf;
+    public CompletableFuture<Bitmap> getMapSnapshot(Context context, String uniqueId) {
+        return getUserGuess(uniqueId).thenCompose((userLocation) ->
+                getLocation(uniqueId).thenCompose((pictureLocation) ->
+                        localDatabase.getMapSnapshot(context, userLocation, pictureLocation, uniqueId)));
     }
 
     @Override
     public CompletableFuture<Location> getUserGuess(String uniqueId) {
+        Location userGuess = localDatabase.getGuessedLocation(uniqueId);
         CompletableFuture<Location> cf = new CompletableFuture<>();
-        cf.complete(localDatabase.getGuessedLocation(uniqueId));
+        if (userGuess != null) {
+            cf.complete(userGuess);
+        } else if (isOnline()) {
+            return remoteDatabase.getUserGuesses(uniqueId).thenApply((guesses) -> guesses.get(GlobalUser.getUser().getName()));
+        }
         return cf;
     }
 

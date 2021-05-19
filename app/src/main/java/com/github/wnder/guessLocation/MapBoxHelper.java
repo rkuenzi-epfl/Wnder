@@ -235,7 +235,7 @@ public class MapBoxHelper {
      * @param mapSnapshotAvailable consumer function
      * @return a Future of all user scores
      */
-    protected static void onMapSnapshotAvailable(Context context, LatLng guessLatLng, LatLng pictureLatLng, Consumer<Bitmap> mapSnapshotAvailable) {
+    public static void onMapSnapshotAvailable(Context context, LatLng guessLatLng, LatLng pictureLatLng, Consumer<Bitmap> mapSnapshotAvailable) {
         StaticMarkerAnnotation guessMarker = buildMarker(guessLatLng, COLOR_RED);
         StaticMarkerAnnotation pictureMarker = buildMarker(pictureLatLng, COLOR_PURPLE);
 

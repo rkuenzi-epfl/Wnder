@@ -1,5 +1,6 @@
 package com.github.wnder.picture;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
@@ -60,7 +61,7 @@ public interface PicturesDatabase {
      * @param uniqueId the picture unique Id
      * @return a Future of Bitmap
      */
-    CompletableFuture<Bitmap> getMapSnapshot(String uniqueId);
+    CompletableFuture<Bitmap> getMapSnapshot(Context context, String uniqueId);
 
     /**
      * Provides (later) a user guess for a picture
