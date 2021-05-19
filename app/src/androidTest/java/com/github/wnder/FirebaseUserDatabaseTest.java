@@ -1,30 +1,22 @@
 package com.github.wnder;
 
-import android.location.Location;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.user.FirebaseUserDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(JUnit4.class)

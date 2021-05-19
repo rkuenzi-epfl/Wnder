@@ -3,7 +3,6 @@ package com.github.wnder.picture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 

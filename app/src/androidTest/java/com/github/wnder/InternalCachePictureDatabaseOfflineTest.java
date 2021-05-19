@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.InternalCachePictureDatabase;
 import com.github.wnder.picture.LocalPicture;
 
