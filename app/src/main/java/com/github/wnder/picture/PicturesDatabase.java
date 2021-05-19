@@ -58,7 +58,7 @@ public interface PicturesDatabase {
      * Upload a picture with all it's initial information to the database
      * @return a Future
      */
-    CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri);
+    CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo);
 
     /**
      * Provides (later) karma associated to a picture

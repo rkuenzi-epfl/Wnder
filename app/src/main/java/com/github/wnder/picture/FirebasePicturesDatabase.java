@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 
 import com.github.wnder.Score;
 import com.google.firebase.firestore.CollectionReference;
@@ -15,16 +14,7 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +24,9 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class FirebasePicturesDatabase implements PicturesDatabase {
 
     private final StorageReference storage;
@@ -57,29 +49,16 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         // List all files waiting that we resume upload
         String[] activeUploadFiles = activeUploadDirectory.list();
         for (String uniqueId: activeUploadFiles) {
-            JSONObject json = loadUploadMetadata(uniqueId);
-            if(json != null){
-                Double latitude = null;
-                Double longitude = null;
-                Location location = new Location("");
-                String userName = null;
-                String pictureUri = null;
-                String uploadSessionUri = null;
-                try {
-                    latitude = json.getDouble("latitude");
-                    longitude= json.getDouble("longitude");
-                    userName = json.getString("user_name");
-                    pictureUri = json.getString("file_uri");
-                } catch (JSONException e){
 
-                }
+            File file = new File(activeUploadDirectory, uniqueId);
+            UploadInfo uploadInfo = UploadInfo.loadUploadInfo(file);
 
-                if(latitude != null && longitude != null && userName != null && pictureUri != null){
-                    location.setLatitude(latitude);
-                    location.setLongitude(longitude);
-                    uploadPicture(uniqueId, userName, location, Uri.parse(pictureUri));
-                }
-
+            if(uploadInfo != null){
+                uploadPicture(uniqueId, uploadInfo);
+            } else {
+                // Not all information are available so we can't upload
+                // Abort and delete the malformed file
+                UploadInfo.deleteUploadInfo(file);
             }
         }
     }
@@ -246,79 +225,37 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         return cf;
     }
 
-    private void storeUploadMetadata(String uniqueId, String userName, Location location, Uri pictureUri) throws IOException, JSONException{
-        //Create json
-        JSONObject json = new JSONObject();
-        json.put("id", uniqueId);
-        json.put("latitude", location.getLatitude());
-        json.put("longitude", location.getLongitude());
-        json.put("user_name", userName);
-        json.put("file_uri", pictureUri);
-
-        // Store in file
-        File file = new File(activeUploadDirectory, uniqueId);
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(json.toString().getBytes());
-        fos.close();
-    }
-
-    private JSONObject loadUploadMetadata(String uniqueId){
-        File file = new File(activeUploadDirectory, uniqueId);
-        if(file.exists()) {
-
-            StringBuilder stringBuilder = new StringBuilder();
-            try {
-
-                FileInputStream fis = new FileInputStream(file);
-                InputStreamReader inputStreamReader =
-                        new InputStreamReader(fis, StandardCharsets.UTF_8);
-                try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                    String line = reader.readLine();
-                    while (line != null) {
-                        stringBuilder.append(line);
-                        line = reader.readLine();
-                    }
-                    fis.close();
-                } catch (IOException e) {
-                    return null;
-                }
-
-            } catch (Exception e) {
-                return null;
-            }
-            try{
-                return new JSONObject(stringBuilder.toString());
-            } catch(Exception e){
-                return null;
-            }
-        }
-        return null;
-    }
-
-    private void deleteUploadMetadata(String uniqueId){
-        new File(activeUploadDirectory, uniqueId).delete();
-    }
-
     @Override
-    public CompletableFuture<Void> uploadPicture(String uniqueId, String userName, Location location, Uri uri) {
+    public CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo) {
+
         // Start upload
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
-        UploadTask pictureTask = storage.child("pictures/"+uniqueId+".jpg").putFile(uri, metadata);
+        UploadTask pictureTask = storage.child("pictures/"+uniqueId+".jpg").putFile(uploadInfo.pictureUri, metadata);
+
+        File file = new File(activeUploadDirectory, uniqueId);
 
         // Write json to file
         try{
-            // uploadSessionUri might be null
-            storeUploadMetadata(uniqueId, userName, location, uri);
+            UploadInfo.storeUploadInfo(file, uploadInfo);
         } catch (Exception e) {
+            // If it fails return an exceptionnaly completed future
             CompletableFuture<Void> cf = new CompletableFuture<>();
             cf.completeExceptionally(e);
             return cf;
         }
 
         // Attach upload SuccessListener
-        return attachUploadListener(uniqueId, userName, location, pictureTask);
+        return attachUploadListener(uniqueId, uploadInfo.userName, uploadInfo.location, pictureTask);
     }
 
+    /**
+     * Attach new listener on picture upload success to upload the associated metadata
+     * @param uniqueId uploaded picture unique id
+     * @param userName uploading user name
+     * @param location location the picture was taken from
+     * @param task the task to attach the metadata task to
+     * @return a completable future that completes when everything is uploaded
+     */
     private CompletableFuture<Void> attachUploadListener(String uniqueId, String userName, Location location, UploadTask task){
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
@@ -353,7 +290,8 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         }).addOnFailureListener(cf::completeExceptionally);
 
         // Delete local metadata when everything is uploaded
-        return cf.thenAccept(nothing -> deleteUploadMetadata(uniqueId));
+        cf.thenAccept(nothing -> UploadInfo.deleteUploadInfo(new File(activeUploadDirectory, uniqueId)));
+        return cf;
 
     }
 

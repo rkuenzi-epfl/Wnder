@@ -130,9 +130,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) throws IllegalStateException{
+    public CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo) throws IllegalStateException{
 
-        return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
+        return remoteDatabase.uploadPicture(uniqueId, uploadInfo);
 
     }
 

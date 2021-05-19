@@ -11,7 +11,6 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public abstract class PicturesModule {
 
-    @Singleton
     @Binds
     public abstract PicturesDatabase bindPicturesDatabase(InternalCachePictureDatabase firebaseImpl);
 

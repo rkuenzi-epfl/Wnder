@@ -21,6 +21,7 @@ import androidx.transition.TransitionManager;
 
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
+import com.github.wnder.picture.UploadInfo;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
@@ -82,7 +83,7 @@ public class TakePictureFragment extends Fragment {
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
         } else if(!networkInfo.isNetworkAvailable()){
-            AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), view.getContext())
+            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_SHORT)
                     .show();
         }
     }
@@ -110,7 +111,7 @@ public class TakePictureFragment extends Fragment {
     private void onTakePictureResult(boolean stored) {
         if (stored) {
 
-            // Move takePictureButton to the left
+            // Move takePictureButton up and display upload button
             TransitionManager.beginDelayedTransition(constraintLayout);
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.load(getContext(), R.layout.fragment_take_picture_upload);
@@ -134,24 +135,32 @@ public class TakePictureFragment extends Fragment {
                     .show();
         } else {
             takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
-            CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, userName, takenPictureLocation, takenPictureUri);
-            uploadResult.thenAccept(res -> {
+            UploadInfo uploadInfo = new UploadInfo(userName, takenPictureLocation, takenPictureUri);
+            CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, uploadInfo);
 
-                // Move takePictureButton to the right
+            if(!uploadResult.isCompletedExceptionally()) {
+                Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT)
+                        .show();
+                // Move takePictureButton down and hide upload button
                 TransitionManager.beginDelayedTransition(constraintLayout);
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.load(getContext(), R.layout.fragment_take_picture);
                 constraintSet.applyTo(constraintLayout);
-                Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT)
-                        .show();
-
                 uploadButton.setClickable(false);
-            }).exceptionally(res -> {
 
-                Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT)
+                uploadResult.thenAccept(res -> {
+                    Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT)
+                            .show();
+                }).exceptionally(res -> {
+
+                    Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT)
+                            .show();
+                    return null;
+                });
+            } else {
+                Snackbar.make(getView(), R.string.upload_not_started, Snackbar.LENGTH_SHORT)
                         .show();
-                return null;
-            });
+            }
         }
     }
 

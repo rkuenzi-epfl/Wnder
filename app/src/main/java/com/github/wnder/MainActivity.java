@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             startActivity(intent);
         }
         else{
-            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), this);
+            AlertDialog alert = AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_connection), this);
             alert.show();
         }
     }
