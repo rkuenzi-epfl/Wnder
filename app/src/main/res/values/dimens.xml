@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="floating_point_margin">16dp</dimen>
+    <dimen name="help_button_margin">20dp</dimen>
+    <dimen name="wonder_help_bar_margin">38dp</dimen>
+    <dimen name="help_bar_height">65dp</dimen>
 </resources>
