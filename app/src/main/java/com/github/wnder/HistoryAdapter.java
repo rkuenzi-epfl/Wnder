@@ -91,7 +91,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private void showPopup(ViewHolder holder, Bitmap bmp, String pictureID){
-        PopupMenu popup = new PopupMenu(holder.itemView.getContext(), holder.itemView);
+        PopupMenu popup = new PopupMenu(holder.getHistoryImageView().getContext(), holder.getHistoryImageView());
         popup.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if(id == R.id.save){
@@ -108,11 +108,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private void saveToGallery(String pictureID, Bitmap bmp, ViewHolder holder){
         if(pictureID.equals(Picture.UNINITIALIZED_ID)){
             //Snack bar
-            Snackbar.make(holder.itemView, R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
+            Snackbar.make(holder.getHistoryImageView(), R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
         }
         else{
-            MediaStore.Images.Media.insertImage(holder.itemView.getContext().getContentResolver(), bmp, pictureID, "");
-            Snackbar.make(holder.itemView, R.string.bar_save_is_ok, BaseTransientBottomBar.LENGTH_SHORT).show();
+            MediaStore.Images.Media.insertImage(holder.getHistoryImageView().getContext().getContentResolver(), bmp, pictureID, "");
+            Snackbar.make(holder.getHistoryImageView(), R.string.bar_save_is_ok, BaseTransientBottomBar.LENGTH_SHORT).show();
         }
     }
 
