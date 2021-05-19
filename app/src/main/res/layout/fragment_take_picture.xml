@@ -30,12 +30,13 @@
             android:id="@+id/takePictureButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="@dimen/floating_point_margin"
+            android:layout_marginBottom="@dimen/floating_point_margin"
             android:clickable="true"
             android:contentDescription="@string/content_descr_take_picture_button"
             android:focusable="true"
-            android:src="@android:drawable/ic_menu_camera"
+            android:src="@drawable/ic_baseline_camera_alt_24"
+            app:backgroundTint="@color/purple_200"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
