@@ -1,6 +1,5 @@
 package com.github.wnder;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
@@ -11,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.SignedInUser;
-import com.github.wnder.user.User;
 import com.github.wnder.user.UserDatabase;
 
 import java.util.ArrayList;
