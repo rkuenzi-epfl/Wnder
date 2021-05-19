@@ -90,6 +90,7 @@ public class GuessLocationActivityInstrumentedTest  {
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLoc));
         when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        when(picturesDatabase.getMapSnapshot(any(), anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
@@ -97,15 +98,6 @@ public class GuessLocationActivityInstrumentedTest  {
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
-
-        dummyMap = new HashMap<>();
-        dummyMap.put("User0", 32.);
-        dummyMap.put("User1", 44.);
-        when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
-        Bitmap imageBitmap = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-        when(picturesDatabase.getBitmap(any())).thenReturn(CompletableFuture.completedFuture(imageBitmap));
-
-
     }
 
     @Test
