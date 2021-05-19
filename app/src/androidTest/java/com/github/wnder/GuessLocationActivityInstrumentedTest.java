@@ -89,7 +89,6 @@ public class GuessLocationActivityInstrumentedTest  {
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLoc));
         when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
-        when(picturesDatabase.getMapSnapshot(any(), anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
