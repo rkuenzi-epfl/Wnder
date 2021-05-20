@@ -11,6 +11,7 @@ import java.util.Map;
 public class LocalPicture {
     private final String uniqueId;
     private final Bitmap bmp;
+    private final Bitmap mapSnapshot;
     private final Location realLocation;
     private final Location guessLocation;
     private final Map<String, Double> scoreboard;
@@ -23,9 +24,10 @@ public class LocalPicture {
      * @param guessLocation local user guess
      * @param scoreboard global scoreboard
      */
-    public LocalPicture(String uniqueId, Bitmap bmp, Location realLocation, Location guessLocation, Map<String, Double> scoreboard){
+    public LocalPicture(String uniqueId, Bitmap bmp, Bitmap mapSnapshot, Location realLocation, Location guessLocation, Map<String, Double> scoreboard) {
         this.uniqueId = uniqueId;
         this.bmp = bmp;
+        this.mapSnapshot = mapSnapshot;
         this.realLocation = realLocation;
         this.guessLocation = guessLocation;
         this.scoreboard = scoreboard;
@@ -40,15 +42,23 @@ public class LocalPicture {
     }
 
     /**
-     * get local picture
-     * @return picture as bitmap
+     * Get bitmap of local picture
+     * @return bitmap
      */
     public Bitmap getBitmap(){
         return this.bmp;
     }
 
     /**
-     * get real location of picture
+     * Get map snapshot of local picture
+     * @return map
+     */
+    public Bitmap getMapSnapshot(){
+        return this.mapSnapshot;
+    }
+
+    /**
+     * Get real location of picture
      * @return real location
      */
     public Location getRealLocation(){

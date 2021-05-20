@@ -2,12 +2,14 @@ package com.github.wnder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.InternalCachePictureDatabase;
+import com.github.wnder.picture.UploadInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -50,7 +52,7 @@ public class InternalCachePictureDatabaseOnlineTest {
         location.setLongitude(15);
         user = "testUser";
         uniqueId = user + Calendar.getInstance().getTimeInMillis();
-        CompletableFuture<Void> uploaded = ICPD.uploadPicture(uniqueId, user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        CompletableFuture<Void> uploaded = ICPD.uploadPicture(uniqueId, new UploadInfo(user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         try {
             uploaded.get();
         } catch (Exception e) {
@@ -117,8 +119,9 @@ public class InternalCachePictureDatabaseOnlineTest {
         otherLoc.setLatitude(20);
         otherLoc.setLongitude(22);
         String otherUser = "otherUser";
+        Bitmap mapSnapshot = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.picture1);
         try {
-            ICPD.sendUserGuess(uniqueId, otherUser, otherLoc).get();
+            ICPD.sendUserGuess(uniqueId, otherUser, otherLoc, mapSnapshot).get();
             guesses = ICPD.getUserGuesses(uniqueId).get();
             scoreboard = ICPD.getScoreboard(uniqueId).get();
         } catch (Exception e) {

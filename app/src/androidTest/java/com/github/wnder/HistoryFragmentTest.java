@@ -37,8 +37,11 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -64,16 +67,6 @@ public class HistoryFragmentTest {
 
     @Before
     public void setUp() {
-        Intents.init();
-    }
-
-    @After
-    public void tearDown() {
-        Intents.release();
-    }
-
-    @Test
-    public void historyScoreboardIsClickable(){
 
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         List<String> dummyPicList = new ArrayList<>();
@@ -95,12 +88,31 @@ public class HistoryFragmentTest {
         when(picturesDb.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLocation));
         when(picturesDb.getUserGuesses(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLocationList));
 
+        Intents.init();
+    }
 
+    @After
+    public void tearDown() {
+        Intents.release();
+    }
+
+    @Test
+    public void historyScoreboardIsClickable(){
 
         onView(withId(R.id.history_page)).perform(click());
         onView(withId(R.id.historyToScoreboard)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
 
+    }
+
+    @Test
+    public void historyPictureCanBeSaved(){
+        onView(withId(R.id.history_page)).perform(click());
+        onView(withId(R.id.historyImage)).perform(click());
+
+        onView(withText("Save to gallery")).perform(click());
+
+        onView(withText(R.string.bar_save_is_ok)).check(matches(isDisplayed()));
     }
 }

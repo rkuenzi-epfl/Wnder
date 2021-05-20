@@ -1,10 +1,14 @@
 package com.github.wnder;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.github.wnder.picture.UploadInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -26,19 +30,20 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JUnit4.class)
 public class FirebasePicturesDatabaseTest {
 
-    private static FirebasePicturesDatabase db = new FirebasePicturesDatabase();
+    private static FirebasePicturesDatabase db;
     private static Location location;
     private static String uniqueId;
     private static String user;
 
     @BeforeClass
     public static void createTestPic() {
+        db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
         location = new Location("");
         location.setLatitude(10);
         location.setLongitude(15);
         user = "testUser";
         uniqueId = user + Calendar.getInstance().getTimeInMillis();
-        CompletableFuture<Void> uploaded = db.uploadPicture(uniqueId, user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        CompletableFuture<Void> uploaded = db.uploadPicture(uniqueId, new UploadInfo(user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         try {
             uploaded.get();
         } catch (Exception e) {
@@ -105,8 +110,9 @@ public class FirebasePicturesDatabaseTest {
         otherLoc.setLatitude(20);
         otherLoc.setLongitude(22);
         String otherUser = "otherUser";
+        Bitmap mapSnapshot = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.picture1);
         try {
-            db.sendUserGuess(uniqueId, otherUser, otherLoc).get();
+            db.sendUserGuess(uniqueId, otherUser, otherLoc, mapSnapshot).get();
             guesses = db.getUserGuesses(uniqueId).get();
             scoreboard = db.getScoreboard(uniqueId).get();
         } catch (Exception e) {
