@@ -7,7 +7,6 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 
 import javax.inject.Inject;
@@ -18,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class HistoryMapActivity extends AppCompatActivity {
     public static final String EXTRA_PICTURE_ID = "picture_id";
 
-    private String pictureID = Picture.UNINITIALIZED_ID;
+    private String pictureID = Utils.UNINITIALIZED_ID;
 
     @Inject
     public PicturesDatabase picturesDb;

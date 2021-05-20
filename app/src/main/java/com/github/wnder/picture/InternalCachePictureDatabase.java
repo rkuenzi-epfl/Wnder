@@ -146,6 +146,18 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
+    public CompletableFuture<Void> addToReportedPictures(String uniqueId) {
+        if(isOnline()){
+            return remoteDatabase.addToReportedPictures(uniqueId);
+        }
+        else{
+            CompletableFuture<Void> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
+            return cf;
+        }
+    }
+
+    @Override
     public CompletableFuture<Long> getKarma(String uniqueId) throws IllegalStateException{
         if (isOnline()) {
             return remoteDatabase.getKarma(uniqueId);

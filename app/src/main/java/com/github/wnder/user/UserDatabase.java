@@ -29,6 +29,6 @@ public interface UserDatabase {
      * @param user the use for which we want a picture id
      * @return a Future with a picture id
      */
-    CompletableFuture<String> getNewPictureForUser(User user, int radius);
+    CompletableFuture<String> getNewPictureForUser(User user);
 
 }

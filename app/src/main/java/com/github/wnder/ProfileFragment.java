@@ -134,9 +134,10 @@ public class ProfileFragment extends Fragment {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
 
         //If yes, retrieve this account and set the user
-        if(account != null) {
+        if(account != null && account.getDisplayName() != null && account.getPhotoUrl() != null) {
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
         }
+
         //update page status
         updateLoginStatus();
     }

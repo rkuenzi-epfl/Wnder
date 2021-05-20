@@ -97,5 +97,7 @@
     <string name="take_picture_destination">Upload</string>
     <string name="guess_a_new_image">Guess a new image</string>
     <string name="begin_guess">Guess</string>
+    <string name="bar_report_impossible">The report process failed</string>
+    <string name="bar_download_picture_failed">Download failed</string>
 
 </resources>
