@@ -108,7 +108,7 @@ public class NavigationActivityTest {
     public void informPictureCantBeUploadedAsGuest(){
         GlobalUser.resetUser();
         //Goto take picture
-        onView(withId(R.id.bottom_navigation)).perform(click(1, 0));
+        onView(withId(R.id.take_picture_page)).perform(click());
         // As we are guest, verify that we are alerted we cannot upload
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
         onView(withId(android.R.id.button1)).perform(click());
@@ -125,7 +125,7 @@ public class NavigationActivityTest {
         when(picturesDb.uploadPicture(anyString(), any())).thenReturn(cf);
 
         //Goto take picture
-        onView(withId(R.id.bottom_navigation)).perform(click(1, 0));
+        onView(withId(R.id.take_picture_page)).perform(click());
         onView(withId(R.id.takePictureButton)).perform(click());
         SystemClock.sleep(2000);
         onView(withId(R.id.uploadButton)).perform(click());
@@ -143,7 +143,7 @@ public class NavigationActivityTest {
         when(picturesDb.uploadPicture(anyString(), any())).thenReturn(cf);
 
         //Goto take picture
-        onView(withId(R.id.bottom_navigation)).perform(click(1, 0));
+        onView(withId(R.id.take_picture_page)).perform(click());
         onView(withId(R.id.takePictureButton)).perform(click());
         SystemClock.sleep(2000);
         onView(withId(R.id.uploadButton)).perform(click());
@@ -157,7 +157,7 @@ public class NavigationActivityTest {
         when(picturesDb.uploadPicture(anyString(), any())).thenReturn(CompletableFuture.completedFuture(null));
 
         //Goto take picture
-        onView(withId(R.id.bottom_navigation)).perform(click(1, 0));
+        onView(withId(R.id.take_picture_page)).perform(click());
         onView(withId(R.id.takePictureButton)).perform(click());
         SystemClock.sleep(2000);
         onView(withId(R.id.uploadButton)).perform(click());
