@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.provider.MediaStore;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
@@ -91,7 +92,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private void showPopup(ViewHolder holder, Bitmap bmp, String pictureID){
-        PopupMenu popup = new PopupMenu(holder.getHistoryImageView().getContext(), holder.getHistoryImageView());
+        PopupMenu popup = new PopupMenu(holder.getHistoryImageView().getContext(), holder.getHistoryImageView(), Gravity.END, R.style.popupMenu, R.style.popupMenu);
         popup.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
             if(id == R.id.save){
