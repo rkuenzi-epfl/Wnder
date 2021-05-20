@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
-import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
@@ -31,8 +30,6 @@ import com.google.android.material.snackbar.Snackbar;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-
-import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
 
 /**
  * Preview activity class
