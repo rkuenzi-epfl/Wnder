@@ -62,7 +62,7 @@ public class GuessPreviewActivityTest {
 
     private final static SignedInUser user = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
 
-    private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+    private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
@@ -79,6 +79,7 @@ public class GuessPreviewActivityTest {
 
     @BeforeClass
     public static void setup(){
+        GlobalUser.setUser(null);
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         Location loc =  new Location("");
         loc.setLatitude(15.);
@@ -86,7 +87,7 @@ public class GuessPreviewActivityTest {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
-        when(userDatabase.getNewPictureForUser(user)).thenReturn(CompletableFuture.completedFuture("testPicDontRm")); //This string will never really be used by the tests, but in case the test are not robust, it's here
+        when(userDatabase.getNewPictureForUser(null)).thenReturn(CompletableFuture.completedFuture("testPicDontRm")); //This string will never really be used by the tests, but in case the test are not robust, it's here
     }
 
     @Before
@@ -106,8 +107,6 @@ public class GuessPreviewActivityTest {
         onView(withId(R.id.guessButton)).perform(click());
 
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
-
-        GlobalUser.resetUser();
     }
 
     @Test
@@ -122,18 +121,6 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testSkipButton(){
-        GlobalUser.setUser(user);
-
-        onView(withId(R.id.imagePreview)).perform(swipeRight());
-
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
-
-        Intents.release();
-
-        GlobalUser.resetUser();
-
-        Intents.init();
-
         onView(withId(R.id.imagePreview)).perform(swipeRight());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
