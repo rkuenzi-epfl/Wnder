@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -130,6 +131,22 @@ public class MapBoxHelper {
                 PropertyFactory.fillColor(ContextCompat.getColor(context, R.color.red)),
                 PropertyFactory.fillOpacity(0.4f)
         ));
+    }
+
+    /**
+     * Updates the hollow red circle on MapBox
+     *
+     * @param context context of the application
+     * @param mapboxMap MapBox map on which to draw
+     * @param position position of the center of the circle
+     */
+    protected static void updateCircle(@NonNull android.content.Context context, MapboxMap mapboxMap, LatLng position){
+        //Remove old mapbox style
+        Style style = mapboxMap.getStyle();
+        style.removeLayer(String.valueOf(R.string.RED_CIRCLE_LAYER_ID));
+        style.removeSource(String.valueOf(R.string.RED_CIRCLE_SOURCE_ID));
+        //Add new mapbox style
+        drawCircle(context, mapboxMap, position);
     }
 
     /**

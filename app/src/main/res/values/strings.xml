@@ -2,7 +2,6 @@
     <string name="app_name">Wnder</string>
 
     <!--Multiple usage-->
-    <string name="confirm">Confirm</string>
     <string name="no_connection">No internet connection !</string>
     <string name="no_internet_body">Your internet connection was lost, please try again later</string>
     <string name="guest_not_allowed">Feature not available as Guest user!</string>
@@ -17,9 +16,6 @@
     <!--Main Activity Strings -->
     <string name="content_descr_profile_picture">Profile picture</string>
     <string name="set_radius">Radius: %1$dkm</string>
-    <string name="upload_picture">Upload a picture</string>
-    <string name="guess_picture">Guess a new picture</string>
-    <string name="see_history">See History</string>
     <string name="no_internet_guess">You cannot guess pictures without an internet connection.</string>
 
     <!--Mapbox Image for Layers Strings-->
@@ -81,7 +77,6 @@
     <string name="content_descr_picture_taken">Your picture</string>
     <string name="content_descr_take_picture_button">Take picture image button</string>
     <string name="content_descr_upload_button">Upload image button</string>
-    <string name="take_picture">Take a picture</string>
     <string name="guest_no_upload">Guest user are not allowed to upload pictures.</string>
     <string name="no_internet_upload">You cannot upload pictures without an internet connection.</string>
     <string name="upload_failed">Upload failed. Check your internet connection and try again.</string>
@@ -89,16 +84,7 @@
     <string name="could_not_launch_camera">Wnder was not able to open your camera.</string>
     <string name="no_picture_from_camera">Wnder did not receive a picture from the camera.</string>
 
-    <!--Upload Activity Strings-->
-    <string name="success">Success</string>
-    <string name="failure">Failure</string>
-    <string name="back_to_menu">Back to menu</string>
-
     <!--Image From Gallery Strings-->
-    <string name="select_picture">Please select an image</string>
-    <string name="find_picture">Find image</string>
-    <string name="no_image">imageUri == null AND extras == null</string>
-    <string name="no_guessed_pictures">No guessed pictures</string>
     <string name="SensorNotAvailableTitle">Sensor not available</string>
     <string name="SensorNotAvailable">The sensor to get information about the phone 3D position is not available. You can\'t access the compass mode.</string>
     <string name="save_to_gallery">Save to gallery</string>
