@@ -19,5 +19,11 @@ The first task was short to implement. The second took more time since it was my
 
 ## Romain 
 
+This week I made the camera usable when the user has no connection. I had to first let the user take the picture when he's disconnected, this was basically already implemented so it took me less time than I expected.
+
+However my second task which let the uploads start later when the user had no connection at the moment he took the picture, was harder than I expected because I struggled with the documentation for firebase storage.
+
+For next time I think I should put a time estimate after making sure I know more about the resources I need. 
+
 ## Overall team
 
