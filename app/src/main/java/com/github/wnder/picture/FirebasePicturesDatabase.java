@@ -32,6 +32,9 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private final StorageReference storage;
     private final CollectionReference picturesCollection;
     private final CollectionReference usersCollection;
+    private final CollectionReference reportedPicturesCollection;
+
+    private enum PictureType {guess, upload};
 
     private final static String ACTIVE_UPLOAD_URI_DIR_NAME = "active_uploads";
     private final File activeUploadDirectory;
@@ -41,6 +44,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
+        reportedPicturesCollection = FirebaseFirestore.getInstance().collection("reportedPictures");
 
         activeUploadDirectory = context.getDir(ACTIVE_UPLOAD_URI_DIR_NAME, Context.MODE_PRIVATE);
 
@@ -175,43 +179,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
             });
         });
-        return CompletableFuture.allOf(guessSent, scoreSent, addToUserGuessedPictures(uniqueId, user));
-    }
-
-    /**
-     * Add a picture to the guessed pictures of a user on the database
-     * @param user the user
-     */
-    private CompletableFuture<Void> addToUserGuessedPictures(String uniqueId, String user) {
-        CompletableFuture<Void> cf = new CompletableFuture<>();
-        //user guessed pictures
-        usersCollection.document(user).get().addOnSuccessListener((documentSnapshot) -> {
-            //Get uploaded and guessed pics
-            List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-            List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-
-            //create the lists if they don't exist
-            if (guessedPictures == null) {
-                guessedPictures = new ArrayList<>();
-            }
-            if (uploadedPictures == null) {
-                uploadedPictures = new ArrayList<>();
-            }
-
-            //add picture to list if it isn't already in
-            if (!guessedPictures.contains(uniqueId)) {
-                guessedPictures.add(uniqueId);
-            }
-
-            //Upload everything back to Firestore
-            Map<String, Object> toUpload = new HashMap<>();
-            toUpload.put("guessedPics", guessedPictures);
-            toUpload.put("uploadedPics", uploadedPictures);
-            usersCollection.document(user).set(toUpload)
-                    .addOnSuccessListener(result -> cf.complete(null))
-                    .addOnFailureListener(cf::completeExceptionally);
-        }).addOnFailureListener(cf::completeExceptionally);
-        return cf;
+        return CompletableFuture.allOf(guessSent, scoreSent, addToUserPictures(uniqueId, user, PictureType.guess));
     }
 
     @Override
@@ -272,7 +240,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
-        CompletableFuture<Void> userUploadListCf = addPhotoToUploadedUserPhoto(uniqueId, userName);
+        CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, userName, PictureType.upload);
         CompletableFuture<Void> cf = CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf);
 
         task.addOnSuccessListener(pictureUploadResult -> {
@@ -298,7 +266,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
             emptyScoreboard.put(userName, -1.);
             picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
                     .addOnSuccessListener(result -> userScoresCf.complete(null)).addOnFailureListener(userScoresCf::completeExceptionally);
-
         }).addOnFailureListener(cf::completeExceptionally);
 
         // Delete local metadata when everything is uploaded
@@ -307,10 +274,20 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     }
 
+    @Override
+    public CompletableFuture<Void> addToReportedPictures(String uniqueId) {
+        CompletableFuture<Void> pictureAdded = new CompletableFuture<>();
+        reportedPicturesCollection.document(uniqueId).set(new HashMap<String, Object>()).addOnSuccessListener((result -> {
+            pictureAdded.complete(null);
+        })).addOnFailureListener(pictureAdded::completeExceptionally);
+
+        return pictureAdded;
+    }
+
     /**
-     * Add this picture to the list of uploaded pictures of the user
+     * Add this picture to the list of uploaded or guessed pictures of the user
      */
-    private CompletableFuture<Void> addPhotoToUploadedUserPhoto(String uniqueId, String user){
+    private CompletableFuture<Void> addToUserPictures(String uniqueId, String user, PictureType type){
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //get current user data
         usersCollection.document(user).get()
@@ -328,22 +305,34 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                         uploadedPictures = new ArrayList<>();
                     }
 
-                    //If uploaded pictures doesn't contain new picture, add it
-                    if (!uploadedPictures.contains(uniqueId)){
-                        uploadedPictures.add(uniqueId);
+                    if(type.equals(PictureType.upload)){
+                        //If uploaded pictures doesn't contain the new picture, add it
+                        if (!uploadedPictures.contains(uniqueId)){
+                            uploadedPictures.add(uniqueId);
+                        }
+                    }
+                    else{
+                        //add picture to the list of guessed pictures if it isn't already in
+                        if (!guessedPictures.contains(uniqueId)) {
+                            guessedPictures.add(uniqueId);
+                        }
                     }
 
-                    //Upload everything back to Firestore
-                    Map<String, Object> toUpload = new HashMap<>();
-                    toUpload.put("guessedPics", guessedPictures);
-                    toUpload.put("uploadedPics", uploadedPictures);
-                    usersCollection.document(user).set(toUpload)
-                            .addOnSuccessListener(result -> cf.complete(null))
-                            .addOnFailureListener(cf::completeExceptionally);
+                    uploadBack(user, guessedPictures, uploadedPictures, cf);
                 })
                 .addOnFailureListener(cf::completeExceptionally);
 
         return cf;
+    }
+
+    private void uploadBack(String user, List<String> guessedPics, List<String> uploadedPics, CompletableFuture<Void> cf){
+        //Upload everything back to Firestore
+        Map<String, Object> toUpload = new HashMap<>();
+        toUpload.put("guessedPics", guessedPics);
+        toUpload.put("uploadedPics", uploadedPics);
+        usersCollection.document(user).set(toUpload)
+                .addOnSuccessListener(result -> cf.complete(null))
+                .addOnFailureListener(cf::completeExceptionally);
     }
 
     @Override

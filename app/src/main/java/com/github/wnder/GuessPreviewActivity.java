@@ -19,18 +19,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+import com.github.wnder.user.UserDatabase;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-
-import static com.github.wnder.picture.ReportedPictures.addToReportedPictures;
 
 /**
  * Preview activity class
@@ -54,8 +52,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
     public NetworkService networkInfo;
     @Inject
     public PicturesDatabase picturesDb;
+    @Inject
+    public UserDatabase userDb;
 
-    private static String pictureID = Picture.UNINITIALIZED_ID;
+    private static String pictureID = Utils.UNINITIALIZED_ID;
     
     /**
      * executed on activity creation
@@ -125,26 +125,24 @@ public class GuessPreviewActivity extends AppCompatActivity{
         user = GlobalUser.getUser();
 
         //Get a new picture to display
-        try {
-            user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
-                if(!picId.equals("")){
-                    //If there is a picture, display it
-                    picturesDb.getBitmap(picId).thenAccept((bmp) -> setImageViewBitmap(bmp, picId));
-                    picturesDb.getLocation(picId).thenAccept((Lct) -> {
-                        pictureLat = Lct.getLatitude();
-                        pictureLng = Lct.getLongitude();
-                    });
-                } else {
-                    //If not, display default picture
-                    // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
-                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
-                    setImageViewBitmap(bmp, picId);
-                }
+        userDb.getNewPictureForUser(user).thenAccept(picId ->{
+            if(!picId.equals("")){
+                //If there is a picture, display it
+                picturesDb.getBitmap(picId).thenAccept((bmp) -> setImageViewBitmap(bmp, picId));
+                picturesDb.getLocation(picId).thenAccept((Lct) -> {
+                    pictureLat = Lct.getLatitude();
+                    pictureLng = Lct.getLongitude();
+                });
+            } else {
+                //If not, display default picture
+                // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
+                setImageViewBitmap(bmp, picId);
             }
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }).exceptionally(res -> {
+            Snackbar.make(findViewById(R.id.guessButton), R.string.bar_download_picture_failed, Snackbar.LENGTH_SHORT).show();
+            return null;
+        });
     }
 
     /**
@@ -174,7 +172,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Opens guess preview activity
      */
     private void skipPicture() {
-        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+        if(!pictureID.equals(Utils.UNINITIALIZED_ID)){
             picturesDb.updateKarma(pictureID, -1);
         }
 
@@ -202,12 +200,14 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //What to do when confirmed
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                    if(!reported && pictureID != Picture.UNINITIALIZED_ID){
+                    if(!reported && !pictureID.equals(Utils.UNINITIALIZED_ID) && networkInfo.isNetworkAvailable()){
                         picturesDb.updateKarma(pictureID,-10);
-                        addToReportedPictures(pictureID);
+                        picturesDb.addToReportedPictures(pictureID);
                         reported = true;
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report, BaseTransientBottomBar.LENGTH_SHORT);
-                        snackbar.show();
+                        Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report, BaseTransientBottomBar.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
                     }
                 });
         //Cancellation possible
@@ -231,7 +231,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * private function to be used when we want to save an image to the gallery
      */
     private void saveToGallery(){
-        if(pictureID.equals(Picture.UNINITIALIZED_ID)){
+        if(pictureID.equals(Utils.UNINITIALIZED_ID)){
             //Snack bar
             Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT);
             snackbar.show();
