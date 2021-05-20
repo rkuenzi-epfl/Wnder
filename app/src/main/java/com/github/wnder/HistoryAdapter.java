@@ -3,19 +3,27 @@ package com.github.wnder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.provider.MediaStore;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -41,7 +49,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         String pictureId = pictureList.get(position);
-        picturesDb.getBitmap(pictureId).thenAccept(bitmap -> holder.getHistoryImageView().setImageBitmap(bitmap));
+        picturesDb.getBitmap(pictureId).thenAccept(bitmap -> {
+            holder.getHistoryImageView().setImageBitmap(bitmap);
+            holder.getHistoryImageView().setOnClickListener(view -> showPopup(holder, bitmap, pictureId));
+        });
         picturesDb.getScoreboard(pictureId).thenAccept(scoreboard -> {
             String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getName(), 0.));
             holder.getYourScoreView().setText(score);
@@ -78,6 +89,32 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public int getItemCount() {
         return pictureList.size();
+    }
+
+    private void showPopup(ViewHolder holder, Bitmap bmp, String pictureID){
+        PopupMenu popup = new PopupMenu(holder.getHistoryImageView().getContext(), holder.getHistoryImageView(), Gravity.END, R.style.popupMenu, R.style.popupMenu);
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if(id == R.id.save){
+                saveToGallery(pictureID, bmp, holder);
+                return true;
+            }
+            return false;
+        });
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.history_menu, popup.getMenu());
+        popup.show();
+    }
+
+    private void saveToGallery(String pictureID, Bitmap bmp, ViewHolder holder){
+        if(pictureID.equals(Picture.UNINITIALIZED_ID)){
+            //Snack bar
+            Snackbar.make(holder.getHistoryImageView(), R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
+        }
+        else{
+            MediaStore.Images.Media.insertImage(holder.getHistoryImageView().getContext().getContentResolver(), bmp, pictureID, "");
+            Snackbar.make(holder.getHistoryImageView(), R.string.bar_save_is_ok, BaseTransientBottomBar.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -117,5 +154,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public LinearLayout getToMapView(){ return toMapView; }
 
         public LinearLayout getToScoreboardView(){ return toScoreboardView; }
+
+
     }
 }
