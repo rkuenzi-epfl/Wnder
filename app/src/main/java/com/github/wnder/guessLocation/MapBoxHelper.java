@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;

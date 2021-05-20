@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -143,12 +142,6 @@ public class InternalCachePictureDatabaseOfflineTest {
     @Test
     public void sendUserGuessesThrows(){
         assertTrue(ICPD.sendUserGuess(uniqueId, "testUser", realLoc, mapSnapshot).isCompletedExceptionally());
-    }
-
-    @Test
-    public void uploadPictureThrows(){
-        assertTrue(ICPD.uploadPicture(uniqueId, "testUser", realLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)).isCompletedExceptionally());
-
     }
 
     @Test
