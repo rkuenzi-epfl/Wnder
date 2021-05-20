@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 
 import com.github.wnder.Score;
 import com.google.firebase.firestore.CollectionReference;
@@ -13,7 +12,9 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,9 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class FirebasePicturesDatabase implements PicturesDatabase {
 
     private final StorageReference storage;
@@ -33,12 +36,33 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     private enum PictureType {guess, upload};
 
+    private final static String ACTIVE_UPLOAD_URI_DIR_NAME = "active_uploads";
+    private final File activeUploadDirectory;
+
     @Inject
-    public FirebasePicturesDatabase(){
+    public FirebasePicturesDatabase(Context context){
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
         reportedPicturesCollection = FirebaseFirestore.getInstance().collection("reportedPictures");
+
+        activeUploadDirectory = context.getDir(ACTIVE_UPLOAD_URI_DIR_NAME, Context.MODE_PRIVATE);
+
+        // List all files waiting that we resume upload
+        String[] activeUploadFiles = activeUploadDirectory.list();
+        for (String uniqueId: activeUploadFiles) {
+
+            File file = new File(activeUploadDirectory, uniqueId);
+            UploadInfo uploadInfo = UploadInfo.loadUploadInfo(file);
+
+            if(uploadInfo != null){
+                uploadPicture(uniqueId, uploadInfo);
+            } else {
+                // Not all information are available so we can't upload
+                // Abort and delete the malformed file
+                UploadInfo.deleteUploadInfo(file);
+            }
+        }
     }
 
     @Override
@@ -182,41 +206,72 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) {
+    public CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo) {
+
+        // Start upload
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
+        UploadTask pictureTask = storage.child("pictures/"+uniqueId+".jpg").putFile(uploadInfo.pictureUri, metadata);
+
+        File file = new File(activeUploadDirectory, uniqueId);
+
+        // Write json to file
+        try{
+            UploadInfo.storeUploadInfo(file, uploadInfo);
+        } catch (Exception e) {
+            // If it fails return an exceptionnaly completed future
+            CompletableFuture<Void> cf = new CompletableFuture<>();
+            cf.completeExceptionally(e);
+            return cf;
+        }
+
+        // Attach upload SuccessListener
+        return attachUploadListener(uniqueId, uploadInfo.userName, uploadInfo.location, pictureTask);
+    }
+
+    /**
+     * Attach new listener on picture upload success to upload the associated metadata
+     * @param uniqueId uploaded picture unique id
+     * @param userName uploading user name
+     * @param location location the picture was taken from
+     * @param task the task to attach the metadata task to
+     * @return a completable future that completes when everything is uploaded
+     */
+    private CompletableFuture<Void> attachUploadListener(String uniqueId, String userName, Location location, UploadTask task){
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
-        CompletableFuture<Void> pictureCf = new CompletableFuture<>();
         CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, user, PictureType.upload);
+        CompletableFuture<Void> cf = CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf);
 
-        //coordinates
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("latitude", location.getLatitude());
-        attributes.put("longitude", location.getLongitude());
-        attributes.put("karma", 0);
-        picturesCollection.document(uniqueId).set(attributes)
-                .addOnSuccessListener(result -> attributesCf.complete(null)).addOnFailureListener(attributesCf::completeExceptionally);
+        task.addOnSuccessListener(pictureUploadResult -> {
+            //coordinates
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("latitude", location.getLatitude());
+            attributes.put("longitude", location.getLongitude());
+            attributes.put("karma", 0);
+            picturesCollection.document(uniqueId).set(attributes)
+                    .addOnSuccessListener(result -> attributesCf.complete(null)).addOnFailureListener(attributesCf::completeExceptionally);
 
-        //default instantiation for the guesses ()
-        //necessary to have the correct documents created in firestore
-        Map<String, GeoPoint> emptyGuesses = new HashMap<>();
-        GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
-        emptyGuesses.put(user, defaultGuess);
-        picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(emptyGuesses)
-                .addOnSuccessListener(result -> userGuessesCf.complete(null)).addOnFailureListener(userGuessesCf::completeExceptionally);
+            //default instantiation for the guesses ()
+            //necessary to have the correct documents created in firestore
+            Map<String, GeoPoint> emptyGuesses = new HashMap<>();
+            GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
+            emptyGuesses.put(userName, defaultGuess);
+            picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(emptyGuesses)
+                    .addOnSuccessListener(result -> userGuessesCf.complete(null)).addOnFailureListener(userGuessesCf::completeExceptionally);
 
 
-        //necessary to have the correct documents created in firestore
-        Map<String, Double> emptyScoreboard= new HashMap<>();
-        emptyScoreboard.put(user, -1.);
-        picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
-                .addOnSuccessListener(result -> userScoresCf.complete(null)).addOnFailureListener(userScoresCf::completeExceptionally);
+            //necessary to have the correct documents created in firestore
+            Map<String, Double> emptyScoreboard= new HashMap<>();
+            emptyScoreboard.put(userName, -1.);
+            picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
+                    .addOnSuccessListener(result -> userScoresCf.complete(null)).addOnFailureListener(userScoresCf::completeExceptionally);
+        }).addOnFailureListener(cf::completeExceptionally);
 
-        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
-        storage.child("pictures/"+uniqueId+".jpg").putFile(uri, metadata)
-                .addOnSuccessListener(result -> pictureCf.complete(null)).addOnFailureListener(pictureCf::completeExceptionally);
+        // Delete local metadata when everything is uploaded
+        cf.thenAccept(nothing -> UploadInfo.deleteUploadInfo(new File(activeUploadDirectory, uniqueId)));
+        return cf;
 
-        return CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf, pictureCf);
     }
 
     @Override
