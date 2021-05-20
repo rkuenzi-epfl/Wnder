@@ -28,11 +28,12 @@ public class FirebaseUserDatabaseTest {
     public void gettingNewPicturesReturnAPictureNotGuessed(){
         GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         User user = GlobalUser.getUser();
+        user.setRadius(100000);
         List<String> guessedPics = new ArrayList<>();
         String receivedPic = "";
         try {
             guessedPics = db.getPictureList(user, "guessedPics").get();
-            receivedPic = db.getNewPictureForUser(user, 100000).get();
+            receivedPic = db.getNewPictureForUser(user).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

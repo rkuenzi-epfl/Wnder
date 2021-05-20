@@ -79,6 +79,7 @@ public class GuessPreviewActivityTest {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
+        //when(GlobalUser.getUser().onPicturesAvailable(anyString(), ApplicationProvider.getApplicationContext()));
         SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         GlobalUser.setUser(u);
         boolean[] isDone = new boolean[1];

@@ -82,13 +82,13 @@ public class FirebaseUserDatabase implements UserDatabase{
     }
 
     @Override
-    public CompletableFuture<String> getNewPictureForUser(User user, int radius) {
+    public CompletableFuture<String> getNewPictureForUser(User user) {
         CompletableFuture<String> cf = new CompletableFuture<>();
         // Get all pictures and remove the ones not in radius
         getAllIdsAndLocation().thenAccept( idsAndLocation -> {
             Location userLocation = user.getPositionFromGPS((LocationManager)context.getSystemService(Context.LOCATION_SERVICE),context);
 
-            Set<String> inRadius = keepOnlyInRadius(userLocation, idsAndLocation, radius);
+            Set<String> inRadius = keepOnlyInRadius(userLocation, idsAndLocation, user.getRadius());
 
             // Get all guessed and uploaded pictures and remove them from the ones in radius
             getGuessedAndUploadedPictureList(user).thenAccept(guessedAndUploaded ->{

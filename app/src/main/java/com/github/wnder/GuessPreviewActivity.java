@@ -23,6 +23,7 @@ import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+import com.github.wnder.user.UserDatabase;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,6 +55,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
     public NetworkService networkInfo;
     @Inject
     public PicturesDatabase picturesDb;
+    @Inject
+    public UserDatabase userDb;
 
     private static String pictureID = Picture.UNINITIALIZED_ID;
     
@@ -125,26 +128,21 @@ public class GuessPreviewActivity extends AppCompatActivity{
         user = GlobalUser.getUser();
 
         //Get a new picture to display
-        try {
-            user.onNewPictureAvailable((LocationManager)getSystemService(Context.LOCATION_SERVICE), this, (picId) -> {
-                if(!picId.equals("")){
-                    //If there is a picture, display it
-                    picturesDb.getBitmap(picId).thenAccept((bmp) -> setImageViewBitmap(bmp, picId));
-                    picturesDb.getLocation(picId).thenAccept((Lct) -> {
-                        pictureLat = Lct.getLatitude();
-                        pictureLng = Lct.getLongitude();
-                    });
-                } else {
-                    //If not, display default picture
-                    // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
-                    Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
-                    setImageViewBitmap(bmp, picId);
-                }
+        userDb.getNewPictureForUser(user).thenAccept(picId ->{
+            if(!picId.equals("")){
+                //If there is a picture, display it
+                picturesDb.getBitmap(picId).thenAccept((bmp) -> setImageViewBitmap(bmp, picId));
+                picturesDb.getLocation(picId).thenAccept((Lct) -> {
+                    pictureLat = Lct.getLatitude();
+                    pictureLng = Lct.getLongitude();
+                });
+            } else {
+                //If not, display default picture
+                // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
+                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
+                setImageViewBitmap(bmp, picId);
             }
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     /**
