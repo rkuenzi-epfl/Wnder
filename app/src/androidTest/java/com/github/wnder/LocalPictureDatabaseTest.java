@@ -2,11 +2,11 @@ package com.github.wnder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.LocalPicture;
 import com.github.wnder.picture.LocalPictureDatabase;
 
@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -27,13 +26,12 @@ import static org.hamcrest.core.Is.is;
 
 @RunWith(JUnit4.class)
 public class LocalPictureDatabaseTest {
-
-    private static FirebasePicturesDatabase db;
     private static Context context = ApplicationProvider.getApplicationContext();
     private static LocalPictureDatabase LPD = new LocalPictureDatabase(context);
 
     private static String uniqueId;
     private static Bitmap bmp;
+    private static Bitmap mapSnapshot;
     private static Location realLoc;
     private static Location guessLoc;
     private static Map<String, Double> scoreboard;
@@ -45,10 +43,10 @@ public class LocalPictureDatabaseTest {
 
     @BeforeClass
     public static void setup() throws ExecutionException, InterruptedException {
-        db  = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
-        //SETUP TEST IMAGE
-        uniqueId = "testPicDontRm";
-        bmp = db.getBitmap("testPicDontRm").get();
+        // Setup test picture
+        uniqueId = "testPic";
+        bmp = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
+        mapSnapshot = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.picture1);
         realLoc = new Location("");
         realLoc.setLongitude(1);
         realLoc.setLatitude(0);
@@ -63,8 +61,8 @@ public class LocalPictureDatabaseTest {
         int currILength = iDirectory.listFiles().length;
         int currDLength = mDirectory.listFiles().length;
 
-        picture = new LocalPicture(uniqueId, bmp, realLoc, guessLoc, scoreboard);
-        LPD.storePictureAndMetadata(picture);
+        picture = new LocalPicture(uniqueId, bmp, mapSnapshot, realLoc, guessLoc, scoreboard);
+        LPD.storePicture(picture);
         //asserts ensuring both files were correctly created
         assertThat(iDirectory.listFiles().length, is(currILength + 1));
         assertThat(mDirectory.listFiles().length, is(currDLength + 1));
@@ -75,15 +73,14 @@ public class LocalPictureDatabaseTest {
     public static void delete(){
         int currILength = iDirectory.listFiles().length;
         int currDLength = mDirectory.listFiles().length;
-        LPD.deleteFile(uniqueId);
+        LPD.deletePicture(uniqueId);
         //Asserts ensuring both files were correctly deleted
         assertThat(iDirectory.listFiles().length, is(currILength - 1));
         assertThat(mDirectory.listFiles().length, is(currDLength - 1));
-
     }
 
     @Test
-    public void updateAndGetScoreboardWork(){
+    public void updateAndGetScoreboardWorks(){
         Map<String, Double> scoreboard = LPD.getScoreboard(uniqueId);
         assertThat(scoreboard.get("testUser"), is(200.));
 
@@ -109,13 +106,14 @@ public class LocalPictureDatabaseTest {
     }
 
     @Test
-    public void getPictureWorks() throws FileNotFoundException {
-        Bitmap readFile = LPD.getPicture(uniqueId);
-        int w1 = bmp.getWidth();
-        int w2 = readFile.getWidth();
-        assertThat(w1, is(w2));
+    public void getBitmapWorks() throws ExecutionException, InterruptedException {
+        Bitmap storedBmp = LPD.getBitmap(uniqueId).get();
+        assert(storedBmp.sameAs(bmp));
     }
 
-
-
+    @Test
+    public void getMapSnapshotWorks() throws ExecutionException, InterruptedException {
+        Bitmap storedMapSnapshot = LPD.getMapSnapshot(null, null, null, uniqueId).get();
+        assert(storedMapSnapshot.sameAs(mapSnapshot));
+    }
 }

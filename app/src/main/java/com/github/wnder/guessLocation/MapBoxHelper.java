@@ -5,8 +5,12 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ProgressBar;
 
@@ -15,6 +19,9 @@ import androidx.core.content.ContextCompat;
 
 import com.github.wnder.R;
 import com.github.wnder.user.GlobalUser;
+import com.mapbox.api.staticmap.v1.MapboxStaticMap;
+import com.mapbox.api.staticmap.v1.StaticMapCriteria;
+import com.mapbox.api.staticmap.v1.models.StaticMarkerAnnotation;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
@@ -30,9 +37,19 @@ import com.mapbox.mapboxsdk.style.sources.Source;
 import com.mapbox.turf.TurfMeta;
 import com.mapbox.turf.TurfTransformation;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
 public class MapBoxHelper {
 
     private static final long POINT_ANIMATION_DURATION = 200;
+
+    private static final String COLOR_RED = "f84d4d";
+    private static final String COLOR_PURPLE = "7753eb";
 
     /**
      * Animate on a line a point from an origin to a destination for a MapBox GeoJsonSource.
@@ -225,5 +242,63 @@ public class MapBoxHelper {
                         PropertyFactory.iconIgnorePlacement(true),
                         PropertyFactory.iconAllowOverlap(true)
                 ));
+    }
+
+    /**
+     * Apply consumer function when a map snapshot for a particular guess is available
+     * @param context application context
+     * @param guessLatLng the position of the guess
+     * @param pictureLatLng the actual position of the picture
+     * @param mapSnapshotAvailable consumer function
+     * @return a Future of all user scores
+     */
+    public static void onMapSnapshotAvailable(Context context, LatLng guessLatLng, LatLng pictureLatLng, Consumer<Bitmap> mapSnapshotAvailable) {
+        StaticMarkerAnnotation guessMarker = buildMarker(guessLatLng, COLOR_RED);
+        StaticMarkerAnnotation pictureMarker = buildMarker(pictureLatLng, COLOR_PURPLE);
+
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int width = displayMetrics.widthPixels;
+        int height = displayMetrics.heightPixels;
+        boolean retina = displayMetrics.densityDpi >= DisplayMetrics.DENSITY_HIGH;
+        if (retina) {
+            width /= 2;
+            height /= 2;
+        }
+
+        MapboxStaticMap staticMap = MapboxStaticMap.builder()
+                .accessToken(context.getString(R.string.mapbox_access_token))
+                .styleId(StaticMapCriteria.SATELLITE_STREETS_STYLE)
+                .staticMarkerAnnotations(Arrays.asList(guessMarker, pictureMarker))
+                .cameraAuto(true)
+                .width(width)
+                .height(height)
+                .retina(retina)
+                .build();
+
+        onDownloadedBitmapAvailable(staticMap.url().url(), mapSnapshotAvailable);
+    }
+
+    private static StaticMarkerAnnotation buildMarker(LatLng latLng, String color) {
+        return StaticMarkerAnnotation.builder()
+                .name(StaticMapCriteria.LARGE_PIN)
+                .color(color)
+                .lnglat(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()))
+                .build();
+    }
+
+    private static void onDownloadedBitmapAvailable(URL url, Consumer<Bitmap> downloadedBitmapAvailable) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            try {
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                handler.post(() -> {
+                    downloadedBitmapAvailable.accept(bitmap);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

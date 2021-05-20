@@ -2,7 +2,6 @@
     <string name="app_name">Wnder</string>
 
     <!--Multiple usage-->
-    <string name="see_scoreboard">See scoreboard</string>
     <string name="no_connection">No internet connection !</string>
     <string name="no_internet_body">Your internet connection was lost, please try again later</string>
     <string name="guest_not_allowed">Feature not available as Guest user!</string>
@@ -65,8 +64,8 @@
     <string name="history_distance_meter">%1$dm</string>
     <string name="history_distance_kilometer">%1$dkm</string>
 
-    <!--History Picture Strings-->
-    <string name="content_descr_history_display_picture">Previously guessed picture</string>
+    <!--History Map Strings-->
+    <string name="content_descr_history_map_image">Map with guess and actual location</string>
 
     <!--Scoreboard strings-->
     <string name="scoreboard_username_placeholder">Username</string>

@@ -147,7 +147,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation) {
+    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot) {
         CompletableFuture<Void> guessSent = new CompletableFuture<>();
         CompletableFuture<Void> scoreSent = new CompletableFuture<>();
         getLocation(uniqueId).thenAccept(location -> {
@@ -222,6 +222,20 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         storage.child("pictures/"+uniqueId+".jpg").getBytes(Long.MAX_VALUE)
                 .addOnSuccessListener(bytes -> cf.complete(BitmapFactory.decodeByteArray(bytes, 0, bytes.length)))
                 .addOnFailureListener(cf::completeExceptionally);
+        return cf;
+    }
+
+    @Override
+    public CompletableFuture<Bitmap> getMapSnapshot(Context context, String uniqueId) {
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new IllegalStateException("This method is only available on the local database"));
+        return cf;
+    }
+
+    @Override
+    public CompletableFuture<Location> getUserGuess(String uniqueId) {
+        CompletableFuture<Location> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new IllegalStateException("This method is only available on the local database"));
         return cf;
     }
 
