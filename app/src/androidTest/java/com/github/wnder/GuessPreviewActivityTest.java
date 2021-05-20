@@ -109,10 +109,7 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButton(){
-        //GlobalUser.setUser(new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
-
         onView(withId(R.id.guessButton)).perform(click());
-        //GlobalUser.setUser(null);
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
     }
 
