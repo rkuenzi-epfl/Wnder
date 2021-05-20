@@ -240,7 +240,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
-        CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, user, PictureType.upload);
+        CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, userName, PictureType.upload);
         CompletableFuture<Void> cf = CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf);
 
         task.addOnSuccessListener(pictureUploadResult -> {
