@@ -200,7 +200,12 @@ public class TakePictureFragment extends Fragment {
         takenPictureView.setVisibility(View.VISIBLE);
         previewView.setVisibility(View.INVISIBLE);
         uploadButton.setOnClickListener(button -> uploadTakenPicture(takenPictureId, takenPictureUri));
-        takePictureButton.setOnClickListener(button -> transitionToBase());
+        takePictureButton.setOnClickListener(_button -> {
+            transitionToBase();
+            takenPictureView.setVisibility(View.INVISIBLE);
+            previewView.setVisibility(View.VISIBLE);
+            takePictureButton.setOnClickListener(button -> takePicture(imageCapture));
+        });
     }
 
     private void transitionToBase() {
@@ -209,10 +214,6 @@ public class TakePictureFragment extends Fragment {
         TransitionManager.beginDelayedTransition(coordinatorLayout);
         takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonParams.leftMargin);
         coordinatorLayout.requestLayout();
-
-        takenPictureView.setVisibility(View.INVISIBLE);
-        previewView.setVisibility(View.VISIBLE);
-        takePictureButton.setOnClickListener(button -> takePicture(imageCapture));
     }
 
     private void uploadTakenPicture(String takenPictureId, Uri takenPictureUri) {
@@ -224,8 +225,8 @@ public class TakePictureFragment extends Fragment {
             CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, uploadInfo);
 
             if(!uploadResult.isCompletedExceptionally()) {
-                Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT).show();
                 transitionToBase();
+                Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT).show();
                 uploadResult.thenAccept(res -> {
                     Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT).show();
                 }).exceptionally(res -> {
