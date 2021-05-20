@@ -150,7 +150,7 @@ public class GuessLocationActivityInstrumentedTest  {
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
 
-    @Test
+    /*@Test
     public void testSwitchMode(){
         onView(withId(R.id.compassMode)).perform(click());
         onView(withId(R.id.compassMode)).perform(click());
@@ -159,7 +159,7 @@ public class GuessLocationActivityInstrumentedTest  {
         onView(withId(R.id.confirmButton)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
-    }
+    }*/
 
     @Test
     public void nextGuessButtonIsDisplayedAtRightTime(){
