@@ -139,6 +139,9 @@ public class GuessPreviewActivity extends AppCompatActivity{
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
                 setImageViewBitmap(bmp, picId);
             }
+        }).exceptionally(res -> {
+            Snackbar.make(findViewById(R.id.guessButton), R.string.bar_download_picture_failed, Snackbar.LENGTH_SHORT).show();
+            return null;
         });
     }
 
