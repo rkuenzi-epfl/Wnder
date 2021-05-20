@@ -79,7 +79,7 @@ public class GuessPreviewActivityTest {
 
     @BeforeClass
     public static void setup(){
-        GlobalUser.setUser(null);
+        GlobalUser.setUser(user);
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         Location loc =  new Location("");
         loc.setLatitude(15.);
@@ -87,7 +87,7 @@ public class GuessPreviewActivityTest {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
-        when(userDatabase.getNewPictureForUser(null)).thenReturn(CompletableFuture.completedFuture("testPicDontRm")); //This string will never really be used by the tests, but in case the test are not robust, it's here
+        when(userDatabase.getNewPictureForUser(user)).thenReturn(CompletableFuture.completedFuture("testPicDontRm")); //This string will never really be used by the tests, but in case the test are not robust, it's here
     }
 
     @AfterClass
@@ -109,8 +109,10 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testGuessLocationButton(){
-        onView(withId(R.id.guessButton)).perform(click());
+        //GlobalUser.setUser(new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
 
+        onView(withId(R.id.guessButton)).perform(click());
+        //GlobalUser.setUser(null);
         Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
     }
 
