@@ -151,31 +151,6 @@ public class NavigationActivityTest {
     }
 
     @Test
-    public void signedInUserDidNotGetPicture(){
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
-        when(networkInfo.isNetworkAvailable()).thenReturn(false);
-        CompletableFuture<Void> cf = new CompletableFuture<>();
-        cf.completeExceptionally(new Exception());
-        when(picturesDb.uploadPicture(anyString(), any())).thenReturn(cf);
-
-        //Goto take picture
-        onView(withId(R.id.bottom_navigation)).perform(click(1, 0));
-
-        // Build a result to return from the Camera app
-        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-        Intent resultData = new Intent();
-        resultData.putExtra("data", dummyPic);
-        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_CANCELED, resultData);
-
-        // Return a sucessful result from the camera
-        intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
-
-        onView(withId(R.id.takePictureButton)).perform(click());
-
-        onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
     public void signedInUserInAPerfectWorld(){
         GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
