@@ -35,6 +35,7 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
@@ -85,6 +86,8 @@ public class NavigationActivityTest {
     public void guessButtonShowsSeekbar() {
         onView(withId(R.id.guess_page)).perform(click());
         onView(withText("Radius: 5km")).check(matches(isDisplayed()));
+        onView(withId(R.id.radiusSeekBar)).perform(swipeRight());
+        onView(withText("Radius: 1000km")).check(matches(isDisplayed()));
     }
 
     @Test
@@ -204,6 +207,5 @@ public class NavigationActivityTest {
         onView(withId(R.id.uploadButton)).check(matches(isDisplayed()));
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_successful)).check(matches(isDisplayed()));
-        onView(withId(R.id.uploadButton)).check(matches(isDisplayed()));
     }
 }

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 
+import com.github.wnder.guessLocation.GuessFragment;
 import com.github.wnder.networkService.NetworkService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
