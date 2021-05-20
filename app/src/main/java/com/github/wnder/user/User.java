@@ -14,9 +14,6 @@ import androidx.core.app.ActivityCompat;
  */
 public abstract class User {
 
-    public static final String GUESSED_PICS = "guessedPics";
-    public static final String UPLOADED_PICS = "uploadedPics";
-
     //Radius: the images will be taken into this radius around the user's location, in kilometers
     protected int radius = 5;
 
