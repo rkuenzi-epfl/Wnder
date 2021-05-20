@@ -35,9 +35,7 @@ public class FirebaseUserDatabaseTest {
         try {
             guessedPics = db.getPictureList(user, "guessedPics").get();
             receivedPic = db.getNewPictureForUser(user).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
