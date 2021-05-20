@@ -17,8 +17,10 @@ import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
+import com.github.wnder.picture.UserModule;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.UserDatabase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -49,7 +51,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
-@UninstallModules({NetworkModule.class, PicturesModule.class})
+@UninstallModules({NetworkModule.class, PicturesModule.class, UserModule.class})
 public class GuessPreviewActivityTest {
 
     //Intent with extra that the activity with start with
@@ -57,6 +59,8 @@ public class GuessPreviewActivityTest {
     static {
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessPreviewActivity.class);
     }
+
+    private final static SignedInUser user = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
@@ -70,6 +74,9 @@ public class GuessPreviewActivityTest {
     @BindValue
     public static PicturesDatabase picturesDatabase = Mockito.mock(PicturesDatabase.class);
 
+    @BindValue
+    public static UserDatabase userDatabase = Mockito.mock(UserDatabase.class);
+
     @BeforeClass
     public static void setup(){
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
@@ -79,20 +86,7 @@ public class GuessPreviewActivityTest {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
-        //when(GlobalUser.getUser().onPicturesAvailable(anyString(), ApplicationProvider.getApplicationContext()));
-        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        GlobalUser.setUser(u);
-        boolean[] isDone = new boolean[1];
-        isDone[0] = false;
-        Storage.onIdsAndLocAvailable((allIdsAndLocs) -> {
-            for (String id: allIdsAndLocs.keySet()) {
-                new ExistingPicture(id);
-            }
-            isDone[0] = true;
-        });
-        while(!isDone[0]);
-        GlobalUser.resetUser();
-
+        when(userDatabase.getNewPictureForUser(user)).thenReturn(CompletableFuture.completedFuture("testPicDontRm")); //This string will never really be used by the tests, but in case the test are not robust, it's here
     }
 
     @Before
@@ -128,8 +122,7 @@ public class GuessPreviewActivityTest {
 
     @Test
     public void testSkipButton(){
-        SignedInUser u = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
-        GlobalUser.setUser(u);
+        GlobalUser.setUser(user);
 
         onView(withId(R.id.imagePreview)).perform(swipeRight());
 
