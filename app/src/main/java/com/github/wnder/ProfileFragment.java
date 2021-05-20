@@ -2,6 +2,7 @@ package com.github.wnder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -134,9 +135,10 @@ public class ProfileFragment extends Fragment {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
 
         //If yes, retrieve this account and set the user
-        if(account != null) {
+        if(account != null && account.getDisplayName() != null && account.getPhotoUrl() != null) {
             GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
         }
+
         //update page status
         updateLoginStatus();
     }
