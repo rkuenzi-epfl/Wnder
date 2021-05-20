@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
@@ -56,7 +55,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
     @Inject
     public UserDatabase userDb;
 
-    private static String pictureID = Picture.UNINITIALIZED_ID;
+    private static String pictureID = Utils.UNINITIALIZED_ID;
     
     /**
      * executed on activity creation
@@ -170,7 +169,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * Opens guess preview activity
      */
     private void skipPicture() {
-        if(!pictureID.equals(Picture.UNINITIALIZED_ID)){
+        if(!pictureID.equals(Utils.UNINITIALIZED_ID)){
             picturesDb.updateKarma(pictureID, -1);
         }
 
@@ -198,7 +197,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //What to do when confirmed
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                    if(!reported && !pictureID.equals(Picture.UNINITIALIZED_ID) && networkInfo.isNetworkAvailable()){
+                    if(!reported && !pictureID.equals(Utils.UNINITIALIZED_ID) && networkInfo.isNetworkAvailable()){
                         picturesDb.updateKarma(pictureID,-10);
                         picturesDb.addToReportedPictures(pictureID);
                         reported = true;
@@ -229,7 +228,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
      * private function to be used when we want to save an image to the gallery
      */
     private void saveToGallery(){
-        if(pictureID.equals(Picture.UNINITIALIZED_ID)){
+        if(pictureID.equals(Utils.UNINITIALIZED_ID)){
             //Snack bar
             Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT);
             snackbar.show();

@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
@@ -107,7 +106,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private void saveToGallery(String pictureID, Bitmap bmp, ViewHolder holder){
-        if(pictureID.equals(Picture.UNINITIALIZED_ID)){
+        if(pictureID.equals(Utils.UNINITIALIZED_ID)){
             //Snack bar
             Snackbar.make(holder.getHistoryImageView(), R.string.bar_save_is_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
         }

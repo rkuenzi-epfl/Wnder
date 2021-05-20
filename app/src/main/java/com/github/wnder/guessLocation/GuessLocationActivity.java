@@ -29,8 +29,8 @@ import androidx.core.content.ContextCompat;
 import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.Score;
+import com.github.wnder.Utils;
 import com.github.wnder.picture.FirebasePicturesDatabase;
-import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
@@ -117,7 +117,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private ImageView bigImage;
     private GuessLocationCompass compass;
 
-    private String pictureID = Picture.UNINITIALIZED_ID;
+    private String pictureID = Utils.UNINITIALIZED_ID;
 
     private User user;
     private Context context;
@@ -405,7 +405,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         compassButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_baseline_military_tech_24));
 
         //Send guess and update karma
-        if (!pictureID.equals(Picture.UNINITIALIZED_ID) && !(user instanceof GuestUser)) {
+        if (!pictureID.equals(Utils.UNINITIALIZED_ID) && !(user instanceof GuestUser)) {
             Location guessedLocation = new Location("");
             guessedLocation.setLatitude(guessPosition.getLatitude());
             guessedLocation.setLongitude(guessPosition.getLongitude());
