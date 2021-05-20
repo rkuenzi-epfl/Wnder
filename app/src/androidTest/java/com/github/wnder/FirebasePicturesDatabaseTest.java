@@ -1,8 +1,11 @@
 package com.github.wnder;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -105,8 +108,9 @@ public class FirebasePicturesDatabaseTest {
         otherLoc.setLatitude(20);
         otherLoc.setLongitude(22);
         String otherUser = "otherUser";
+        Bitmap mapSnapshot = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.picture1);
         try {
-            db.sendUserGuess(uniqueId, otherUser, otherLoc).get();
+            db.sendUserGuess(uniqueId, otherUser, otherLoc, mapSnapshot).get();
             guesses = db.getUserGuesses(uniqueId).get();
             scoreboard = db.getScoreboard(uniqueId).get();
         } catch (Exception e) {
