@@ -7,6 +7,7 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.github.wnder.Score;
+import com.github.wnder.Storage;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -253,7 +254,13 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
     @Override
     public CompletableFuture<Void> addToReportedPictures(String uniqueId) {
-        return null;
+        CompletableFuture<Void> pictureAdded = new CompletableFuture<>();
+        Storage.uploadToFirestore(new HashMap<String, Object>() {
+        }, "reportedPictures", uniqueId)
+                .addOnSuccessListener((nothing)->{
+                    pictureAdded.complete(null);
+                });
+        return pictureAdded;
     }
 
     /**
