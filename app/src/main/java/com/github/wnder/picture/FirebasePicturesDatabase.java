@@ -7,7 +7,6 @@ import android.location.Location;
 import android.net.Uri;
 
 import com.github.wnder.Score;
-import com.github.wnder.Storage;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -30,6 +29,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private final StorageReference storage;
     private final CollectionReference picturesCollection;
     private final CollectionReference usersCollection;
+    private final CollectionReference reportedPicturesCollection;
 
     private enum PictureType {guess, upload};
 
@@ -38,6 +38,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
+        reportedPicturesCollection = FirebaseFirestore.getInstance().collection("reportedPictures");
     }
 
     @Override
@@ -221,11 +222,10 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     @Override
     public CompletableFuture<Void> addToReportedPictures(String uniqueId) {
         CompletableFuture<Void> pictureAdded = new CompletableFuture<>();
-        Storage.uploadToFirestore(new HashMap<String, Object>() {
-        }, "reportedPictures", uniqueId)
-                .addOnSuccessListener((nothing)->{
-                    pictureAdded.complete(null);
-                });
+        reportedPicturesCollection.document(uniqueId).set(new HashMap<String, Object>()).addOnSuccessListener((result -> {
+            pictureAdded.complete(null);
+        })).addOnFailureListener(pictureAdded::completeExceptionally);
+
         return pictureAdded;
     }
 
