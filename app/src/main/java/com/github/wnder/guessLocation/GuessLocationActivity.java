@@ -400,6 +400,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //don't show little image anymore and disable the compass button
         findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
         findViewById(R.id.compassMode).setClickable(false);
+        findViewById(R.id.compassMode).setVisibility(INVISIBLE);
 
         //Once guess has been confirmed, confirm button becomes button leading to scoreboard
         ((FloatingActionButton) findViewById(R.id.confirmButton)).setImageResource(R.drawable.ic_baseline_list_24);
