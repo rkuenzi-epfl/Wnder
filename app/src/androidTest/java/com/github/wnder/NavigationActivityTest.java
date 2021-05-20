@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.SystemClock;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
@@ -62,6 +64,9 @@ public class NavigationActivityTest {
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
             .around(new ActivityScenarioRule<>(NavigationActivity.class));
+
+    @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
 
     @Before
     public void before(){
