@@ -131,7 +131,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ViewHolder(View view) {
             super(view);
             historyImageView = view.findViewById(R.id.historyImage);
-
             yourScoreView = view.findViewById(R.id.yourScore);
             historyDistanceView = view.findViewById(R.id.historyDistance);
 

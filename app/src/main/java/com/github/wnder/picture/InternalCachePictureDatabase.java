@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
@@ -21,6 +20,7 @@ import javax.inject.Inject;
 public class InternalCachePictureDatabase implements PicturesDatabase{
     private final FirebasePicturesDatabase remoteDatabase;
     private final LocalPictureDatabase localDatabase;
+    private final Context context;
     public NetworkService networkInfo;
 
     /**
@@ -29,8 +29,9 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      */
     @Inject
     public InternalCachePictureDatabase(Context context){
-        remoteDatabase = new FirebasePicturesDatabase();
+        remoteDatabase = new FirebasePicturesDatabase(context);
         localDatabase = new LocalPictureDatabase(context);
+        this.context = context;
         networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
     }
 
@@ -140,15 +141,8 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> uploadPicture(String uniqueId, String user, Location location, Uri uri) throws IllegalStateException{
-        if (isOnline()) {
-            return remoteDatabase.uploadPicture(uniqueId, user, location, uri);
-        }
-        else {
-            CompletableFuture<Void> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
-        }
+    public CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo) throws IllegalStateException{
+        return remoteDatabase.uploadPicture(uniqueId, uploadInfo);
     }
 
     @Override

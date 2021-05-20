@@ -8,6 +8,7 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.github.wnder.picture.UploadInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -29,19 +30,20 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JUnit4.class)
 public class FirebasePicturesDatabaseTest {
 
-    private static FirebasePicturesDatabase db = new FirebasePicturesDatabase();
+    private static FirebasePicturesDatabase db;
     private static Location location;
     private static String uniqueId;
     private static String user;
 
     @BeforeClass
     public static void createTestPic() {
+        db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
         location = new Location("");
         location.setLatitude(10);
         location.setLongitude(15);
         user = "testUser";
         uniqueId = user + Calendar.getInstance().getTimeInMillis();
-        CompletableFuture<Void> uploaded = db.uploadPicture(uniqueId, user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        CompletableFuture<Void> uploaded = db.uploadPicture(uniqueId, new UploadInfo(user, location, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         try {
             uploaded.get();
         } catch (Exception e) {
