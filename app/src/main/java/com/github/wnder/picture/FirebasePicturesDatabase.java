@@ -263,17 +263,21 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                         }
                     }
 
-                    //Upload everything back to Firestore
-                    Map<String, Object> toUpload = new HashMap<>();
-                    toUpload.put("guessedPics", guessedPictures);
-                    toUpload.put("uploadedPics", uploadedPictures);
-                    usersCollection.document(user).set(toUpload)
-                            .addOnSuccessListener(result -> cf.complete(null))
-                            .addOnFailureListener(cf::completeExceptionally);
+                    uploadBack(user, guessedPictures, uploadedPictures, cf);
                 })
                 .addOnFailureListener(cf::completeExceptionally);
 
         return cf;
+    }
+
+    private void uploadBack(String user, List<String> guessedPics, List<String> uploadedPics, CompletableFuture<Void> cf){
+        //Upload everything back to Firestore
+        Map<String, Object> toUpload = new HashMap<>();
+        toUpload.put("guessedPics", guessedPics);
+        toUpload.put("uploadedPics", uploadedPics);
+        usersCollection.document(user).set(toUpload)
+                .addOnSuccessListener(result -> cf.complete(null))
+                .addOnFailureListener(cf::completeExceptionally);
     }
 
     @Override
