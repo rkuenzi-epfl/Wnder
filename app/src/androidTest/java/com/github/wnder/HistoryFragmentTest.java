@@ -37,7 +37,9 @@ import dagger.hilt.android.testing.UninstallModules;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,6 +110,9 @@ public class HistoryFragmentTest {
     public void historyPictureCanBeSaved(){
         onView(withId(R.id.history_page)).perform(click());
         onView(withId(R.id.historyImage)).perform(click());
+
         onView(withText("Save to gallery")).perform(click());
+
+        onView(withText(R.string.bar_save_is_ok)).check(matches(isDisplayed()));
     }
 }
