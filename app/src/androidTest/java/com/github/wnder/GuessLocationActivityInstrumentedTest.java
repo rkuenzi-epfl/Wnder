@@ -39,6 +39,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -46,15 +47,7 @@ import static org.mockito.Mockito.when;
 @UninstallModules({PicturesModule.class})
 public class GuessLocationActivityInstrumentedTest  {
     //Intent with extras that the activity will start with
-    static Intent intent;
-    static {
-        intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
-    }
+    private static Intent intent;
     private static Map<String, Double> dummyMap;
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
@@ -89,6 +82,7 @@ public class GuessLocationActivityInstrumentedTest  {
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLoc));
         when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
