@@ -74,24 +74,30 @@ public class UploadInfo {
                 } catch (IOException e) {
                     return null;
                 }
-            } catch (Exception e) {
-                return null;
-            }
             // Try constructing a UploadInfo object from the JSON
-            try {
                 JSONObject json = new JSONObject(stringBuilder.toString());
-                String userName = json.getString(USER_NAME);
-                Location location = new Location("");
-                location.setLatitude(json.getDouble(LATITUDE));
-                location.setLongitude(json.getDouble(LONGITUDE));
-                String pictureUri = json.getString(FILE_URI);
-
-                return new UploadInfo(userName, location, Uri.parse(pictureUri));
+                return extractUploadInfoFromJSON(json);
             } catch(Exception e){
                 return null;
             }
         }
         return null;
+    }
+
+    /**
+     * Extract each upload info items from JSONObject
+     * @param json the json to extract from
+     * @return the resulting UploadInfo
+     * @throws JSONException
+     */
+    private static UploadInfo extractUploadInfoFromJSON(JSONObject json) throws JSONException {
+        String userName = json.getString(USER_NAME);
+        Location location = new Location("");
+        location.setLatitude(json.getDouble(LATITUDE));
+        location.setLongitude(json.getDouble(LONGITUDE));
+        String pictureUri = json.getString(FILE_URI);
+
+        return new UploadInfo(userName, location, Uri.parse(pictureUri));
     }
 
     /**

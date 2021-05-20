@@ -94,11 +94,9 @@ public class TakePictureFragment extends Fragment {
 
         // Alert Guest user and user no connected to the internet
         if(GlobalUser.getUser() instanceof GuestUser){
-            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
-                    .show();
+            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext()).show();
         } else if(!networkInfo.isNetworkAvailable()){
-            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG)
-                    .show();
+            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -114,8 +112,7 @@ public class TakePictureFragment extends Fragment {
 
             takePictureLauncher.launch(takenPictureUri);
         } else {
-            Snackbar.make(getView(), R.string.could_not_launch_camera, Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(getView(), R.string.could_not_launch_camera, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -135,8 +132,7 @@ public class TakePictureFragment extends Fragment {
             takenPictureView.setImageURI(takenPictureUri);
             uploadButton.setOnClickListener(button -> uploadTakenPicture());
         } else {
-            Snackbar.make(getView(), R.string.no_picture_from_camera, Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(getView(), R.string.no_picture_from_camera, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -145,16 +141,14 @@ public class TakePictureFragment extends Fragment {
      */
     private void uploadTakenPicture() {
         if(user instanceof GuestUser){
-            Snackbar.make(getView(), R.string.guest_no_upload, Snackbar.LENGTH_SHORT)
-                    .show();
+            Snackbar.make(getView(), R.string.guest_no_upload, Snackbar.LENGTH_SHORT).show();
         } else {
             takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
             UploadInfo uploadInfo = new UploadInfo(userName, takenPictureLocation, takenPictureUri);
             CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, uploadInfo);
 
             if(!uploadResult.isCompletedExceptionally()) {
-                Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT)
-                        .show();
+                Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT).show();
                 // Move takePictureButton down and hide upload button
                 uploadButton.hide();
                 TransitionManager.beginDelayedTransition(coordinatorLayout);
@@ -162,17 +156,14 @@ public class TakePictureFragment extends Fragment {
                 coordinatorLayout.requestLayout();
 
                 uploadResult.thenAccept(res -> {
-                    Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT)
-                            .show();
+                    Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT).show();
                 }).exceptionally(res -> {
 
-                    Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT)
-                            .show();
+                    Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT).show();
                     return null;
                 });
             } else {
-                Snackbar.make(getView(), R.string.upload_not_started, Snackbar.LENGTH_SHORT)
-                        .show();
+                Snackbar.make(getView(), R.string.upload_not_started, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
