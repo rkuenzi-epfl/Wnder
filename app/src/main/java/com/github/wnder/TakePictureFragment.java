@@ -1,6 +1,7 @@
 package com.github.wnder;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -41,8 +42,6 @@ import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
 import java.util.concurrent.CompletableFuture;
@@ -90,24 +89,27 @@ public class TakePictureFragment extends Fragment {
         user = GlobalUser.getUser();
         userName = user.getName();
 
-        ActivityResultLauncher<String> requestPermissionLauncher =
-                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                    if (isGranted) {
-                        initializeCameraPreview(view);
-                    }
-                });
-
-        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            initializeCameraPreview(view);
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-        }
-
-        // Alert Guest user and user no connected to the internet
-        if(GlobalUser.getUser() instanceof GuestUser){
+        if (GlobalUser.getUser() instanceof GuestUser) {
+            NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
+            navigationActivity.selectItem(R.id.profile_page);
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
-        } else if(!networkInfo.isNetworkAvailable()){
+        } else {
+            ActivityResultLauncher<String> requestPermissionLauncher =
+                    registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                        if (isGranted) {
+                            initializeCameraPreview(view);
+                        }
+                    });
+
+            if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                initializeCameraPreview(view);
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+            }
+        }
+
+        if(!networkInfo.isNetworkAvailable()){
             AlertBuilder.okAlert(getString(R.string.no_connection), getString(R.string.no_internet_upload), view.getContext())
                     .show();
         }
@@ -165,7 +167,7 @@ public class TakePictureFragment extends Fragment {
         imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(this.getContext()),
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
-                    public void onImageSaved(@NotNull ImageCapture.OutputFileResults outputFileResults) {
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Uri takenPictureUri = outputFileResults.getSavedUri();
                         transitionToUpload(takenPictureId, takenPictureUri);
                     }
