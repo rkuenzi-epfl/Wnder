@@ -1,11 +1,9 @@
 package com.github.wnder;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -15,12 +13,6 @@ import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
-import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.SignedInUser;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.Task;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +25,6 @@ import org.mockito.Mockito;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -46,7 +37,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.google.android.gms.tasks.Tasks.await;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -82,25 +72,6 @@ public class GuessLocationActivityInstrumentedTest  {
 
     @BeforeClass
     public static void beforeAll(){
-        // Get application context for google sign in steps
-        Context ctx = ApplicationProvider.getApplicationContext();
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        GoogleSignInClient client = GoogleSignIn.getClient(ctx, gso);
-        Task<Void> taskWaiter;
-        if(GoogleSignIn.getLastSignedInAccount(ctx) != null){
-            taskWaiter = client.signOut();
-            try {
-                // Wait maximum of 30 seconds, otherwise assume the user was disconnected successfully
-                await(taskWaiter, 30, TimeUnit.SECONDS);
-            } catch (Exception e){
-                System.out.println("Assuming disconnection succeeded");
-            }
-        }
-
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
 
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         Location dummyLoc = new Location("");
