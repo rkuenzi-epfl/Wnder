@@ -204,6 +204,6 @@ public class NavigationActivityTest {
         onView(withId(R.id.uploadButton)).check(matches(isDisplayed()));
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_successful)).check(matches(isDisplayed()));
-        onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.uploadButton)).check(matches(isDisplayed()));
     }
 }
