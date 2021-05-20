@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
+import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
@@ -200,12 +201,14 @@ public class GuessPreviewActivity extends AppCompatActivity{
         //What to do when confirmed
         builder.setPositiveButton("Confirm",
                 (DialogInterface dialog, int which) -> {
-                    if(!reported && pictureID != Picture.UNINITIALIZED_ID){
+                    if(!reported && !pictureID.equals(Picture.UNINITIALIZED_ID) && networkInfo.isNetworkAvailable()){
                         picturesDb.updateKarma(pictureID,-10);
                         addToReportedPictures(pictureID);
                         reported = true;
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report, BaseTransientBottomBar.LENGTH_SHORT);
-                        snackbar.show();
+                        Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report, BaseTransientBottomBar.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report_impossible, BaseTransientBottomBar.LENGTH_SHORT).show();
                     }
                 });
         //Cancellation possible

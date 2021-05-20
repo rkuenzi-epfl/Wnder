@@ -14,7 +14,6 @@ import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
-import com.github.wnder.picture.ExistingPicture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.picture.UserModule;
@@ -23,6 +22,7 @@ import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.UserDatabase;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -88,6 +88,11 @@ public class GuessPreviewActivityTest {
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
         when(userDatabase.getNewPictureForUser(null)).thenReturn(CompletableFuture.completedFuture("testPicDontRm")); //This string will never really be used by the tests, but in case the test are not robust, it's here
+    }
+
+    @AfterClass
+    public static void end(){
+        GlobalUser.resetUser();
     }
 
     @Before

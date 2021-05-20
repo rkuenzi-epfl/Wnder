@@ -152,6 +152,11 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
+    public CompletableFuture<Void> addToReportedPictures(String uniqueId) {
+        return null;
+    }
+
+    @Override
     public CompletableFuture<Long> getKarma(String uniqueId) throws IllegalStateException{
         if (isOnline()) {
             return remoteDatabase.getKarma(uniqueId);

@@ -251,6 +251,11 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         return CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf, pictureCf);
     }
 
+    @Override
+    public CompletableFuture<Void> addToReportedPictures(String uniqueId) {
+        return null;
+    }
+
     /**
      * Add this picture to the list of uploaded pictures of the user
      */
