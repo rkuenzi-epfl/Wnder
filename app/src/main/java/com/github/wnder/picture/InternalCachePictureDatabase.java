@@ -4,13 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 
-import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -144,9 +142,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     @Override
     public CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo) throws IllegalStateException{
-
         return remoteDatabase.uploadPicture(uniqueId, uploadInfo);
-
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.github.wnder.picture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.Uri;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

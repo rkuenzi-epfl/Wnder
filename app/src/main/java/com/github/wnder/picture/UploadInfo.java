@@ -58,30 +58,42 @@ public class UploadInfo {
      */
     public static UploadInfo loadUploadInfo(File file) {
         if(file.exists()) {
-            StringBuilder stringBuilder = new StringBuilder();
+
             // Try reading the file
             try {
                 FileInputStream fis = new FileInputStream(file);
-                InputStreamReader inputStreamReader =
-                        new InputStreamReader(fis, StandardCharsets.UTF_8);
-                try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                    String line = reader.readLine();
-                    while (line != null) {
-                        stringBuilder.append(line);
-                        line = reader.readLine();
-                    }
-                    fis.close();
-                } catch (IOException e) {
-                    return null;
-                }
-            // Try constructing a UploadInfo object from the JSON
-                JSONObject json = new JSONObject(stringBuilder.toString());
+                InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+                String content = readUploadInfoFile(fis, inputStreamReader);
+                if (content == null) return null;
+                // Try constructing a UploadInfo object from the JSON
+                JSONObject json = new JSONObject(content);
                 return extractUploadInfoFromJSON(json);
             } catch(Exception e){
                 return null;
             }
         }
         return null;
+    }
+
+    /**
+     * Read the upload information from a file
+     * @param fis the file input stream
+     * @param inputStreamReader the file input stream reader
+     * @return a string with the file content
+     */
+    private static String readUploadInfoFile(FileInputStream fis, InputStreamReader inputStreamReader) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+            String line = reader.readLine();
+            while (line != null) {
+                stringBuilder.append(line);
+                line = reader.readLine();
+            }
+            fis.close();
+        } catch (IOException e) {
+            return null;
+        }
+        return stringBuilder.toString();
     }
 
     /**

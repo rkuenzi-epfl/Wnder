@@ -32,9 +32,8 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private final StorageReference storage;
     private final CollectionReference picturesCollection;
     private final CollectionReference usersCollection;
-    private final Context context;
 
-    private final String ACTIVE_UPLOAD_URI_DIR_NAME = "active_uploads";
+    private final static String ACTIVE_UPLOAD_URI_DIR_NAME = "active_uploads";
     private final File activeUploadDirectory;
 
     @Inject
@@ -42,7 +41,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         storage = FirebaseStorage.getInstance().getReference();
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
-        this.context = context;
 
         activeUploadDirectory = context.getDir(ACTIVE_UPLOAD_URI_DIR_NAME, Context.MODE_PRIVATE);
 
