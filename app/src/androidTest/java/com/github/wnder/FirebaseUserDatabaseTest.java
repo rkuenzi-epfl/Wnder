@@ -23,19 +23,19 @@ import static org.junit.Assert.assertFalse;
 public class FirebaseUserDatabaseTest {
 
     private static FirebaseUserDatabase db = new FirebaseUserDatabase(ApplicationProvider.getApplicationContext());
+    private static final int RADIUS_FOR_REFERECE = 100000;
 
     @Test
     public void gettingNewPicturesReturnAPictureNotGuessed(){
         GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         User user = GlobalUser.getUser();
+        user.setRadius(RADIUS_FOR_REFERECE);
         List<String> guessedPics = new ArrayList<>();
         String receivedPic = "";
         try {
             guessedPics = db.getPictureList(user, "guessedPics").get();
-            receivedPic = db.getNewPictureForUser(user, 100000).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            receivedPic = db.getNewPictureForUser(user).get();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -75,6 +75,14 @@ public interface PicturesDatabase {
      */
     CompletableFuture<Void> uploadPicture(String uniqueId, UploadInfo uploadInfo);
 
+
+    /**
+     * add a picture to the list of reported pictures on the db
+     * @param uniqueId the unique ID of the reported picture
+     * @return a completable future that completes when the picture is successfully added to reported photo
+     */
+    CompletableFuture<Void> addToReportedPictures(String uniqueId);
+
     /**
      * Provides (later) karma associated to a picture
      * @param uniqueId the picture unique Id
