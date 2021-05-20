@@ -74,8 +74,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         });
 
         holder.getToMapView().setOnClickListener(distanceField -> {
-            Intent intent = new Intent(context, PictureHistoryActivity.class);
-            intent.putExtra(PictureHistoryActivity.EXTRA_PICTURE_ID, pictureId);
+            Intent intent = new Intent(context, HistoryMapActivity.class);
+            intent.putExtra(HistoryMapActivity.EXTRA_PICTURE_ID, pictureId);
             context.startActivity(intent);
         });
         holder.getToScoreboardView().setOnClickListener(scoreField -> {

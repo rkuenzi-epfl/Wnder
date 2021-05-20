@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 
+import com.github.wnder.guessLocation.MapBoxHelper;
 import com.google.gson.Gson;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,15 +21,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Class serving the interaction with the local db
  */
 public class LocalPictureDatabase {
-    private final String IMAGE_DIR_NAME = "images";
+    private final String BITMAP_DIR_NAME = "images";
+    private final String MAP_DIR_NAME = "maps";
     private final String METADATA_DIR_NAME = "metadata";
-    private File iDirectory;
-    private File mDirectory;
+    private File bitmapDirectory;
+    private File mapSnapshotDirectory;
+    private File metadataDirectory;
     private final String SCOREBOARD = "scoreboard";
 
 
@@ -35,112 +40,111 @@ public class LocalPictureDatabase {
      * Constructor
      * @param context app context
      */
-    public LocalPictureDatabase(Context context){
-        //Will be used many times in this class, so init now
-        iDirectory = context.getDir(IMAGE_DIR_NAME, Context.MODE_PRIVATE);
-        mDirectory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
+    public LocalPictureDatabase(Context context) {
+        // Will be used many times in this class, so init now
+        bitmapDirectory = context.getDir(BITMAP_DIR_NAME, Context.MODE_PRIVATE);
+        metadataDirectory = context.getDir(METADATA_DIR_NAME, Context.MODE_PRIVATE);
+        mapSnapshotDirectory = context.getDir(MAP_DIR_NAME, Context.MODE_PRIVATE);
+    }
+
+
+    /**
+     * Store a bitmap to a local file
+     * @param bmp bitmap to store
+     * @param directory directory in which the bitmap will be stored
+     * @param uniqueId uniqueId of the file
+     */
+    private void storeBitmapFile(Bitmap bmp, File directory, String uniqueId) {
+        File myPath = new File(directory, uniqueId);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Stores the picture in the internal storage
+     * Store the metadata file
+     * @param data the data to write
+     * @param uniqueId unique id of picture
+     */
+    private void storeMetadataFile(String data, String uniqueId) {
+        File file = new File(metadataDirectory, uniqueId);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            fos.write(data.getBytes());
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Store the picture in the internal storage
      * @param picture LocalPicture to store
      */
-    public void storePictureAndMetadata(LocalPicture picture) {
-        //serialize and store metadata
+    public void storePicture(LocalPicture picture) {
+        storeBitmapFile(picture.getBitmap(), bitmapDirectory, picture.getUniqueId());
+
+        storeBitmapFile(picture.getMapSnapshot(), mapSnapshotDirectory, picture.getUniqueId());
+
         String serializedPicture = LocalPictureSerializer.serializePicture(picture.getRealLocation(), picture.getGuessLocation(), picture.getScoreboard());
         storeMetadataFile(serializedPicture, picture.getUniqueId());
-
-        //store picture
-        storePictureFile(picture.getBitmap(), picture.getUniqueId());
     }
 
-    /**
-     * Update the scoreboard of the picture in the internal storage
-     * @param scoreboard updated scoreboard
-     */
-    public void updateScoreboard(String uniqueId, Map<String, Double> scoreboard){
-        try {
-            //Get and remove old scoreboard
-            String oldMetadata = openMetadataFile(uniqueId);
-            JSONObject json = LocalPictureSerializer.deserializePicture(oldMetadata);
-            json.remove(SCOREBOARD);
-
-            //put in new scoreboard
-            json.put(SCOREBOARD, scoreboard);
-            storeMetadataFile(json.toString(), uniqueId);
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
 
     /**
-     * Tool method used to get real or guessed location using serialization
+     * Delete a file
+     * @param directory directory in which to delete the file
      * @param uniqueId uniqueId of picture
-     * @param type real or guess
-     * @return real or guessed location, depending on realOrGuess
      */
-    private Location getRealOrGuessed(String uniqueId, LocationType type){
-        //get metadata
-        String serializedData = openMetadataFile(uniqueId);
-        JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
-
-        //get real pic
-        if (type == LocationType.REAL) {
-            return LocalPictureSerializer.getRealLocation(json);
-        }
-        //get guess pic
-        else {
-            return LocalPictureSerializer.getGuessLocation(json);
-        }
+    private void deleteFile(File directory, String uniqueId) {
+        new File(directory, uniqueId).delete();
     }
 
     /**
-     * Get the location of the image from the local database
-     * @param uniqueId id of the image
-     * @return the actual location of the image
+     * Deletes picture file AND metadata file
+     * @param uniqueId uniqueId of picture
      */
-    public Location getLocation(String uniqueId) {
-        return getRealOrGuessed(uniqueId, LocationType.REAL);
+    public void deletePicture(String uniqueId) {
+        deleteFile(bitmapDirectory, uniqueId);
+        deleteFile(mapSnapshotDirectory, uniqueId);
+        deleteFile(metadataDirectory, uniqueId);
+    }
+
+
+    /**
+     * Load a bitmap from a local file
+     * @param directory directory from which the bitmap will be loaded
+     * @param uniqueId the id of the picture
+     * @return a bitmap of the picture
+     */
+    private Bitmap loadBitmapFile(File directory, String uniqueId) throws IOException {
+        File file = new File(directory, uniqueId);
+        FileInputStream fis = new FileInputStream(file);
+        byte[] bytes = new byte[(int) file.length()];
+
+        fis.read(bytes, 0, bytes.length);
+        fis.close();
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
     /**
-     * Get the location of the image from the local database
-     * @param uniqueId id of the image
-     * @return the actual location of the image
-     */
-    public Location getGuessedLocation(String uniqueId) {
-        return getRealOrGuessed(uniqueId, LocationType.GUESSED);
-    }
-
-    /**
-     * Get the scoreboard of the image from the local database
-     * @param uniqueId id of the image
-     * @return a map of the scoreboard
-     */
-    public Map<String, Double> getScoreboard(String uniqueId) {
-        //get metadata
-        String serializedData = openMetadataFile(uniqueId);
-        try {
-            //deserialize and go back to hashmap
-            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
-            String scoreboard = json.getString(SCOREBOARD);
-            return new Gson().fromJson(scoreboard, Map.class);
-        } catch (JSONException e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Reads the metadata file
+     * Load the metadata file
      * @param uniqueId uniqueId of picture
      * @return content of file, empty if there is a problem
      */
-    private String openMetadataFile(String uniqueId){
+    private String loadMetadataFile(String uniqueId){
         String toReturn = "";
 
         //setup file input stream
-        File file = new File(mDirectory, uniqueId);
+        File file = new File(metadataDirectory, uniqueId);
         FileInputStream fis;
         try {
             fis = new FileInputStream(file);
@@ -174,94 +178,119 @@ public class LocalPictureDatabase {
         return toReturn;
     }
 
+
     /**
-     * Stores the updated metadata file
-     * @param data the data to write
-     * @param uniqueId unique id of picture
+     * Get the bitmap of the image from the local database
+     * @param uniqueId id of the image
+     * @return the bitmap of the image
      */
-    private void storeMetadataFile(String data, String uniqueId){
-        //setup file output stream
-        File file = new File(mDirectory, uniqueId);
-        FileOutputStream fos = null;
+    public CompletableFuture<Bitmap> getBitmap(String uniqueId) {
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
         try {
-            fos = new FileOutputStream(file);
-            //write data as bytes
-            fos.write(data.getBytes());
-            //close stream
-            fos.close();
-        } catch (Exception e) {
+            Bitmap bitmap = loadBitmapFile(bitmapDirectory, uniqueId);
+            cf.complete(bitmap);
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return cf;
     }
 
+    /**
+     * Get the map of the image from the local database
+     * @param uniqueId id of the image
+     * @return the map of the image
+     */
+    public CompletableFuture<Bitmap> getMapSnapshot(Context context, Location guessLocation, Location pictureLocation, String uniqueId) {
+        CompletableFuture<Bitmap> cf = new CompletableFuture<>();
+        try {
+            Bitmap mapSnapshot = loadBitmapFile(mapSnapshotDirectory, uniqueId);
+            cf.complete(mapSnapshot);
+        } catch (IOException e) {
+            LatLng guessLatLng = new LatLng(guessLocation.getLatitude(), guessLocation.getLongitude());
+            LatLng pictureLatLng = new LatLng(pictureLocation.getLatitude(), pictureLocation.getLongitude());
+            MapBoxHelper.onMapSnapshotAvailable(context, guessLatLng, pictureLatLng, (mapSnapshot) -> {
+                cf.complete(mapSnapshot);
+            });
+        }
+        return cf;
+    }
 
     /**
-     * Read the picture from a local file
-     * @param uniqueId the id of the picture
-     * @return a bitmap of the picture
+     * Tool method used to get real or guessed location using serialization
+     * @param uniqueId uniqueId of picture
+     * @param type real or guess
+     * @return real or guessed location, depending on realOrGuess
      */
-    public Bitmap getPicture(String uniqueId) throws FileNotFoundException {
-        //setup file input stream and byte array
-        File file = new File(iDirectory, uniqueId);
-        FileInputStream fis = new FileInputStream(file);
-        byte[] bytes = new byte[(int) file.length()];
-        try {
-            //fulfill byte array
-            fis.read(bytes, 0, bytes.length);
-            fis.close();
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+    private Location getRealOrGuessed(String uniqueId, LocationType type){
+        String serializedData = loadMetadataFile(uniqueId);
+        if (serializedData == null) {
+            return null;
+        }
+        JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+        if (json == null) {
+            return null;
         }
 
-        //decode byte array to get bitmap
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        if (type == LocationType.REAL) {
+            return LocalPictureSerializer.getRealLocation(json);
+        } else {
+            return LocalPictureSerializer.getGuessLocation(json);
+        }
     }
 
     /**
-     * Store a picture in a local file
-     * @param bmp picture
-     * @param uniqueId uniqueId of the file
+     * Get the location of the image from the local database
+     * @param uniqueId id of the image
+     * @return the actual location of the image
      */
-    private void storePictureFile(Bitmap bmp, String uniqueId) {
-        //setup file output stream
-        File myPath = new File(iDirectory, uniqueId);
+    public Location getLocation(String uniqueId) {
+        return getRealOrGuessed(uniqueId, LocationType.REAL);
+    }
 
-        FileOutputStream fos = null;
+    /**
+     * Get the location of the image from the local database
+     * @param uniqueId id of the image
+     * @return the actual location of the image
+     */
+    public Location getGuessedLocation(String uniqueId) {
+        return getRealOrGuessed(uniqueId, LocationType.GUESSED);
+    }
+
+    /**
+     * Get the scoreboard of the image from the local database
+     * @param uniqueId id of the image
+     * @return a map of the scoreboard
+     */
+    public Map<String, Double> getScoreboard(String uniqueId) {
+        String serializedData = loadMetadataFile(uniqueId);
         try {
-            fos = new FileOutputStream(myPath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-            //close stream
-            fos.close();
-        } catch (Exception e) {
+            //deserialize and go back to hashmap
+            JSONObject json = LocalPictureSerializer.deserializePicture(serializedData);
+            String scoreboard = json.getString(SCOREBOARD);
+            return new Gson().fromJson(scoreboard, Map.class);
+        } catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * Update the scoreboard of the picture in the internal storage
+     * @param scoreboard updated scoreboard
+     */
+    public void updateScoreboard(String uniqueId, Map<String, Double> scoreboard) {
+        try {
+            //Get and remove old scoreboard
+            String oldMetadata = loadMetadataFile(uniqueId);
+            JSONObject json = LocalPictureSerializer.deserializePicture(oldMetadata);
+            json.remove(SCOREBOARD);
+
+            //put in new scoreboard
+            json.put(SCOREBOARD, scoreboard);
+            storeMetadataFile(json.toString(), uniqueId);
+        } catch (JSONException e){
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Delete a picture file
-     * @param uniqueId uniqueId of picture
-     */
-    private void deletePictureFile(String uniqueId){
-        new File(iDirectory, uniqueId).delete();
-    }
-
-    /**
-     * Delete a metadata file
-     * @param uniqueId uniqueId of picture
-     */
-    private void deleteMetadataFile(String uniqueId){
-        new File(mDirectory, uniqueId).delete();
-    }
-
-    /**
-     * Deletes picture file AND metadata file
-     * @param uniqueId uniqueId of picture
-     */
-    public void deleteFile(String uniqueId){
-        //delete picture
-        deletePictureFile(uniqueId);
-        //delete metadata
-        deleteMetadataFile(uniqueId);
     }
 }

@@ -1,7 +1,6 @@
 package com.github.wnder;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -11,7 +10,6 @@ import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
-import com.github.wnder.user.SignedInUser;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
