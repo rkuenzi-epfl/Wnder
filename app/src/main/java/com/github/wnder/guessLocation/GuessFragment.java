@@ -18,12 +18,10 @@ import androidx.fragment.app.Fragment;
 import com.github.wnder.AlertBuilder;
 import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
-import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.mapbox.geojson.GeoJson;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -31,15 +29,11 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static com.github.wnder.guessLocation.MapBoxHelper.addArrowToStyle;
-import static com.github.wnder.guessLocation.MapBoxHelper.addGuessToStyle;
-import static com.github.wnder.guessLocation.MapBoxHelper.addPictureToStyle;
 import static com.github.wnder.guessLocation.MapBoxHelper.drawCircle;
 import static com.github.wnder.guessLocation.MapBoxHelper.updateCircle;
 import static com.github.wnder.guessLocation.MapBoxHelper.zoomFromKilometers;
@@ -126,6 +120,36 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         }
     }
 
+    /**
+     * Manage the SeekBar
+     */
+    private void manageSeekBar(SeekBar radiusSeekBar, TextView radiusTextView){
+        //Set radius seekbar depending on user selected radius
+        int userRad = user.getRadius();
+        for(int i = 0; i < distances.length; i++){
+            if(userRad == distances[i]){
+                radiusSeekBar.setProgress(i);
+                radiusTextView.setText(getString(R.string.set_radius, distances[i]));
+                break;
+            }
+        }
+        radiusSeekBar.setOnSeekBarChangeListener(this);
+    }
+
+    /**
+     * When user interacts with radius seekbar
+     * @param seekBar radius seekbar
+     * @param progress step of seekbar
+     * @param fromUser boolean
+     */
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        user.setRadius(distances[progress]);
+        radiusTextView.setText(getString(R.string.set_radius, distances[progress]));
+        setZoom();
+        updateCircle(getActivity(), mapboxMap, cameraPosition);
+    }
+
     //Necessary overwrites for MapView lifecycle methods
     /**
      * start mapbox
@@ -190,37 +214,6 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         //unregister listener!
         super.onDestroy();
         mapView.onDestroy();
-    }
-
-    /**
-     * Manage the SeekBar
-     */
-    private void manageSeekBar(SeekBar radiusSeekBar, TextView radiusTextView){
-        //Set radius seekbar depending on user selected radius
-        int userRad = GlobalUser.getUser().getRadius();
-        for(int i = 0; i < distances.length; i++){
-            if(userRad == distances[i]){
-                radiusSeekBar.setProgress(i);
-                radiusTextView.setText(getString(R.string.set_radius, distances[i]));
-                break;
-            }
-        }
-        radiusSeekBar.setOnSeekBarChangeListener(this);
-    }
-
-    /**
-     * When user interacts with radius seekbar
-     * @param seekBar radius seekbar
-     * @param progress step of seekbar
-     * @param fromUser boolean
-     */
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        User u = GlobalUser.getUser();
-        u.setRadius(distances[progress]);
-        radiusTextView.setText(getString(R.string.set_radius, distances[progress]));
-        setZoom();
-        updateCircle(getActivity(), mapboxMap, cameraPosition);
     }
 
     /**
