@@ -203,7 +203,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                 (DialogInterface dialog, int which) -> {
                     if(!reported && !pictureID.equals(Picture.UNINITIALIZED_ID) && networkInfo.isNetworkAvailable()){
                         picturesDb.updateKarma(pictureID,-10);
-                        addToReportedPictures(pictureID);
+                        picturesDb.addToReportedPictures(pictureID);
                         reported = true;
                         Snackbar.make(findViewById(R.id.imagePreview), R.string.bar_report, BaseTransientBottomBar.LENGTH_SHORT).show();
                     }
