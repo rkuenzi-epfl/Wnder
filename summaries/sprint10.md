@@ -33,7 +33,13 @@ However, I finished my work pretty early in the week, and I didn't get back to i
 
 Next time, even if I finish my work early, I'll keep helping others reviewing and approving PRs later in the week, so that they don't have to do it alone.
 
-## Pablo 
+## Pablo
+
+This week I finished my task that was to implement a snapshot of the map to show it in the history even if offline. I also so that a new snapshot is generated in case there isn't one in the local database. I also did some ui changes to integrate a preview of the camera directly in the app, and to redirect guest users to the profile screen.
+
+However, I wasn't able to get my second task merged because of issues with the camera in the tests and because we might want to add additional features such as switching between cameras or zooming.
+
+Next time, I will try to better estimate how long some of my tasks will take.
 
 ## Romain 
 
