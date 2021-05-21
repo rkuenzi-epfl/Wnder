@@ -5,7 +5,7 @@
 
 This week I made a logo for the app and harmonized the UI.
 
-I didn't have proplems with my first task but I whish I could have done more for the second. I decided to wait and help for reviews and merge before finishing the last things I wanted to do. But doing that I ended up with a branch where the tests wouldn't pass anymore and I got stuck fixing that which used all my remaining time.
+I didn't have problems with my first task but I wish I could have done more for the second. I decided to wait and help for reviews and merge before finishing the last things I wanted to do. But doing that I ended up with a branch where the tests wouldn't pass anymore and I got stuck fixing that which used all my remaining time.
 
 Next time I should separate my PRs better and instead of waiting to do a bigger PR I should separate in smaller PRs and just ask for reviews and merge instantly when the first part is done.
 
@@ -47,7 +47,7 @@ For next time I think I should put a time estimate after making sure I know more
 
 This week we managed to do more or less what we wanted and finished up all the users stories. 
 
-We still however created new PRs thursday which is the day before the sprint's end. If we don't want to work late that day we should get our PRs done by wensday so that thursday we can focus on reviews and correction of issues/bugs.
+We still however created new PRs thursday which is the day before the sprint's end. If we don't want to work late that day we should get our PRs done by wednesday so that thursday we can focus on reviews and correction of issues/bugs.
 
-Next time discussing a prescise time when the PR should be ready could be a way to prevent that.
+Next time discussing a precise time when the PR should be ready could be a way to prevent that.
 
