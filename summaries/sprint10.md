@@ -3,6 +3,12 @@
 
 ## Aloïs (Scrum Master)
 
+This week I made a logo for the app and harmonized the UI.
+
+I didn't have proplems with my first task but I whish I could have done more for the second. I decided to wait and help for reviews and merge before finishing the last things I wanted to do. But doing that I ended up with a branch where the tests wouldn't pass anymore and I got stuck fixing that which used all my remaining time.
+
+Next time I should separate my PRs better and instead of waiting to do a bigger PR I should separate in smaller PRs and just ask for reviews and merge instantly when tha first part is done.
+
 ## Jeremy
 
 This week I had to fix an issue where users who selected a small radius got the maximum number of points too easily. 
