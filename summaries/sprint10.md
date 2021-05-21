@@ -45,3 +45,9 @@ For next time I think I should put a time estimate after making sure I know more
 
 ## Overall team
 
+This week we managed to do more or less what we wanted and finished up all the users stories. 
+
+We still however created new PRs thursday which is the day before the sprint's end. If we don't want to work late that day we should get our PRs done by wensday so that thursday we can focus on reviews and correction of issues/bugs.
+
+Next time discussing a prescise time when the PR should be ready could be a way to prevent that.
+
