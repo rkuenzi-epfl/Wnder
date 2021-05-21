@@ -15,6 +15,12 @@ The first task was short to implement. The second took more time since it was my
 
 ## Nicolas 
 
+This week I added improvements to the location guessing activity (a "next guess" button and a little image in which you can zoom), I fixed a few bugs, and I refractored the GuessLocationActivity class that was really messy.
+
+However, I finished my work pretty early in the week, and I didn't get back to it a bit later when everyone was merging their PRs, so I didn't check/approved many PRs, which means I let this part of the job to my teammates.
+
+Next time, even if I finish my work early, I'll keep helping others reviewing and approving PRs later in the week, so that they don't have to do it alone.
+
 ## Pablo 
 
 ## Romain 
