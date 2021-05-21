@@ -11,7 +11,13 @@ I also had to put a map in the guess fragment so that the user could know how fa
 
 The first task was short to implement. The second took more time since it was my first time that working on mapbox. But in the end my time estimations were almost on point.
 
-## Léonard 
+## Léonard
+
+This week I modified the UI to add the possibility of saving the photos as well as some modification on the overall classes for the database.
+
+The first two tasks went well but the last one was more surprising. The time estimate was almost correct for what I wanted to do, but as I did it a little bit late, I had to stop to begin the merging process earlier.
+
+Next time, I should split my work in multiple tasks to avoid general purpose tasks that take too much time.
 
 ## Nicolas 
 
