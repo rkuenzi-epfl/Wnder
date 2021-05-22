@@ -15,6 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(RobolectricTestRunner.class)
@@ -68,6 +69,15 @@ public class UserTest {
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.resetUser();
+    }
+
+    @Test
+    public void userSkippedPictureSetIsUpdated(){
+        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        User u =  GlobalUser.getUser();
+        u.skipPicture("thePicture");
+        assertTrue(u.getSkippedPictures().contains("thePicture"));
         GlobalUser.resetUser();
     }
 }

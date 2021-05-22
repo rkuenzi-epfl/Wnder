@@ -9,28 +9,48 @@ import android.net.Uri;
 
 import androidx.core.app.ActivityCompat;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * abstract class defining a user
  */
 public abstract class User {
 
-    //Radius: the images will be taken into this radius around the user's location, in kilometers
-    protected int radius = 5;
 
-    protected String name;
-    protected Uri profilePicture;
+    private String name;
+    private Uri profilePicture;
+
+    //Radius: the images will be taken into this radius around the user's location, in kilometers
+    private int radius = 5;
+
+    // List of skipped picture
+    private Set<String> skippedPictures;
+
+    public User(String name, Uri profilePicture){
+        this.name = name;
+        this.profilePicture = profilePicture;
+
+        // Default radius is 5km;
+        this.radius = 5;
+        this.skippedPictures = new HashSet<>();
+    }
 
     /**
      * Returns name of user
      * @return name of user
      */
-    public abstract String getName();
+    public String getName(){
+        return name;
+    }
 
     /**
      * Returns profile picture of user
      * @return profile picture of user
      */
-    public abstract Uri getProfilePicture();
+    public Uri getProfilePicture(){
+        return profilePicture;
+    }
 
     /**
      * Returns last know location of user
@@ -53,15 +73,36 @@ public abstract class User {
     }
 
     /**
-     * Returns radius of the user
-     * @return radius of the user
+     * Return radius for current user
+     * @return radius, in kilometers
      */
-    public abstract int getRadius();
+    public int getRadius(){
+        return radius;
+    }
 
     /**
-     * Sets radius of the user
-     * @param rad new radius
+     * Set radius for current user
+     * @param rad, in kilometers
      */
-    public abstract void setRadius(int rad);
+    public void setRadius(int rad){
+        this.radius = rad;
+    }
+
+
+    /**
+     * Skip a picture for the user so that he does not get the same picture later
+     * @param pictureId the picture we want to skip
+     */
+    public void skipPicture(String pictureId){
+        skippedPictures.add(pictureId);
+    }
+
+    /**
+     * Get all the pictures skipped by the user
+     * @return set of all skipped pictures
+     */
+    public Set<String> getSkippedPictures(){
+        return skippedPictures;
+    }
 
 }

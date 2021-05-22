@@ -22,7 +22,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class FirebaseUserDatabase implements UserDatabase{
 
     private final CollectionReference picturesCollection;
@@ -41,7 +43,6 @@ public class FirebaseUserDatabase implements UserDatabase{
         //setup network info
         networkInfo = new NetworkInformation((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         ICPD = new InternalCachePictureDatabase(context);
-
     }
 
     @Override
@@ -86,8 +87,13 @@ public class FirebaseUserDatabase implements UserDatabase{
         CompletableFuture<String> cf = new CompletableFuture<>();
         // Get all pictures and remove the ones not in radius
         getAllIdsAndLocation().thenAccept( idsAndLocation -> {
-            Location userLocation = user.getPositionFromGPS((LocationManager)context.getSystemService(Context.LOCATION_SERVICE),context);
 
+            // Remove skipped pictures
+            for (String pictureId: user.getSkippedPictures()) {
+                idsAndLocation.remove(pictureId);
+            }
+
+            Location userLocation = user.getPositionFromGPS((LocationManager)context.getSystemService(Context.LOCATION_SERVICE),context);
             Set<String> inRadius = keepOnlyInRadius(userLocation, idsAndLocation, user.getRadius());
 
             // Get all guessed and uploaded pictures and remove them from the ones in radius

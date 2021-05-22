@@ -24,9 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 
-import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.Score;
 import com.github.wnder.Utils;

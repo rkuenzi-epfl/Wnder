@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.github.wnder.AlertBuilder;
-import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
