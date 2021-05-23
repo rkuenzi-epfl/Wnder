@@ -39,9 +39,8 @@ public abstract class User {
      * @return last known location of user
      */
     public Location getPositionFromGPS(LocationManager manager, Context context){
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        //TODO:
-        //throw new IllegalStateException();
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            throw new IllegalStateException();
         }
         Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(loc == null){ //To avoid unexpected result from the GPS, we set it to 0, 0.
