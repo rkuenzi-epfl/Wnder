@@ -100,5 +100,6 @@
     <string name="begin_guess">Guess</string>
     <string name="bar_report_impossible">The report process failed</string>
     <string name="bar_download_picture_failed">Download failed</string>
+    <string name="start_a_tour">Start a tour</string>
 
 </resources>

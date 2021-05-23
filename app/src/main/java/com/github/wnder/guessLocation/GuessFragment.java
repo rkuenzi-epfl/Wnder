@@ -75,7 +75,10 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         manageSeekBar(radiusSeekBar, radiusTextView);
 
         FloatingActionButton guessButton = rootView.findViewById(R.id.navigationToGuessButton);
-        guessButton.setOnClickListener((view) -> openPreviewActivity());
+        guessButton.setOnClickListener((view) -> openActivity(GuessPreviewActivity.class));
+
+        FloatingActionButton tourButton = rootView.findViewById(R.id.navigationToTourButton);
+        tourButton.setOnClickListener((view) -> openActivity(GuessPreviewActivity.class));
 
         return rootView;
     }
@@ -109,9 +112,16 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         drawCircle(getActivity(), mapboxMap, cameraPosition);
     }
 
-    private void openPreviewActivity() {
+    private void openActivity(Class c) {
         if(networkInfo.isNetworkAvailable()){
-            Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            Intent intent = null;
+            if(c == GuessPreviewActivity.class){
+                intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            }
+            //TODO replace with new activity
+            else if(c == GuessPreviewActivity.class){
+                intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            }
             startActivity(intent);
         }
         else{
@@ -119,6 +129,8 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
             alert.show();
         }
     }
+
+
 
     /**
      * Manage the SeekBar
