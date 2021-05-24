@@ -20,9 +20,6 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.AndroidEntryPoint;
-
-@AndroidEntryPoint
 public class FirebaseTourDatabase implements TourDatabase{
 
     @Inject
