@@ -107,7 +107,7 @@ public class NavigationActivity extends AppCompatActivity {
             //permission to get the location
             for(int i = 0; i < permissions.length; ++i){
                 if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
-                    AlertBuilder.okAlert("GPS access", "The GPS is needed to access all the functionnalities of the app.", getApplicationContext());
+                    AlertBuilder.okAlert(getString(R.string.gps_access_title), getString(R.string.gps_access_body), this).show();
                 }
                 else{
                     LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
