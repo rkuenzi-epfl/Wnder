@@ -2,18 +2,12 @@ package com.github.wnder.tour;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
-import javax.inject.Inject;
 
 public class FirebaseTourDatabase implements TourDatabase{
 

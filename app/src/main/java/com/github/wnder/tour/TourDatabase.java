@@ -2,8 +2,6 @@ package com.github.wnder.tour;
 
 import android.location.Location;
 
-import com.mapbox.mapboxsdk.geometry.LatLng;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
