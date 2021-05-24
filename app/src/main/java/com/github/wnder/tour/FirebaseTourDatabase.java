@@ -31,8 +31,8 @@ public class FirebaseTourDatabase implements TourDatabase{
     public CompletableFuture<List<String>> getTourPics(String tourUniqueId) {
         CompletableFuture<List<String>> tour = new CompletableFuture<>();
 
-        tourCollection.document(tourUniqueId).get().
-            addOnSuccessListener((documentSnapshot) -> {
+        tourCollection.document(tourUniqueId).get()
+            .addOnSuccessListener((documentSnapshot) -> {
                 List<String> picIds = (List<String>) documentSnapshot.get("tourPics");
                 tour.complete(picIds);
             })
@@ -56,7 +56,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     }
 
     @Override
-    public CompletableFuture<Double> getTourDistance(String tourUniqueId, Location distanceTo){
+    public CompletableFuture<Double> getTourDistance(String tourUniqueId, Location place){
         CompletableFuture<Double> distanceFuture = new CompletableFuture<>();
 
         tourCollection.document(tourUniqueId).get().
@@ -68,7 +68,7 @@ public class FirebaseTourDatabase implements TourDatabase{
                     tourLocation.setLatitude(latitude);
                     tourLocation.setLongitude(longitude);
 
-                    double distance = tourLocation.distanceTo(distanceTo);
+                    double distance = tourLocation.distanceTo(place);
 
                     distanceFuture.complete(distance);
                 })

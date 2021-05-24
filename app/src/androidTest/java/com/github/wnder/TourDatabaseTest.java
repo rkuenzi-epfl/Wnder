@@ -44,7 +44,7 @@ public class TourDatabaseTest {
     private static double totalLength;
 
     @BeforeClass
-    public static void createTestTour() {
+    public static void createTestTour() throws ExecutionException, InterruptedException {
 
         tdb = new FirebaseTourDatabase(ApplicationProvider.getApplicationContext());
         FirebasePicturesDatabase db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
@@ -70,13 +70,9 @@ public class TourDatabaseTest {
         CompletableFuture<Void> uploadSecondPic = db.uploadPicture(secondUniqueId, new UploadInfo(user, secondLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
         CompletableFuture<Void> uploadThirdPic = db.uploadPicture(thirdUniqueId, new UploadInfo(user, thirdLoc, Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
 
-        try {
-            uploadFirstPic.get();
-            uploadSecondPic.get();
-            uploadThirdPic.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        uploadFirstPic.get();
+        uploadSecondPic.get();
+        uploadThirdPic.get();
 
         tourName = "testTour";
         tourUniqueId = tdb.generateTourUniqueId(tourName);
@@ -86,9 +82,7 @@ public class TourDatabaseTest {
         pictures.add(secondUniqueId);
         pictures.add(thirdUniqueId);
 
-        totalLength = 0;
-        totalLength += firstLoc.distanceTo(secondLoc);
-        totalLength += secondLoc.distanceTo(thirdLoc);
+        totalLength = firstLoc.distanceTo(secondLoc) + secondLoc.distanceTo(thirdLoc);
 
         CompletableFuture<Void> uploadTour = tdb.uploadTour(tourUniqueId, tourName, pictures);
 
@@ -127,15 +121,8 @@ public class TourDatabaseTest {
     }
 
     @Test
-    public void getTourPicsWorks(){
-        List<String> pics = new ArrayList<>();
-        try {
-            pics = tdb.getTourPics(tourUniqueId).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void getTourPicsWorks() throws ExecutionException, InterruptedException {
+        List<String> pics = tdb.getTourPics(tourUniqueId).get();
         assertThat(pics.size(), is(3));
         assertThat(pics.get(0), is(pictures.get(0)));
         assertThat(pics.get(1), is(pictures.get(1)));
@@ -143,47 +130,26 @@ public class TourDatabaseTest {
     }
 
     @Test
-    public void getTourNameWorks(){
-        String name = "";
-        try {
-            name = tdb.getTourName(tourUniqueId).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void getTourNameWorks() throws ExecutionException, InterruptedException {
+        String name = tdb.getTourName(tourUniqueId).get();
         assertThat(name, is(tourName));
     }
 
     @Test
-    public void getTourDistanceWorks(){
+    public void getTourDistanceWorks() throws ExecutionException, InterruptedException {
         double distToLat = 10;
         double distToLong = 10;
         Location location = new Location("");
         location.setLatitude(distToLat);
         location.setLongitude(distToLong);
-        double dist = 0;
-        try {
-            dist = tdb.getTourDistance(tourUniqueId, location).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        double dist = tdb.getTourDistance(tourUniqueId, location).get();
         double realDist = location.distanceTo(firstLoc);
         assertThat(dist, is(realDist));
     }
 
     @Test
-    public void getTourLengthWorks(){
-        double l = 0;
-        try {
-            l = tdb.getTourLength(tourUniqueId).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void getTourLengthWorks() throws ExecutionException, InterruptedException {
+        double l = tdb.getTourLength(tourUniqueId).get();
         assertThat(l, is(totalLength));
     }
 }
