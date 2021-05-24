@@ -82,7 +82,8 @@ public class TourDatabaseTest {
         pictures.add(secondUniqueId);
         pictures.add(thirdUniqueId);
 
-        totalLength = firstLoc.distanceTo(secondLoc) + secondLoc.distanceTo(thirdLoc);
+        totalLength = firstLoc.distanceTo(secondLoc);
+        totalLength += secondLoc.distanceTo(thirdLoc);
 
         CompletableFuture<Void> uploadTour = tdb.uploadTour(tourUniqueId, tourName, pictures);
 
