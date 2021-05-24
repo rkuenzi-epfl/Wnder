@@ -1,6 +1,7 @@
 package com.github.wnder.tour;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -94,8 +95,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> uploadTour(String tourName, List<String> picsUniqueIds) {
-        String tourUniqueId = createTourUniqueId(tourName);
+    public CompletableFuture<Void> uploadTour(String tourUniqueId, String tourName, List<String> picsUniqueIds) {
 
         CompletableFuture<Void> nameUpload = uploadTourName(tourUniqueId, tourName);
         CompletableFuture<Void> picsUpload = uploadTourPics(tourUniqueId, picsUniqueIds);
@@ -225,12 +225,8 @@ public class FirebaseTourDatabase implements TourDatabase{
         return distanceFuture;
     }
 
-    /**
-     * Creates a tour unique id from a tour name
-     * @param tourName tour name
-     * @return unique id for a tour
-     */
-    private String createTourUniqueId(String tourName){
+    @Override
+    public String generateTourUniqueId(String tourName){
         return tourName + Calendar.getInstance().getTimeInMillis();
     }
 }

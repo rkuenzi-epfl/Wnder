@@ -38,8 +38,16 @@ public interface TourDatabase {
 
     /**
      * Uploads a tour to the database
+     * @param tourUniqueId unique id of the tour
      * @param tourName the tour name
      * @param picsUniqueIds the unique ids of the pics in the tour
      */
-    CompletableFuture<Void> uploadTour(String tourName, List<String> picsUniqueIds);
+    CompletableFuture<Void> uploadTour(String tourUniqueId, String tourName, List<String> picsUniqueIds);
+
+    /**
+     * Creates a tour unique id from a tour name
+     * @param tourName tour name
+     * @return unique id for a tour
+     */
+    String generateTourUniqueId(String tourName);
 }
