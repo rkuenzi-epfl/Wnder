@@ -180,10 +180,10 @@ public class FirebaseTourDatabase implements TourDatabase{
         CompletableFuture<Void> uploadLengthFuture = new CompletableFuture<>();
         Set<Double> allLengths = new HashSet<>();
 
-        //create an array to store all the score futures
+        //create an array to store all the length futures
         CompletableFuture[] futureLengths = new CompletableFuture[picIds.size() - 1];
 
-        //for each guessed pic, get its score and store this future into the array
+        //for each 2 pics, get their inbetween distance
         for(int i = 0; i < picIds.size() - 1; i++){
             final int id = i;
 
@@ -192,12 +192,12 @@ public class FirebaseTourDatabase implements TourDatabase{
             });
         }
 
-        //Once a score is completed, complete add it to all the scores already completed
+        //Once a length is completed, add it to all the lengths already completed
         for(CompletableFuture<Double> futureLength: futureLengths){
             futureLength.thenAccept(score -> allLengths.add(score));
         }
 
-        //once all scores have been completed, complete the future
+        //once all scores have been completed, complete the future, compute total length, and upload
         CompletableFuture<Void> allLengthsReceived = CompletableFuture.allOf(futureLengths);
         allLengthsReceived.thenAccept(empty -> {
             double totalLength = 0;
