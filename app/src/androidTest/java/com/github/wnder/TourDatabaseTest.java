@@ -9,6 +9,7 @@ import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
 import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.tour.TourDatabase;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -25,13 +26,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.Thread.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(JUnit4.class)
 public class TourDatabaseTest {
 
-    private static TourDatabase tdb;
+    private static FirebaseTourDatabase tdb;
     private static FirebasePicturesDatabase db;
     private static String tourUniqueId;
     private static String tourName;
@@ -47,7 +49,8 @@ public class TourDatabaseTest {
 
     @BeforeClass
     public static void createTestTour() {
-        tdb = new FirebaseTourDatabase();
+
+        tdb = new FirebaseTourDatabase(ApplicationProvider.getApplicationContext());
         db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
 
         firstLoc = new Location("");
@@ -73,19 +76,15 @@ public class TourDatabaseTest {
 
         try {
             uploadFirstPic.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
             uploadSecondPic.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
             uploadThirdPic.get();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -139,7 +138,7 @@ public class TourDatabaseTest {
 
     @Test
     public void getTourPicsWorks(){
-        List<String> pics = null;
+        List<String> pics = new ArrayList<>();
         try {
             pics = tdb.getTourPics(tourUniqueId).get();
         } catch (ExecutionException e) {
@@ -155,7 +154,7 @@ public class TourDatabaseTest {
 
     @Test
     public void getTourNameWorks(){
-        String name = null;
+        String name = "";
         try {
             name = tdb.getTourName(tourUniqueId).get();
         } catch (ExecutionException e) {
@@ -170,13 +169,12 @@ public class TourDatabaseTest {
     public void getTourDistanceWorks(){
         double distToLat = 10;
         double distToLong = 10;
-        LatLng distanceTo = new LatLng(distToLat, distToLong);
         Location location = new Location("");
         location.setLatitude(distToLat);
         location.setLongitude(distToLong);
         double dist = 0;
         try {
-            dist = tdb.getTourDistance(tourUniqueId, distanceTo).get();
+            dist = tdb.getTourDistance(tourUniqueId, location).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

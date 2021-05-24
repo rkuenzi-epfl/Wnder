@@ -113,7 +113,7 @@ public class UploadInfo {
     }
 
     /**
-     * Delete an upload inforamtion file
+     * Delete an upload information file
      * @param file the file to delete
      * @return the result of the deletion
      */

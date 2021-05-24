@@ -1,5 +1,7 @@
 package com.github.wnder.tour;
 
+import android.location.Location;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public interface TourDatabase {
      * @param distanceTo place from which the distance to the tour will be computed
      * @return the distance between the given dist and the tour's first picture position
      */
-    CompletableFuture<Double> getTourDistance(String tourUniqueId, LatLng distanceTo);
+    CompletableFuture<Double> getTourDistance(String tourUniqueId, Location distanceTo);
 
     /**
      * Gets a tour length

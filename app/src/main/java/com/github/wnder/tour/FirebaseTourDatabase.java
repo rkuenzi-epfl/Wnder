@@ -1,5 +1,6 @@
 package com.github.wnder.tour;
 
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -15,21 +16,23 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
 
 public class FirebaseTourDatabase implements TourDatabase{
 
-    @Inject
-    public FirebasePicturesDatabase db;
+    private FirebasePicturesDatabase db;
 
     private final CollectionReference tourCollection;
 
-    public FirebaseTourDatabase() {
+    public FirebaseTourDatabase(Context context) {
         tourCollection = FirebaseFirestore.getInstance().collection("tours");
+        db = new FirebasePicturesDatabase(context);
     }
 
     @Override
@@ -61,7 +64,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     }
 
     @Override
-    public CompletableFuture<Double> getTourDistance(String tourUniqueId, LatLng distanceTo){
+    public CompletableFuture<Double> getTourDistance(String tourUniqueId, Location distanceTo){
         CompletableFuture<Double> distanceFuture = new CompletableFuture<>();
 
         tourCollection.document(tourUniqueId).get().
@@ -69,7 +72,9 @@ public class FirebaseTourDatabase implements TourDatabase{
                     double latitude = documentSnapshot.getDouble("tourFirstLat");
                     double longitude = documentSnapshot.getDouble("tourFirstLong");
 
-                    LatLng tourLocation = new LatLng(latitude, longitude);
+                    Location tourLocation = new Location("");
+                    tourLocation.setLatitude(latitude);
+                    tourLocation.setLongitude(longitude);
 
                     double distance = tourLocation.distanceTo(distanceTo);
 
@@ -173,32 +178,38 @@ public class FirebaseTourDatabase implements TourDatabase{
      */
     private CompletableFuture<Void> uploadTourLength(String tourUniqueId, List<String> picIds){
         CompletableFuture<Void> uploadLengthFuture = new CompletableFuture<>();
-        CompletableFuture<Double>[] lengthsBetweenPics = new CompletableFuture[picIds.size() - 1];
+        Set<Double> allLengths = new HashSet<>();
 
-        double[] allLengths = new double[picIds.size() - 1];
+        //create an array to store all the score futures
+        CompletableFuture[] futureLengths = new CompletableFuture[picIds.size() - 1];
 
-        //Get all the distances between the pics
+        //for each guessed pic, get its score and store this future into the array
         for(int i = 0; i < picIds.size() - 1; i++){
             final int id = i;
-            getDistBetweenTwoPics(picIds.get(i), picIds.get(i+1)).thenAccept(distance -> {
-                allLengths[id] = distance;
-                lengthsBetweenPics[id].complete(distance);
+
+            futureLengths[id] = getDistBetweenTwoPics(picIds.get(id), picIds.get(id+1)).thenApply(distance -> {
+                return distance;
             });
         }
 
-        //Once all distances gotten, compute total length
-        CompletableFuture.allOf(lengthsBetweenPics).thenAccept(result -> {
-           double totalLength = 0;
-           for(int i = 0; i < allLengths.length; i++){
-               totalLength += allLengths[i];
-           }
+        //Once a score is completed, complete add it to all the scores already completed
+        for(CompletableFuture<Double> futureLength: futureLengths){
+            futureLength.thenAccept(score -> allLengths.add(score));
+        }
 
-           //Once total length computed, upload it
+        //once all scores have been completed, complete the future
+        CompletableFuture<Void> allLengthsReceived = CompletableFuture.allOf(futureLengths);
+        allLengthsReceived.thenAccept(empty -> {
+            double totalLength = 0;
+            for(double length: allLengths){
+                totalLength += length;
+            }
+
             Map<String, Double> tourLength = new HashMap<>();
             tourLength.put("tourLength", totalLength);
 
             tourCollection.document(tourUniqueId).set(tourLength, SetOptions.merge())
-                    .addOnSuccessListener(res -> uploadLengthFuture.complete(null))
+                    .addOnSuccessListener(result -> uploadLengthFuture.complete(null))
                     .addOnFailureListener(uploadLengthFuture::completeExceptionally);
         });
 
