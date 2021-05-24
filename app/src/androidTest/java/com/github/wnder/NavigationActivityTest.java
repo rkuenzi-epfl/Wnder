@@ -131,8 +131,9 @@ public class NavigationActivityTest {
 
         //Goto take picture
         onView(withId(R.id.take_picture_page)).perform(click());
+        SystemClock.sleep(2000);
         onView(withId(R.id.takePictureButton)).perform(click());
-        SystemClock.sleep(10000);
+        SystemClock.sleep(2000);
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_started)).check(matches(isDisplayed()));
     }
@@ -149,8 +150,9 @@ public class NavigationActivityTest {
 
         //Goto take picture
         onView(withId(R.id.take_picture_page)).perform(click());
+        SystemClock.sleep(2000);
         onView(withId(R.id.takePictureButton)).perform(click());
-        SystemClock.sleep(10000);
+        SystemClock.sleep(2000);
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withText(R.string.upload_successful)).check(matches(isDisplayed()));
     }
@@ -163,8 +165,9 @@ public class NavigationActivityTest {
 
         //Goto take picture
         onView(withId(R.id.take_picture_page)).perform(click());
+        SystemClock.sleep(2000);
         onView(withId(R.id.takePictureButton)).perform(click());
-        SystemClock.sleep(10000);
+        SystemClock.sleep(2000);
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));
     }
