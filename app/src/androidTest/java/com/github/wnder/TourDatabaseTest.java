@@ -34,7 +34,6 @@ import static org.hamcrest.Matchers.is;
 public class TourDatabaseTest {
 
     private static FirebaseTourDatabase tdb;
-    private static FirebasePicturesDatabase db;
     private static String tourUniqueId;
     private static String tourName;
     private static String firstUniqueId;
@@ -42,30 +41,27 @@ public class TourDatabaseTest {
     private static String thirdUniqueId;
     private static List<String> pictures;
     private static Location firstLoc;
-    private static Location secondLoc;
-    private static Location thirdLoc;
     private static double totalLength;
-    private static String user;
 
     @BeforeClass
     public static void createTestTour() {
 
         tdb = new FirebaseTourDatabase(ApplicationProvider.getApplicationContext());
-        db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
+        FirebasePicturesDatabase db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
 
         firstLoc = new Location("");
         firstLoc.setLatitude(0);
         firstLoc.setLongitude(0);
 
-        secondLoc = new Location("");
+        Location secondLoc = new Location("");
         secondLoc.setLatitude(10);
         secondLoc.setLongitude(1);
 
-        thirdLoc = new Location("");
+        Location thirdLoc = new Location("");
         thirdLoc.setLatitude(5);
         thirdLoc.setLongitude(2);
 
-        user = "testUser";
+        String user = "testUser";
         firstUniqueId = "first" + user + Calendar.getInstance().getTimeInMillis();
         secondUniqueId = "second" + user + Calendar.getInstance().getTimeInMillis();
         thirdUniqueId = "third" + user + Calendar.getInstance().getTimeInMillis();
@@ -79,12 +75,6 @@ public class TourDatabaseTest {
             uploadSecondPic.get();
             uploadThirdPic.get();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
