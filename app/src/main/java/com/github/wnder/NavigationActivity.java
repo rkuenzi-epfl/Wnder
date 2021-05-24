@@ -111,6 +111,9 @@ public class NavigationActivity extends AppCompatActivity {
                 }
                 else{
                     LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                    if(!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                        AlertBuilder.okAlert(getString(R.string.gps_disabled_title), getString(R.string.gps_disabled_body), this).show();
+                    }
                     LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, location -> {
                         //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
                     });

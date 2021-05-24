@@ -71,7 +71,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         mapView.getMapAsync(this);
 
         if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            AlertBuilder.okAlert("Functionality unavailable", "The application needs GPS access to continue.", getContext()).show();
+            AlertBuilder.okAlert(getString(R.string.gps_missing_title), getString(R.string.gps_missing_body), getContext()).show();
             return null;
         }
 
