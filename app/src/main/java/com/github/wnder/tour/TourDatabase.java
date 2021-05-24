@@ -38,6 +38,7 @@ public interface TourDatabase {
 
     /**
      * Uploads a tour to the database
+     * THIS ONLY UPLOADS METADATA, MAKE SURE THE PICS CONCERNED PICS HAVE BEEN UPLOADED BEFORE USING THIS METHOD!!!!!!!
      * @param tourUniqueId unique id of the tour
      * @param tourName the tour name
      * @param picsUniqueIds the unique ids of the pics in the tour
