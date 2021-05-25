@@ -114,14 +114,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     private void openActivity(Class c) {
         if(networkInfo.isNetworkAvailable()){
-            Intent intent = null;
-            if(c == GuessPreviewActivity.class){
-                intent = new Intent(getActivity(), GuessPreviewActivity.class);
-            }
-            //TODO replace with new activity
-            else if(c == GuessPreviewActivity.class){
-                intent = new Intent(getActivity(), GuessPreviewActivity.class);
-            }
+            Intent intent = new Intent(getActivity(), c);
             startActivity(intent);
         }
         else{
