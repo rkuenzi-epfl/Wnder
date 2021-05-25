@@ -71,7 +71,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:contentDescription="@string/content_descr_history_scoreboard"
-                    app:srcCompat="@drawable/ic_baseline_list_24" />
+                    app:srcCompat="@drawable/ic_baseline_list_24_black" />
 
                 <TextView
                     android:id="@+id/yourScore"

@@ -1,5 +1,6 @@
 package com.github.wnder;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.location.Location;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.picture.PicturesDatabase;
@@ -53,8 +55,12 @@ public class GuessLocationActivityInstrumentedTest  {
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
+
+    @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
             .around(new ActivityScenarioRule<>(intent));
+
 
     @BindValue
     public static PicturesDatabase picturesDatabase = Mockito.mock(PicturesDatabase.class);
@@ -72,6 +78,7 @@ public class GuessLocationActivityInstrumentedTest  {
 
     @BeforeClass
     public static void beforeAll(){
+
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         Location dummyLoc = new Location("");
         dummyLoc.setLatitude(0.);
@@ -132,7 +139,7 @@ public class GuessLocationActivityInstrumentedTest  {
 
         Intents.assertNoUnverifiedIntents();
 
-        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.confirmButton)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
@@ -145,7 +152,7 @@ public class GuessLocationActivityInstrumentedTest  {
 
         Intents.assertNoUnverifiedIntents();
 
-        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.confirmButton)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
@@ -156,7 +163,7 @@ public class GuessLocationActivityInstrumentedTest  {
         onView(withId(R.id.compassMode)).perform(click());
 
         onView(withId(R.id.confirmButton)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.confirmButton)).perform(click());
 
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }

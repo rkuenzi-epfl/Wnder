@@ -177,7 +177,7 @@ public class InternalCachePictureDatabaseOnlineTest {
             e.printStackTrace();
         }
         // Check random "easily avilable" property of the picture
-        assertThat(bmp.getWidth(), is(1039));
+        assertThat(bmp.getWidth(), is(192));
     }
 
 }
