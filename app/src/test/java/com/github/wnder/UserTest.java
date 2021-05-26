@@ -8,6 +8,7 @@ import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -20,6 +21,11 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class UserTest {
+
+    @After
+    public void resetUser(){
+        GlobalUser.resetUser();
+    }
 
     @Test
     public void guestUserReturnGuestName(){
@@ -50,7 +56,6 @@ public class UserTest {
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
-        GlobalUser.resetUser();
     }
 
     @Test
@@ -59,7 +64,6 @@ public class UserTest {
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("SignedInUser"));
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
-        GlobalUser.resetUser();
     }
 
     @Test
@@ -69,7 +73,6 @@ public class UserTest {
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
-        GlobalUser.resetUser();
     }
 
     @Test
@@ -78,6 +81,5 @@ public class UserTest {
         User u =  GlobalUser.getUser();
         u.skipPicture("thePicture");
         assertTrue(u.getSkippedPictures().contains("thePicture"));
-        GlobalUser.resetUser();
     }
 }
