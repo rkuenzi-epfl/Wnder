@@ -89,9 +89,7 @@ public class FirebaseUserDatabase implements UserDatabase{
         getAllIdsAndLocation().thenAccept( idsAndLocation -> {
 
             // Remove skipped pictures
-            for (String pictureId: user.getSkippedPictures()) {
-                idsAndLocation.remove(pictureId);
-            }
+            idsAndLocation.keySet().removeAll(user.getSkippedPictures());
 
             Location userLocation = user.getPositionFromGPS((LocationManager)context.getSystemService(Context.LOCATION_SERVICE),context);
             Set<String> inRadius = keepOnlyInRadius(userLocation, idsAndLocation, user.getRadius());
