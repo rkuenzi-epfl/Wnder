@@ -2,15 +2,11 @@ package com.github.wnder;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
@@ -19,9 +15,6 @@ import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.tour.TourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
