@@ -158,7 +158,6 @@ public class GuessPreviewActivity extends AppCompatActivity{
             intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
             intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
 
-
             startActivity(intent);
             finish();
         }

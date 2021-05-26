@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.guessLocation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.wnder.AlertBuilder;
+import com.github.wnder.R;
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;

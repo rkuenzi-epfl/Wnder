@@ -86,8 +86,6 @@ public class GuessLocationZoom {
         else{
             zoomOut(littlePic, bigPic, littlePicScale);
         }
-
-
     }
 
     /**

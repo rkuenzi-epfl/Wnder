@@ -88,7 +88,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
-    private static final long GET_POSITION_FROM_GPS_PERIOD = 1000; //10 secondes
+    private static final long GET_POSITION_FROM_GPS_PERIOD = 1000; //1 secondes
 
     private static final double MAX_LAT = 90;
 
@@ -109,8 +109,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private boolean compassMode;
     private boolean mapClickOnCompassMode;
     private boolean guessConfirmed;
-    private Timer timer;
-    private TimerTask updateGuessPositionFromGPS;
+    private Timer gpsTimer;
+    private TimerTask gpsTimerTask;
     private SensorManager sensorManager;
     private SensorEventListener listener;
 
@@ -135,66 +135,63 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-
-        //Get camera position
-        double cameraLat = extras.getDouble(EXTRA_CAMERA_LAT);
-        double cameraLng = extras.getDouble(EXTRA_CAMERA_LNG);
-        cameraPosition = new LatLng(cameraLat, cameraLng);
-
-        //Setup guess position
-        guessPosition = new LatLng(cameraPosition);
-
-        //Get picture position
-        double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
-        double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
-        picturePosition = new LatLng(pictureLat, pictureLng);
-
-        //Get picture ID
-        pictureID = extras.getString(EXTRA_PICTURE_ID);
-
-        //Starting mode
-        compassMode = false;
-        mapClickOnCompassMode = false;
-
         //MapBox creation
-        guessConfirmed = false;
-
-        //Sensor initialization
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-        listener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                mapboxMap.setCameraPosition(GuessLocationSensor.calculateNewPosition(event, mapboxMap, picturePosition, guessPosition));
-            }
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy){}
-        };
-
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_guess_location);
-
-        user = GlobalUser.getUser();
-        context = this;
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        //get extras and initialisation of class variables
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        double cameraLat = extras.getDouble(EXTRA_CAMERA_LAT);
+        double cameraLng = extras.getDouble(EXTRA_CAMERA_LNG);
+        cameraPosition = new LatLng(cameraLat, cameraLng);
+        guessPosition = new LatLng(cameraPosition);
+
+        double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
+        double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
+        picturePosition = new LatLng(pictureLat, pictureLng);
+
+        pictureID = extras.getString(EXTRA_PICTURE_ID);
+
+        user = GlobalUser.getUser();
+        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
+
+        //Starting mode
+        compassMode = false;
+        mapClickOnCompassMode = false;
+        guessConfirmed = false;
+
+        setupZoomAnimation();
+
         //Buttons
         nextGuessButton = findViewById(R.id.backToGuessPreview);
-        //Invisible at first
         nextGuessButton.setVisibility(INVISIBLE);
 
         nextGuessButton.setOnClickListener(id -> nextGuess());
         findViewById(R.id.compassMode).setOnClickListener(id -> compassButton());
         findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
 
+        //Sensor initialization
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        listener = createMapSensorListener();
+
         //Timer setup
+        gpsTimer = new Timer(true);
+        gpsTimerTask = createGpsTimerTask();
+    }
+
+    /**
+     * Create the TimerTask that update the location of the user with the GPS
+     */
+    private TimerTask createGpsTimerTask() {
         final Handler handler = new Handler();
-        updateGuessPositionFromGPS = new TimerTask() {
+
+        return new TimerTask() {
             @Override
             public void run() {
                 handler.post(() -> {
@@ -207,19 +204,26 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 });
             }
         };
-        timer = new Timer(true);
+    }
 
-        View hotbarView = findViewById(R.id.hotbarView);
-
-        zoomAnimation = setupZoomAnimation();
-
-        compass = new GuessLocationCompass(hotbarView, picturePosition);
+    /**
+     * Create the sensor for the MapBox map the listen to the phone rotations
+     */
+    private SensorEventListener createMapSensorListener() {
+        return new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                mapboxMap.setCameraPosition(GuessLocationSensor.calculateNewPosition(event, mapboxMap, picturePosition, guessPosition));
+            }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy){}
+        };
     }
 
     /**
      * To call in onCreate to setup the zoom animation correctly.
      */
-    private GuessLocationZoom setupZoomAnimation(){
+    private void setupZoomAnimation(){
         //Setup image preview
         //littleImage, encapsulated in littleCard, is the image shown when zoomed out
         //bigImage, encapsulated in bigCard, is the image shown when zoomed in
@@ -239,7 +243,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         List<View> toHide = new ArrayList<>();
         toHide.add(findViewById(R.id.compassMode));
         toHide.add(findViewById(R.id.confirmButton));
-        return new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
+        new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
     }
 
     /**
@@ -270,7 +274,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         mapboxMap.addOnMapClickListener(GuessLocationActivity.this);
         mapboxMap.addOnCameraMoveListener(GuessLocationActivity.this);
 
-        timer.scheduleAtFixedRate(updateGuessPositionFromGPS, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
+        gpsTimer.scheduleAtFixedRate(gpsTimerTask, GET_POSITION_FROM_GPS_PERIOD, GET_POSITION_FROM_GPS_PERIOD);
     }
 
     /**
@@ -344,7 +348,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         else{
             compass.updateCompass(mapboxMap, guessPosition, compassMode);
             sensorManager.registerListener(listener, list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
-            updateGuessPositionFromGPS.run();
+            gpsTimerTask.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
             compassModeButtonView.setImageResource(R.drawable.ic_outline_explore_24);
         }

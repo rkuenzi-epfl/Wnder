@@ -25,7 +25,7 @@
         <activity android:name=".HistoryMapActivity" />
         <activity android:name=".scoreboard.ScoreboardActivity" />
         <activity android:name=".guessLocation.GuessLocationActivity" />
-        <activity android:name=".TemporaryActivity" />
+        <activity android:name=".guessLocation.TemporaryActivity" />
         <activity
             android:name=".GuessPreviewActivity"
             android:noHistory="true" />
