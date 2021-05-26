@@ -17,7 +17,8 @@
         android:clickable="true"
         android:contentDescription="@string/content_descr_take_picture_button"
         android:focusable="true"
-        android:src="@android:drawable/ic_menu_camera"/>
+        android:src="@drawable/ic_baseline_camera_alt_24"
+        app:backgroundTint="@color/purple_200"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/uploadButton"
@@ -28,7 +29,8 @@
         android:clickable="true"
         android:contentDescription="@string/content_descr_upload_button"
         android:focusable="true"
-        android:src="@android:drawable/ic_menu_upload" />
+        android:src="@drawable/ic_baseline_upgrade_24"
+        app:backgroundTint="@color/purple_200"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/takePictureConstraint"

@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 
 import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
@@ -345,7 +344,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             sensorManager.registerListener(listener, list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
             updateGuessPositionFromGPS.run();
             mapboxMap.getUiSettings().setRotateGesturesEnabled(false);
-            compassModeButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_outline_explore_24));
+            compassModeButtonView.setImageResource(R.drawable.ic_outline_explore_24);
         }
     }
 
@@ -358,28 +357,20 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
-        //If guess has been confirmed, compass button becomes button leading to scoreboard
-        if (guessConfirmed) {
-            //Open the scoreboard activity
-            Intent intent = new Intent(this, ScoreboardActivity.class);
-            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
-            startActivity(intent);
-            return;
-        }
-
         //If guess hasn't been confirmed, then just switch mode
         compassMode = !compassMode;
 
-        //if we're now in compass mode, enable it
+        //if we're now in compass mode, enable it and switch icon
         if (compassMode) {
             enableCompassMode();
+            ((FloatingActionButton) findViewById(R.id.compassMode)).setImageResource(R.drawable.ic_outline_explore_24);
         }
-        //else, update it one last time and disable it
+        //else, update it and disable the map click
         else {
             compass.updateCompass(mapboxMap, guessPosition, compassMode);
             sensorManager.unregisterListener(listener);
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
-            findViewById(R.id.compassMode).setForeground(ContextCompat.getDrawable(context, R.drawable.ic_outline_explore_off_24));
+            ((FloatingActionButton) findViewById(R.id.compassMode)).setImageResource(R.drawable.ic_outline_explore_off_24);
         }
 
     }
@@ -393,16 +384,25 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
+        //If guess has been confirmed, confirm button becomes button leading to scoreboard
+        if (guessConfirmed) {
+            //Open the scoreboard activity
+            Intent intent = new Intent(this, ScoreboardActivity.class);
+            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureID);
+            startActivity(intent);
+            return;
+        }
+
         if (compassMode) compassButton();
         guessConfirmed = true;
 
-        //don't show little image anymore
+        //don't show little image anymore and disable the compass button
         findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
+        findViewById(R.id.compassMode).setClickable(false);
+        findViewById(R.id.compassMode).setVisibility(INVISIBLE);
 
-        //Once guess has been confirmed, compass mode button becomes button leading to scoreboard
-        findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
-        View compassButtonView = findViewById(R.id.compassMode);
-        compassButtonView.setForeground(ContextCompat.getDrawable(context, R.drawable.ic_baseline_military_tech_24));
+        //Once guess has been confirmed, confirm button becomes button leading to scoreboard
+        ((FloatingActionButton) findViewById(R.id.confirmButton)).setImageResource(R.drawable.ic_baseline_list_24);
 
         //Send guess and update karma
         if (!pictureID.equals(Utils.UNINITIALIZED_ID) && !(user instanceof GuestUser)) {
