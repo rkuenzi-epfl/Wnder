@@ -12,6 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
@@ -92,11 +93,20 @@ public class GuessLocationActivityInstrumentedTest  {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
+        /*
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
+         */
+        intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_tour_mode);
+        Location pictureToGuessLoc = new Location("");
+        pictureToGuessLoc.setLatitude(10.0);
+        pictureToGuessLoc.setLongitude(10.0);
+        Picture pictureToGuess = new Picture("simple", dummyPic, pictureToGuessLoc);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
+        intent.putExtra(GuessLocationActivity.EXTRA_TOUR_ID, "tour");
     }
 
     @Test

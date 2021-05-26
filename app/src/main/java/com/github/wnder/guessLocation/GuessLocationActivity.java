@@ -20,6 +20,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -31,6 +32,7 @@ import com.github.wnder.R;
 import com.github.wnder.Score;
 import com.github.wnder.Utils;
 import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
@@ -79,12 +81,17 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public FirebasePicturesDatabase db;
 
     //Define all necessary and recurrent strings
+    public static final String EXTRA_GUESS_MODE = "guess_mode";
+    public static final String EXTRA_PICTURE_TO_GUESS = "picture_to_guess";
+
+    public static final String EXTRA_PICTURE_ID = "picture_id";
+    public static final String EXTRA_TOUR_ID = "tour_id";
+
     public static final String EXTRA_CAMERA_LAT = "cameraLat";
     public static final String EXTRA_CAMERA_LNG = "cameraLng";
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
-    public static final String EXTRA_PICTURE_ID = "picture_id";
-    public static final String TOUR_ID = "tour_id";
+
 
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
@@ -95,7 +102,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     //Button
     private Button nextGuessButton;
 
-    //Defines necessary mapBox setup
+    //Mapbox setup
     private MapView mapView;
     private MapboxMap mapboxMap;
     private LatLng cameraPosition;
@@ -118,11 +125,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private ImageView bigImage;
     private GuessLocationCompass compass;
 
+    //Variables
+    private int guessMode;
+    private Picture picToGuess;
     private String pictureID = Utils.UNINITIALIZED_ID;
-
+    private String tourID;
     private User user;
-    private Context context;
-    private GuessLocationZoom zoomAnimation;
 
     @Inject
     public PicturesDatabase picturesDb;
@@ -135,54 +143,14 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //MapBox creation
+        //Initialisation of class variables (MapBox creation)
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
+
         setContentView(R.layout.activity_guess_location);
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
-        //get extras and initialisation of class variables
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-
-        double cameraLat = extras.getDouble(EXTRA_CAMERA_LAT);
-        double cameraLng = extras.getDouble(EXTRA_CAMERA_LNG);
-        cameraPosition = new LatLng(cameraLat, cameraLng);
-        guessPosition = new LatLng(cameraPosition);
-
-        double pictureLat = extras.getDouble(EXTRA_PICTURE_LAT);
-        double pictureLng = extras.getDouble(EXTRA_PICTURE_LNG);
-        picturePosition = new LatLng(pictureLat, pictureLng);
-
-        pictureID = extras.getString(EXTRA_PICTURE_ID);
-
-        user = GlobalUser.getUser();
-        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
-
-        //Starting mode
-        compassMode = false;
-        mapClickOnCompassMode = false;
-        guessConfirmed = false;
-
-        setupZoomAnimation();
-
-        //Buttons
-        nextGuessButton = findViewById(R.id.backToGuessPreview);
-        nextGuessButton.setVisibility(INVISIBLE);
-
-        nextGuessButton.setOnClickListener(id -> nextGuess());
-        findViewById(R.id.compassMode).setOnClickListener(id -> compassButton());
-        findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
-
-        //Sensor initialization
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        listener = createMapSensorListener();
-
-        //Timer setup
-        gpsTimer = new Timer(true);
-        gpsTimerTask = createGpsTimerTask();
     }
 
     /**
@@ -253,6 +221,58 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
+
+
+
+
+
+        user = GlobalUser.getUser();
+
+        //Get extras
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        guessMode = extras.getInt(EXTRA_GUESS_MODE);
+        picToGuess = extras.getParcelable(EXTRA_PICTURE_TO_GUESS);
+        if (guessMode == R.string.guess_tour_mode) {
+            tourID = extras.getString(EXTRA_TOUR_ID);
+        }
+
+        double gpsLat = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude();
+        double gpsLng = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude();
+        cameraPosition = new LatLng(gpsLat, gpsLng);
+        guessPosition = new LatLng(cameraPosition);
+
+        Location loc = picToGuess.getPicLocation();
+        picturePosition = new LatLng(loc.getLatitude(), loc.getLongitude());
+
+        //Starting mode
+        compassMode = false;
+        mapClickOnCompassMode = false;
+        guessConfirmed = false;
+
+        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
+
+        setupZoomAnimation();
+
+        //Buttons
+        nextGuessButton = findViewById(R.id.backToGuessPreview);
+        nextGuessButton.setVisibility(INVISIBLE);
+
+        nextGuessButton.setOnClickListener(id -> nextGuess());
+        findViewById(R.id.compassMode).setOnClickListener(id -> compassButton());
+        findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
+
+        //Sensor initialization
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        listener = createMapSensorListener();
+
+        //Timer setup
+        gpsTimer = new Timer(true);
+        gpsTimerTask = createGpsTimerTask();
+
+
+
 
         //Set camera position
         CameraPosition position = new CameraPosition.Builder()

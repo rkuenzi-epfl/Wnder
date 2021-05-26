@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Class describing a locally stored picture
  */
-public class LocalPicture  extends Picture {
+public class LocalPicture extends Picture {
     private final Bitmap mapSnapshot;
     private final Location guessLocation;
     private final Map<String, Double> scoreboard;

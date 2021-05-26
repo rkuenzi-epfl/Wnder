@@ -30,6 +30,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -147,7 +149,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         user.setRadius(distances[progress]);
         radiusTextView.setText(getString(R.string.set_radius, distances[progress]));
         setZoom();
-        updateCircle(getActivity(), mapboxMap, cameraPosition);
+        updateCircle(requireActivity(), mapboxMap, cameraPosition);
     }
 
     //Necessary overwrites for MapView lifecycle methods

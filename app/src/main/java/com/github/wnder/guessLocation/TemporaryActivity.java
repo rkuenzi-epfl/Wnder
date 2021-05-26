@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,11 +13,13 @@ import com.github.wnder.AlertBuilder;
 import com.github.wnder.R;
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.tour.TourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import javax.inject.Inject;
 
@@ -69,19 +72,27 @@ public class TemporaryActivity extends AppCompatActivity {
             // TODO change this to match the tour selected by the user
             String tour_id = "tourUniqueId";
             tourDb.getTourPics(tour_id).thenAccept(list -> {
-                picturesDb.getLocation(list.get(0)).thenAccept((Lct) -> {
-                    intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, list.get(0));
-                    intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, Lct.getLatitude());
-                    intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, Lct.getLongitude());
-                    intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
-                    intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
+                picturesDb.getLocation(list.get(0)).thenAccept((lct) -> {
+                    picturesDb.getBitmap(list.get(0)).thenAccept((btm) -> {
+
+                        intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_tour_mode);
+
+                        Picture pictureToGuess = new Picture(list.get(0), btm, lct);
+                        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
+
+                        intent.putExtra(GuessLocationActivity.EXTRA_TOUR_ID, tour_id);
 
 
-                    intent.putExtra(GuessLocationActivity.TOUR_ID, tour_id);
+                        //intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, list.get(0));
+                        //intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, lct.getLatitude());
+                        //intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, lct.getLongitude());
+                        //intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
+                        //intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
 
 
-                    startActivity(intent);
-                    finish();
+                        startActivity(intent);
+                        finish();
+                    });
                 });
             });
 
