@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -83,6 +84,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_PICTURE_LAT = "pictureLat";
     public static final String EXTRA_PICTURE_LNG = "pictureLng";
     public static final String EXTRA_PICTURE_ID = "picture_id";
+    public static final String TOUR_ID = "tour_id";
 
     private static final int CAMERA_PADDING = 100;
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
