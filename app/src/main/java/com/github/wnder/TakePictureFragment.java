@@ -9,10 +9,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts.TakePicture;
@@ -30,7 +33,9 @@ import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -56,6 +61,13 @@ public class TakePictureFragment extends Fragment {
     private ViewGroup.MarginLayoutParams takePictureButtonParams;
     private int takePictureButtonOffset;
     private FloatingActionButton uploadButton;
+    private EditText enterText;
+    private TextView numberOfPictures;
+
+    private boolean tourMode = true;
+    private String tourName = "";
+    private List<Pair<String, UploadInfo>> tourPictures;
+    private static final int MAX_NUMBER_OF_TOUR = 10;
 
     private User user;
     private String userName;
@@ -74,6 +86,11 @@ public class TakePictureFragment extends Fragment {
         coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
+        enterText = view.findViewById(R.id.enterName);
+        numberOfPictures = view.findViewById(R.id.numberOfPictures);
+
+        enterText.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.INVISIBLE);
 
         // Convert button size to dp
         Resources r = getResources();
@@ -85,6 +102,12 @@ public class TakePictureFragment extends Fragment {
 
         user = GlobalUser.getUser();
         userName = user.getName();
+
+        if(tourMode){
+            numberOfPictures.setVisibility(View.VISIBLE);
+            tourPictures = new ArrayList<>();
+            setTextForTourSize(tourPictures.size());
+        }
 
         // Prepare to open the camera
         takePictureLauncher = registerForActivityResult(new TakePicture(), (stored) -> onTakePictureResult(stored));
@@ -120,15 +143,23 @@ public class TakePictureFragment extends Fragment {
     private void onTakePictureResult(boolean stored) {
         if (stored) {
 
-            // Move takePictureButton up and display upload button
-            TransitionManager.beginDelayedTransition(coordinatorLayout);
-            takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonOffset);
-            coordinatorLayout.requestLayout();
-            uploadButton.show();
+            if(tourMode){
+                takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
+                tourPictures.add(new Pair<>(takenPictureId, new UploadInfo(userName, takenPictureLocation, takenPictureUri)));
+                setTextForTourSize(tourPictures.size());
+            }
+            else{
+                // Move takePictureButton up and display upload button
+                TransitionManager.beginDelayedTransition(coordinatorLayout);
+                takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonOffset);
+                coordinatorLayout.requestLayout();
+                uploadButton.show();
 
-            ImageView takenPictureView = getView().findViewById(R.id.takenPicture);
-            takenPictureView.setImageURI(takenPictureUri);
-            uploadButton.setOnClickListener(button -> uploadTakenPicture());
+                ImageView takenPictureView = getView().findViewById(R.id.takenPicture);
+                takenPictureView.setImageURI(takenPictureUri);
+                uploadButton.setOnClickListener(button -> uploadTakenPicture());
+            }
+
         } else {
             Snackbar.make(getView(), R.string.no_picture_from_camera, Snackbar.LENGTH_SHORT).show();
         }
@@ -182,5 +213,21 @@ public class TakePictureFragment extends Fragment {
         newPictureDetails.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
         return getContext().getContentResolver().insert(imageCollection, newPictureDetails);
 
+    }
+
+    /**
+     *
+     * @param size of the tour
+     * @return true if we can add more photos, false otherwise
+     */
+    private boolean setTextForTourSize(int size){
+        if(size >= 10){
+            numberOfPictures.setText("Your tour has " + size + " pictures. You can't add more.");
+            return false;
+        }
+        else{
+            numberOfPictures.setText("Your tour has " + size + " pictures");
+            return true;
+        }
     }
 }
