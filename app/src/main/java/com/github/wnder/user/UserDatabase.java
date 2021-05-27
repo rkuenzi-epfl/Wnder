@@ -30,4 +30,11 @@ public interface UserDatabase {
      * @return a Future with a picture id
      */
     CompletableFuture<String> getNewPictureForUser(User user);
+
+    /**
+     * Retrieve up to 10 tours that are the closest to the user
+     * @param user the user for which we want a tour list
+     * @return a Future of a list of tour identifiers
+     */
+    CompletableFuture<List<String>> getTourListForUser(User user);
 }

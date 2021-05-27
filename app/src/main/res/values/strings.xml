@@ -5,6 +5,8 @@
     <string name="no_connection">No internet connection !</string>
     <string name="no_internet_body">Your internet connection was lost, please try again later</string>
     <string name="guest_not_allowed">Feature not available as Guest user!</string>
+    <string name="distance_meter">%1$d m</string>
+    <string name="distance_kilometer">%1$d km</string>
 
     <!--Login Activity Strings-->
     <string name="logout">Logout</string>
@@ -56,8 +58,8 @@
     <string name="content_descr_confirm_button_image">This is the image shown on the confirm button</string>
     <string name="mapClickOnCompassMode_confirm_title">You are in Compass Mode</string>
     <string name="mapClickOnCompassMode_confirm_message">In Compass Mode you are supposed to walk to the picture location you are currently guessing.\nExit the Compass Mode if you want to simply guess by clicking</string>
-    <string name="distance_meter">Distance: %1$dm</string>
-    <string name="distance_kilometer">Distance: %1$dkm</string>
+    <string name="guess_location_distance_meter">Distance: %1$d m</string>
+    <string name="guess_location_distance_kilometer">Distance: %1$d km</string>
     <string name="score">Score: %1$d</string>
     <string name="next_guess">NEXT GUESS</string>
     <string name="tour_mode_confirm_while_far_title">You are about to skip a picture</string>
@@ -69,8 +71,6 @@
     <string name="content_descr_history_scoreboard">Scoreboard icon</string>
     <string name="default_distance">0m</string>
     <string name="default_score">0.0</string>
-    <string name="history_distance_meter">%1$dm</string>
-    <string name="history_distance_kilometer">%1$dkm</string>
 
     <!--History Map Strings-->
     <string name="content_descr_history_map_image">Map with guess and actual location</string>
@@ -110,6 +110,7 @@
     <string name="bar_report_impossible">The report process failed</string>
     <string name="bar_download_picture_failed">Download failed</string>
     <string name="start_a_tour">Start a tour</string>
+
     <string name="gps_access_title">GPS access</string>
     <string name="gps_access_body">The GPS is needed to access all the functionalities of the app.</string>
     <string name="gps_disabled_title">GPS is disabled</string>
@@ -120,6 +121,4 @@
     <string name="failed_tour_picture_upload">One picture failed to be uploaded</string>
     <string name="tour_uploaded">Your tour was successfully uploaded.</string>
     <string name="tour_upload_failed">The upload of the tour failed.</string>
-
-
 </resources>
