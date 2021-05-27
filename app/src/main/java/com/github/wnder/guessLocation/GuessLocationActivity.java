@@ -553,6 +553,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         picturesDb.getBitmap(tourIDs.get(tourIndex)).thenAccept(bmp -> {
             picturesDb.getLocation(tourIDs.get(tourIndex)).thenAccept(loc -> {
                 picturePosition = new LatLng(loc.getLatitude(), loc.getLongitude());
+                ((ImageView) (findViewById(R.id.imageToGuess))).setImageBitmap(bmp);
                 ((ImageView) (findViewById(R.id.imageToGuessZoomedIn))).setImageBitmap(bmp);
 
                 //Update compass
@@ -565,15 +566,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         });
 
         findViewById(R.id.imageToGuessCard).setVisibility(VISIBLE);
-
-
-
-        //????
-        /*
-        pictureSource = new GeoJsonSource(String.valueOf(R.string.PICTURE_SOURCE_ID), Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
-        addPictureToStyle(this, mapboxMap.getStyle(), pictureSource);
-        mapboxMap.getStyle().getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.NONE));
-         */
     }
 
     /**
