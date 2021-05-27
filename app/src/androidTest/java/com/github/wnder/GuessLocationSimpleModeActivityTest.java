@@ -12,8 +12,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
-import com.github.wnder.picture.Picture;
 import com.github.wnder.guessLocation.GuessPreviewActivity;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
@@ -57,6 +57,9 @@ public class GuessLocationSimpleModeActivityTest {
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
+
+    @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
             .around(new ActivityScenarioRule<>(intent));
 
@@ -91,7 +94,7 @@ public class GuessLocationSimpleModeActivityTest {
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
         intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_simple_mode);
-        Picture pictureToGuess = new Picture("simple", 10.0, 10.0);
+        Picture pictureToGuess = new Picture("", 10.0, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
     }
 
