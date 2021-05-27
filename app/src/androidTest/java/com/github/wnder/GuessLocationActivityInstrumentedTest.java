@@ -12,6 +12,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
+import com.github.wnder.guessLocation.GuessPreviewActivity;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
