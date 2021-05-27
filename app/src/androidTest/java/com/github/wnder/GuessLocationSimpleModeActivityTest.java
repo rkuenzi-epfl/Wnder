@@ -158,16 +158,16 @@ public class GuessLocationSimpleModeActivityTest {
     }
 
     @Test
-    public void testSwitchMode(){
+    public void testImageUpdatesStatusInCompassMode(){
         onView(withId(R.id.mapView)).perform(click());
         onView(withId(R.id.compassMode)).perform(click());
-        onView(withId(R.id.compassMode)).perform(click());
+
+        onView(withId(R.id.imageToGuessCard)).check(matches(isDisplayed()));
 
         onView(withId(R.id.confirmButton)).perform(click());
-        onView(withId(R.id.confirmButton)).perform(click());
 
-        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
-    }
+        onView(withId(R.id.imageToGuessCard)).check(matches(not(isDisplayed())));
+   }
 
     @Test
     public void nextGuessButtonIsDisplayedAtRightTime(){
