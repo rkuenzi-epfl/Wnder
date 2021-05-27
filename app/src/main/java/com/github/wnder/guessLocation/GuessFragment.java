@@ -1,7 +1,9 @@
 package com.github.wnder.guessLocation;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,10 +15,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.wnder.AlertBuilder;
-import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
@@ -57,6 +59,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState){
+
         Mapbox.getInstance(getActivity(), getString(R.string.mapbox_access_token));
         View rootView = inflater.inflate(R.layout.fragment_seekbar, container, false);
 
@@ -65,6 +68,11 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         mapView = rootView.findViewById(R.id.mapViewFragment);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            AlertBuilder.okAlert(getString(R.string.gps_missing_title), getString(R.string.gps_missing_body), getContext()).show();
+            return null;
+        }
 
         double cameraLat = user.getPositionFromGPS((LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE), getActivity()).getLatitude();
         double cameraLng = user.getPositionFromGPS((LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE), getActivity()).getLongitude();

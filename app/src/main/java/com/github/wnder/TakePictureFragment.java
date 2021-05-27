@@ -81,6 +81,11 @@ public class TakePictureFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            AlertBuilder.okAlert(getString(R.string.gps_missing_title), getString(R.string.gps_missing_body), getContext()).show();
+            return;
+        }
+
         coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
@@ -118,7 +123,12 @@ public class TakePictureFragment extends Fragment {
             }
         }
 
-        if(!networkInfo.isNetworkAvailable()) {
+        // Alert Guest user and user no connected to the internet
+        if(GlobalUser.getUser() instanceof GuestUser){
+            NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
+            navigationActivity.selectItem(R.id.profile_page);
+            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext()).show();
+        } else if(!networkInfo.isNetworkAvailable()){
             Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
         }
     }
