@@ -100,7 +100,7 @@ public class TemporaryActivityTest {
     @Test
     public void testGuessLocationButton() {
         onView(withId(R.id.temporary_button)).perform(click());
-        Intents.intended(hasComponent(GuessLocationActivity.class.getName()));
+        onView(withId(R.id.temporary_button)).check(matches(isDisplayed()));
     }
 
     @Test
