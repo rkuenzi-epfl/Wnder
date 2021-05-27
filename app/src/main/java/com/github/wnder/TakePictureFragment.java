@@ -28,6 +28,7 @@ import androidx.transition.TransitionManager;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
+import com.github.wnder.tour.TourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
@@ -54,6 +55,9 @@ public class TakePictureFragment extends Fragment {
 
     @Inject
     public NetworkService networkInfo;
+
+    @Inject
+    public TourDatabase tourDb;
 
     private ActivityResultLauncher<Uri> takePictureLauncher;
 
@@ -238,8 +242,36 @@ public class TakePictureFragment extends Fragment {
             Snackbar.make(getView(), "Guest user are not allowed to upload tour", Snackbar.LENGTH_SHORT).show();
         }
         else{
+            List<String> pictures = new ArrayList<>();
+            for(Pair<String, UploadInfo> pair : tourPictures){
 
+                CompletableFuture<Void> uploadPic = picturesDb.uploadPicture(pair.first, pair.second);
+
+                uploadPic.exceptionally(res -> {
+                    pictures.clear(); //Signify that we lost one picture along the way
+                    return null;
+                }).thenAccept(res -> {
+                    pictures.add(pair.first);
+
+                    if(pictures.size() == tourPictures.size()){ //Which mean that we did not lose any pictures along the way
+                        CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(tourName), tourName, pictures);
+
+                        uploadTour.thenAccept(ress -> {
+                            Snackbar.make(getView(), "Your tour was successfully uploaded.", Snackbar.LENGTH_SHORT).show();
+                        }).exceptionally(ress -> {
+                            Snackbar.make(getView(), "The upload of the tour failed.", Snackbar.LENGTH_SHORT).show();
+                            return null;
+                        });
+                    }
+                });
+            }
+            if(pictures.size() != tourPictures.size()){
+                Snackbar.make(getView(), "One or more pictures failed to be uploaded", Snackbar.LENGTH_SHORT).show();
+            }
         }
+
+        enterText.setVisibility(View.INVISIBLE);
+        validateTour.setVisibility(View.INVISIBLE);
     }
 
     /**
