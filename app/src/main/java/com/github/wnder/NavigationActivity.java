@@ -92,6 +92,10 @@ public class NavigationActivity extends AppCompatActivity {
         return true;
     }
 
+    protected void selectItem(int itemId) {
+        bottomNavigationView.setSelectedItemId(itemId);
+    }
+
     /**
      * To run when we get user's answer for location permission
      * @param requestCode request code
