@@ -57,12 +57,8 @@ public class GuessLocationSimpleModeActivityTest {
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
     @Rule
-    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
-
-    @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
             .around(new ActivityScenarioRule<>(intent));
-
 
     @BindValue
     public static PicturesDatabase picturesDatabase = Mockito.mock(PicturesDatabase.class);
