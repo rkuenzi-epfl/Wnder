@@ -98,11 +98,13 @@
     <string name="begin_guess">Guess</string>
     <string name="bar_report_impossible">The report process failed</string>
     <string name="bar_download_picture_failed">Download failed</string>
+    <string name="start_a_tour">Start a tour</string>
     <string name="gps_access_title">GPS access</string>
     <string name="gps_access_body">The GPS is needed to access all the functionalities of the app.</string>
     <string name="gps_disabled_title">GPS is disabled</string>
     <string name="gps_disabled_body">Please, activate your GPS to access all the functionalities.</string>
     <string name="gps_missing_title">Functionality unavailable</string>
     <string name="gps_missing_body">The application needs the GPS to continue.</string>
+
 
 </resources>
