@@ -460,7 +460,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         }
         picturesDb.updateKarma(picToGuess.getUniqueId(), 1);
 
-        showActualLocation(computeScoreText());
+        showActualLocation(computeScoreText(), true);
 
         //Animate the next guess button
         nextGuessButton.setVisibility(VISIBLE);
@@ -533,10 +533,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
 
         //Animate MapBox
-        showActualLocation(animatedText);
+        showActualLocation(animatedText, false);
     }
 
     private void nextGuessTourMode() {
+        //Make the confirm button unavailable during the change/download of the next image
+        findViewById(R.id.confirmButton).setClickable(false);
 
         guessConfirmed = false;
         guessPossible = false;
@@ -552,14 +554,19 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             picturesDb.getLocation(tourIDs.get(tourIndex)).thenAccept(loc -> {
                 picturePosition = new LatLng(loc.getLatitude(), loc.getLongitude());
                 ((ImageView) (findViewById(R.id.imageToGuessZoomedIn))).setImageBitmap(bmp);
+
+                //Update compass
+                compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
+                compass.updateCompass(mapboxMap, guessPosition, true);
+
+                //Make the confirm button available again
+                findViewById(R.id.confirmButton).setClickable(true);
             });
         });
 
         findViewById(R.id.imageToGuessCard).setVisibility(VISIBLE);
 
-        //Update compass
-        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
-        compass.updateCompass(mapboxMap, guessPosition, true);
+
 
         //????
         /*
@@ -573,10 +580,12 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * Shows the real location of the picture
      */
     @SuppressLint("SetTextI18n")
-    private void showActualLocation(String animatedBoardText) {
+    private void showActualLocation(String animatedBoardText, Boolean pictureIconVisibility) {
         //Make the icon of the picture visible
-        Style style = mapboxMap.getStyle();
-        style.getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.VISIBLE));
+        if (pictureIconVisibility) {
+            Style style = mapboxMap.getStyle();
+            style.getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.VISIBLE));
+        }
 
         //Animate camera position to englobe the picture and the guess position
         double latDiff = Math.abs(guessPosition.getLatitude() - picturePosition.getLatitude());
