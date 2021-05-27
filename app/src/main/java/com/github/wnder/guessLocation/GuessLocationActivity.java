@@ -39,6 +39,7 @@ import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
+import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.tour.TourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
@@ -95,6 +96,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
     private static final long GET_POSITION_FROM_GPS_PERIOD = 1000; //1 secondes
     private static final double MAX_LAT = 90;
+    private static final double ARRIVED_DISTANCE = 20000; //meters
 
     //Button
     private Button nextGuessButton;
@@ -133,11 +135,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     @Inject
     public PicturesDatabase picturesDb;
 
-    @Inject
-    public TourDatabase ToursDb;
+    public TourDatabase TourDb;
 
     /**
      * Executed on activity creation
+     *
      * @param savedInstanceState instance state
      */
     @Override
@@ -164,7 +166,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (guessMode == R.string.guess_tour_mode) {
             tourID = extras.getString(EXTRA_TOUR_ID);
             findViewById(R.id.compassMode).setVisibility(INVISIBLE);
-            ToursDb.getTourPics(tourID).thenAccept(ls -> tourIDs = ls);
+            TourDb = new FirebaseTourDatabase(this);
+            TourDb.getTourPics(tourID).thenAccept(ls -> tourIDs = ls);
         }
 
         double gpsLat = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude();
@@ -216,7 +219,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                         updatePositionByLineAnimation(guessSource, guessAnimator, guessPosition, destinationPoint);
                         guessPosition = updatePositionByLineAnimation(arrowSource, arrowAnimator, guessPosition, destinationPoint);
                     }
-                    if (((ProgressBar)(findViewById(R.id.hotbarView))).getProgressTintList() == ColorStateList.valueOf(Color.CYAN)) {
+
+                    if (guessPosition.distanceTo(picturePosition) < ARRIVED_DISTANCE) {
                         guessPossible = true;
                     } else {
                         guessPossible = false;
@@ -235,15 +239,17 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             public void onSensorChanged(SensorEvent event) {
                 mapboxMap.setCameraPosition(GuessLocationSensor.calculateNewPosition(event, mapboxMap, picturePosition, guessPosition));
             }
+
             @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy){}
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
         };
     }
 
     /**
      * To call in onCreate to setup the zoom animation correctly.
      */
-    private void setupZoomAnimation(){
+    private void setupZoomAnimation() {
         //Setup image preview
         //littleImage, encapsulated in littleCard, is the image shown when zoomed out
         //bigImage, encapsulated in bigCard, is the image shown when zoomed in
@@ -261,19 +267,16 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //Setup zoom animation
         int zoomAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         List<View> toHide = new ArrayList<>();
-        toHide.add(findViewById(R.id.compassMode));
-        toHide.add(findViewById(R.id.confirmButton));
-
-        new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
-
         if (guessMode != R.string.guess_tour_mode) {
-            findViewById(R.id.compassMode).setVisibility(VISIBLE);
+            toHide.add(findViewById(R.id.compassMode));
         }
-        findViewById(R.id.confirmButton).setVisibility(VISIBLE);
+        toHide.add(findViewById(R.id.confirmButton));
+        new GuessLocationZoom(littleCard, bigCard, findViewById(R.id.guessLocationLayout), zoomAnimationTime, toHide);
     }
 
     /**
      * Executed when map is ready
+     *
      * @param mapboxMap MapboxMap for mapbox
      */
     @Override
@@ -305,9 +308,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     /**
      * To be executed when the style has loaded
+     *
      * @param style on the mapbox map
      */
-    private void onStyleLoaded(Style style){
+    private void onStyleLoaded(Style style) {
         drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
 
         addGuessToStyle(this, style, guessSource);
@@ -321,6 +325,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
     /**
      * To execute when a map is clicked
+     *
      * @param point point where the map is clicked
      * @return true
      */
@@ -332,7 +337,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         //Display a pop up to explain that you cannot move the guess marker by clicking while in compass mode
         if (compassMode) {
-            if(!mapClickOnCompassMode) {
+            if (!mapClickOnCompassMode) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setCancelable(true);
                 builder.setTitle(R.string.mapClickOnCompassMode_confirm_title);
@@ -352,30 +357,27 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         return true;
     }
 
-
     /**
      * To execute when a map is Moved
      */
     @Override
     public void onCameraMove() {
-        if(compassMode) compass.updateCompass(mapboxMap, guessPosition, compassMode);
+        if (compassMode) compass.updateCompass(mapboxMap, guessPosition, compassMode);
     }
 
-
-    private void enableCompassMode(){
+    private void enableCompassMode() {
         FloatingActionButton compassModeButtonView = findViewById(R.id.compassMode);
 
         List<Sensor> list = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
 
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             //We can't use the sensor, so we inform the user
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(true).setTitle(R.string.SensorNotAvailableTitle).setMessage(R.string.SensorNotAvailable)
-            .setPositiveButton("Ok", (DialogInterface dialog, int which) -> compassMode = false);
+                    .setPositiveButton("Ok", (DialogInterface dialog, int which) -> compassMode = false);
             AlertDialog dialog = builder.create();
             dialog.show();
-        }
-        else{
+        } else {
             compass.updateCompass(mapboxMap, guessPosition, compassMode);
             sensorManager.registerListener(listener, list.get(0), SensorManager.SENSOR_DELAY_NORMAL);
             gpsTimerTask.run();
@@ -394,6 +396,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         }
 
         //If guess hasn't been confirmed, then just switch mode
+        //if(!guessConfirmed) { compassMode = !compassMode; }
         compassMode = !compassMode;
 
         //if we're now in compass mode, enable it and switch icon
@@ -408,7 +411,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             mapboxMap.getUiSettings().setRotateGesturesEnabled(true);
             ((FloatingActionButton) findViewById(R.id.compassMode)).setImageResource(R.drawable.ic_outline_explore_off_24);
         }
-
     }
 
     /**
@@ -430,14 +432,13 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private void confirmSimpleMode() {
         //If guess has been confirmed, confirm button becomes button leading to scoreboard
         if (guessConfirmed) {
-            //Open the scoreboard activity
-            Intent intent = new Intent(this, ScoreboardActivity.class);
-            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, picToGuess.getUniqueId());
-            startActivity(intent);
+            startScoreBoard();
             return;
         }
 
-        if (compassMode) compassButton();
+        if (compassMode) {
+            compassButton();
+        }
         guessConfirmed = true;
 
         //don't show little image anymore and disable the compass button
@@ -459,7 +460,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         }
         picturesDb.updateKarma(picToGuess.getUniqueId(), 1);
 
-        showActualLocation();
+        showActualLocation(computeScoreText());
 
         //Animate the next guess button
         nextGuessButton.setVisibility(VISIBLE);
@@ -467,8 +468,18 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         nextGuessButton.startAnimation(button_animation);
     }
 
+    /**
+     * Goes to the next guest preview activity
+     */
+    private void nextGuess() {
+        Intent intent = new Intent(this, GuessPreviewActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void confirmTourMode() {
-        //If guess hasn't been confirmed, it means the user wasn't close enough to the destination
+        TextView scoreText = findViewById(R.id.scoreText);
+
         if (!guessPossible) {
             //Show pop up warning about skipping the picture
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -477,58 +488,92 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             builder.setMessage(R.string.tour_mode_confirm_while_far_text);
 
             //What to do when OK is pressed
-            builder.setPositiveButton("Ok", (DialogInterface dialog, int which) -> {
-                guessPossible = true;
-                confirmTourMode();
+            builder.setPositiveButton("Yes", (DialogInterface dialog, int which) -> {
+                tourIndex += 1;
+                if (tourIndex >= tourIDs.size()) {
+                    guessPossibleConfirmTourMode();
+                } else {
+                    nextGuessTourMode();
+                }
             });
 
             AlertDialog dialog = builder.create();
             dialog.show();
 
         } else {
-            tourIndex += 1;
-
-            if (tourIndex >= tourIDs.size()) {
-                //If guess has been confirmed, confirm button becomes button leading to scoreboard
-                if (guessConfirmed) {
-                    //Open the scoreboard activity
-                    Intent intent = new Intent(this, ScoreboardActivity.class);
-                    intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, picToGuess.getUniqueId());
-                    startActivity(intent);
-                    return;
-                }
-
-                guessConfirmed = true;
-
-                TextView scoreText = findViewById(R.id.scoreText);
-                scoreText.setText("Tour terminé.\nBravo!");
-
-                //Animate the text
-                scoreText.setVisibility(VISIBLE);
-                Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
-                scoreText.startAnimation(score_animation);
-
-                //Once guess has been confirmed, confirm button becomes button leading to scoreboard
-                ((FloatingActionButton) findViewById(R.id.confirmButton)).setImageResource(R.drawable.ic_baseline_list_24);
-            }
-
-            //Setup for the next image
-            showActualLocation();
-            guessPossible = false;
-            picturesDb.getBitmap(tourIDs.get(tourIndex)).thenAccept(bmp -> {
-                picturesDb.getLocation(tourIDs.get(tourIndex)).thenAccept(loc -> {
-                    picturePosition = new LatLng(loc.getLatitude(), loc.getLongitude());
-                    ((ImageView)(findViewById(R.id.imageToGuessZoomedIn))).setImageBitmap(bmp);
-                });
-            });
+            guessPossibleConfirmTourMode();
         }
+    }
+
+    private void guessPossibleConfirmTourMode() {
+        tourIndex += 1;
+
+        //If guess has been confirmed, go to next guess or end the tour
+        if (guessConfirmed) {
+            nextGuessTourMode();
+            return;
+        }
+
+        guessConfirmed = true;
+
+        String animatedText = "" + tourIndex + "/" + tourIDs.size() + "\nPictures found";
+
+        //If it was the last picture replace the confirm button by the next guess button
+        if (tourIndex >= tourIDs.size()) {
+            findViewById(R.id.confirmButton).setVisibility(INVISIBLE);
+
+            //Animate the next guess button
+            nextGuessButton.setVisibility(VISIBLE);
+            Animation button_animation = AnimationUtils.loadAnimation(this, R.anim.next_guess_button_anim);
+            nextGuessButton.startAnimation(button_animation);
+
+            animatedText = "Tour finished.\nWell done!";
+        }
+
+        findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
+
+        //Animate MapBox
+        showActualLocation(animatedText);
+    }
+
+    private void nextGuessTourMode() {
+
+        guessConfirmed = false;
+        guessPossible = false;
+
+        //Animate the text
+        TextView scoreText = findViewById(R.id.scoreText);
+        scoreText.setVisibility(VISIBLE);
+        Animation invisible_score_animation = AnimationUtils.loadAnimation(this, R.anim.invisible_score_anim);
+        scoreText.startAnimation(invisible_score_animation);
+
+        //Update little image and show it
+        picturesDb.getBitmap(tourIDs.get(tourIndex)).thenAccept(bmp -> {
+            picturesDb.getLocation(tourIDs.get(tourIndex)).thenAccept(loc -> {
+                picturePosition = new LatLng(loc.getLatitude(), loc.getLongitude());
+                ((ImageView) (findViewById(R.id.imageToGuessZoomedIn))).setImageBitmap(bmp);
+            });
+        });
+
+        findViewById(R.id.imageToGuessCard).setVisibility(VISIBLE);
+
+        //Update compass
+        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
+        compass.updateCompass(mapboxMap, guessPosition, true);
+
+        //????
+        /*
+        pictureSource = new GeoJsonSource(String.valueOf(R.string.PICTURE_SOURCE_ID), Point.fromLngLat(picturePosition.getLongitude(), picturePosition.getLatitude()));
+        addPictureToStyle(this, mapboxMap.getStyle(), pictureSource);
+        mapboxMap.getStyle().getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.NONE));
+         */
     }
 
     /**
      * Shows the real location of the picture
      */
     @SuppressLint("SetTextI18n")
-    private void showActualLocation(){
+    private void showActualLocation(String animatedBoardText) {
         //Make the icon of the picture visible
         Style style = mapboxMap.getStyle();
         style.getLayer(String.valueOf(R.string.PICTURE_LAYER_ID)).setProperties(PropertyFactory.visibility(Property.VISIBLE));
@@ -543,32 +588,36 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         LatLngBounds latLngBounds = new LatLngBounds.Builder().include(guessPosition).include(picturePosition).include(topPosition).include(downPosition).build();
         mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, CAMERA_PADDING), (int) CAMERA_ANIMATION_DURATION);
 
+        //Animate the text
+        TextView scoreText = findViewById(R.id.scoreText);
+        scoreText.setText(animatedBoardText);
+        scoreText.setVisibility(VISIBLE);
+        Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
+        scoreText.startAnimation(score_animation);
+    }
+
+    private String computeScoreText() {
         //Set the score text
         double distanceFromPicture = guessPosition.distanceTo(picturePosition);
 
-        String dText = getString(R.string.distance_meter,(int)distanceFromPicture);
-        if(distanceFromPicture > 10000){
-            dText = getString(R.string.distance_kilometer,(int)distanceFromPicture/1000);
+        String dText = getString(R.string.distance_meter, (int) distanceFromPicture);
+        if (distanceFromPicture > 10000) {
+            dText = getString(R.string.distance_kilometer, (int) distanceFromPicture / 1000);
         }
 
         double score = Score.calculationScore(distanceFromPicture, user.getRadius() * 1000, user.getRadius());
         TextView scoreText = findViewById(R.id.scoreText);
-        scoreText.setText(getString(R.string.score, (int)score) + "\n" + dText);
-
-        //Animate the text
-        scoreText.setVisibility(VISIBLE);
-        Animation score_animation = AnimationUtils.loadAnimation(this, R.anim.score_anim);
-
-        scoreText.startAnimation(score_animation);
+        return getString(R.string.score, (int) score) + "\n" + dText;
     }
 
     /**
-     * Goes to the next guest preview activity
+     * Start the ScoreBoard activity
      */
-    private void nextGuess(){
-        Intent intent = new Intent(this, GuessPreviewActivity.class);
+    private void startScoreBoard() {
+        Intent intent = new Intent(this, ScoreboardActivity.class);
+        intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID,picToGuess.getUniqueId());
         startActivity(intent);
-        finish();
+
     }
 
     //Necessary overwrites for MapView lifecycle methods
