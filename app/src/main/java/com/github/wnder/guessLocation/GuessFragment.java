@@ -113,7 +113,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         drawCircle(getActivity(), mapboxMap, cameraPosition);
     }
 
-    private void openActivity(AppCompatActivity activity) {
+    private  <T extends AppCompatActivity> void openActivity(T activity) {
         if(networkInfo.isNetworkAvailable()){
             Intent intent = new Intent(getActivity(), activity.getClass());
             startActivity(intent);
