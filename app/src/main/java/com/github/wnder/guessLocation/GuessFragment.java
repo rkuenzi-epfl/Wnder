@@ -59,7 +59,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState){
-        Mapbox.getInstance(getActivity(), getString(R.string.mapbox_access_token));
+        Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token));
         View rootView = inflater.inflate(R.layout.fragment_seekbar, container, false);
 
         user = GlobalUser.getUser();
@@ -68,8 +68,8 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        double cameraLat = user.getPositionFromGPS((LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE), getActivity()).getLatitude();
-        double cameraLng = user.getPositionFromGPS((LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE), getActivity()).getLongitude();
+        double cameraLat = user.getPositionFromGPS((LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE), getActivity()).getLatitude();
+        double cameraLng = user.getPositionFromGPS((LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE), getActivity()).getLongitude();
         cameraPosition = new LatLng(cameraLat, cameraLng);
 
         SeekBar radiusSeekBar = rootView.findViewById(R.id.radiusSeekBar);
@@ -108,12 +108,13 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
      * @param style on the mapbox map
      */
     private void onStyleLoaded(Style style){
-        drawCircle(getActivity(), mapboxMap, cameraPosition);
+        drawCircle(requireActivity(), mapboxMap, cameraPosition);
     }
 
     private void openPreviewActivity() {
         if(networkInfo.isNetworkAvailable()){
-            Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            //Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            Intent intent = new Intent(getActivity(), TemporaryActivity.class);
             startActivity(intent);
         }
         else{
@@ -220,7 +221,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     /**
      * To override for seekbar
-     * @param seekBar
+     * @param seekBar the seekBar
      */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -229,7 +230,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     /**
      * To override for seekbar
-     * @param seekBar
+     * @param seekBar the seekBar
      */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {

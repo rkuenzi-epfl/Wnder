@@ -73,26 +73,16 @@ public class TemporaryActivity extends AppCompatActivity {
             String tour_id = "tourUniqueId";
             tourDb.getTourPics(tour_id).thenAccept(list -> {
                 picturesDb.getLocation(list.get(0)).thenAccept((lct) -> {
-                    picturesDb.getBitmap(list.get(0)).thenAccept((btm) -> {
 
-                        intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_tour_mode);
+                    intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_tour_mode);
 
-                        Picture pictureToGuess = new Picture(list.get(0), btm, lct);
-                        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
+                    Picture pictureToGuess = new Picture(list.get(0), lct.getLatitude(), lct.getLongitude());
+                    intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
 
-                        intent.putExtra(GuessLocationActivity.EXTRA_TOUR_ID, tour_id);
+                    intent.putExtra(GuessLocationActivity.EXTRA_TOUR_ID, tour_id);
 
-
-                        //intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, list.get(0));
-                        //intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, lct.getLatitude());
-                        //intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, lct.getLongitude());
-                        //intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
-                        //intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
-
-
-                        startActivity(intent);
-                        finish();
-                    });
+                    startActivity(intent);
+                    finish();
                 });
             });
 

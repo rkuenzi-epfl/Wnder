@@ -127,9 +127,6 @@ public class GuessLocationZoom {
             public void onAnimationEnd(Animator animation) {
                 startPoint.setVisibility(VISIBLE);
                 endPoint.setVisibility(GONE);
-                for(View view: toHideWhenZoomedIn){
-                    view.setVisibility(VISIBLE);
-                }
             }
         });
 

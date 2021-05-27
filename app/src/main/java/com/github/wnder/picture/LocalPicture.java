@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public class LocalPicture extends Picture {
     private final Bitmap mapSnapshot;
+    private final Location location;
+    private final Bitmap bmp;
     private final Location guessLocation;
     private final Map<String, Double> scoreboard;
 
@@ -22,9 +24,11 @@ public class LocalPicture extends Picture {
      * @param scoreboard global scoreboard
      */
     public LocalPicture(String uniqueId, Bitmap bmp, Bitmap mapSnapshot, Location picLocation, Location guessLocation, Map<String, Double> scoreboard) {
-        super(uniqueId, bmp, picLocation);
+        super(uniqueId, picLocation.getLatitude(), picLocation.getLongitude());
 
         this.mapSnapshot = mapSnapshot;
+        this.location = picLocation;
+        this.bmp = bmp;
         this.guessLocation = guessLocation;
         this.scoreboard = scoreboard;
     }
@@ -35,6 +39,22 @@ public class LocalPicture extends Picture {
      */
     public Bitmap getMapSnapshot(){
         return this.mapSnapshot;
+    }
+
+    /**
+     * Get the location of the picture
+     * @return the location
+     */
+    public Location getPicLocation(){
+        return this.location;
+    }
+
+    /**
+     * Get bitmap of local picture
+     * @return bitmap
+     */
+    public Bitmap getBitmap(){
+        return this.bmp;
     }
 
     /**

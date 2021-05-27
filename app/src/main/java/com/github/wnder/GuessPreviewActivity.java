@@ -156,19 +156,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
             intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_simple_mode);
 
-            Location pictureToGuessLoc = new Location("");
-            pictureToGuessLoc.setLatitude(pictureLat);
-            pictureToGuessLoc.setLongitude(pictureLng);
-            Picture pictureToGuess = new Picture(pictureID, bitmap, pictureToGuessLoc);
+            Picture pictureToGuess = new Picture(pictureID, pictureLat, pictureLng);
             intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
-
-            /*
-            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
-            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
-            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
-            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
-            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
-            */
 
             startActivity(intent);
             finish();

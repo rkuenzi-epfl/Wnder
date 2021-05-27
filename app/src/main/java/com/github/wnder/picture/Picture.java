@@ -6,22 +6,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Class describing a locally stored picture Parcelable
+ * Class describing a parcelable picture
  */
 public class Picture implements Parcelable {
     private final String uniqueId;
-    private final Bitmap bmp;
-    private final Location picLocation;
+    private final double picLat;
+    private final double picLng;
 
     /**
      * Constructor for a locally stored picture
      * @param uniqueId unique ID
-     * @param bmp picture
      */
-    public Picture(String uniqueId, Bitmap bmp, Location loc) {
+    public Picture(String uniqueId, double lat, double lng) {
         this.uniqueId = uniqueId;
-        this.bmp = bmp;
-        this.picLocation = loc;
+        this.picLat = lat;
+        this.picLng = lng;
     }
 
     /**
@@ -30,8 +29,8 @@ public class Picture implements Parcelable {
      */
     protected Picture(Parcel in) {
         uniqueId = in.readString();
-        bmp = in.readParcelable(Bitmap.class.getClassLoader());
-        picLocation = in.readParcelable(Location.class.getClassLoader());
+        picLat = in.readDouble();
+        picLng = in.readDouble();
     }
 
     public static final Creator<Picture> CREATOR = new Creator<Picture>() {
@@ -65,19 +64,19 @@ public class Picture implements Parcelable {
     }
 
     /**
-     * Get bitmap of local picture
-     * @return bitmap
+     * Get latitude of the picture
+     * @return real location
      */
-    public Bitmap getBitmap(){
-        return this.bmp;
+    public double getPicLat(){
+        return this.picLat;
     }
 
     /**
-     * Get real location of picture
+     * Get longitude of the picture
      * @return real location
      */
-    public Location getPicLocation(){
-        return this.picLocation;
+    public double getPicLng(){
+        return this.picLng;
     }
 
     /**
@@ -96,7 +95,7 @@ public class Picture implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(uniqueId);
-        dest.writeValue(bmp);
-        dest.writeValue(picLocation);
+        dest.writeDouble(picLat);
+        dest.writeDouble(picLng);
     }
 }

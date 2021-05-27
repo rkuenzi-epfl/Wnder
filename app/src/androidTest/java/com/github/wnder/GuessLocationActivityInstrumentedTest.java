@@ -101,10 +101,7 @@ public class GuessLocationActivityInstrumentedTest  {
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
          */
         intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_tour_mode);
-        Location pictureToGuessLoc = new Location("");
-        pictureToGuessLoc.setLatitude(10.0);
-        pictureToGuessLoc.setLongitude(10.0);
-        Picture pictureToGuess = new Picture("simple", dummyPic, pictureToGuessLoc);
+        Picture pictureToGuess = new Picture("simple", 10.0, 10.0);
         intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
         intent.putExtra(GuessLocationActivity.EXTRA_TOUR_ID, "tour");
     }
