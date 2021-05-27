@@ -12,6 +12,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.github.wnder.guessLocation.GuessPreviewActivity;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
