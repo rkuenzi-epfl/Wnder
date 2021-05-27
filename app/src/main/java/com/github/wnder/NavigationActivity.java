@@ -107,14 +107,17 @@ public class NavigationActivity extends AppCompatActivity {
             //permission to get the location
             for(int i = 0; i < permissions.length; ++i){
                 if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
-                    // TODO: What happens if the user did not accept?
-                    throw new UnsupportedOperationException();
+                    AlertBuilder.okAlert(getString(R.string.gps_access_title), getString(R.string.gps_access_body), this).show();
                 }
-
-                LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, location -> {
-                    //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
-                });
+                else{
+                    LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                    if(!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                        AlertBuilder.okAlert(getString(R.string.gps_disabled_title), getString(R.string.gps_disabled_body), this).show();
+                    }
+                    LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, location -> {
+                        //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
+                    });
+                }
             }
         }
     }
