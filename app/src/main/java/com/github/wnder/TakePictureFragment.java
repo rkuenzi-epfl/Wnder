@@ -13,6 +13,7 @@ import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -63,6 +64,7 @@ public class TakePictureFragment extends Fragment {
     private FloatingActionButton uploadButton;
     private EditText enterText;
     private TextView numberOfPictures;
+    private Button validateTour;
 
     private boolean tourMode = true;
     private String tourName = "";
@@ -88,7 +90,9 @@ public class TakePictureFragment extends Fragment {
         takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
         enterText = view.findViewById(R.id.enterName);
         numberOfPictures = view.findViewById(R.id.numberOfPictures);
+        validateTour = view.findViewById(R.id.validateTour);
 
+        validateTour.setVisibility(View.INVISIBLE);
         enterText.setVisibility(View.INVISIBLE);
         numberOfPictures.setVisibility(View.INVISIBLE);
 
@@ -143,17 +147,21 @@ public class TakePictureFragment extends Fragment {
     private void onTakePictureResult(boolean stored) {
         if (stored) {
 
+            // Move takePictureButton up and display upload button
+            TransitionManager.beginDelayedTransition(coordinatorLayout);
+            takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonOffset);
+            coordinatorLayout.requestLayout();
+            uploadButton.show();
+
             if(tourMode){
                 takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
                 tourPictures.add(new Pair<>(takenPictureId, new UploadInfo(userName, takenPictureLocation, takenPictureUri)));
-                setTextForTourSize(tourPictures.size());
+                if(!setTextForTourSize(tourPictures.size())){
+                    takePictureButton.setVisibility(View.INVISIBLE);
+                }
+                uploadButton.setOnClickListener(button -> ChooseTourName());
             }
             else{
-                // Move takePictureButton up and display upload button
-                TransitionManager.beginDelayedTransition(coordinatorLayout);
-                takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonOffset);
-                coordinatorLayout.requestLayout();
-                uploadButton.show();
 
                 ImageView takenPictureView = getView().findViewById(R.id.takenPicture);
                 takenPictureView.setImageURI(takenPictureUri);
@@ -215,13 +223,32 @@ public class TakePictureFragment extends Fragment {
 
     }
 
+    private void ChooseTourName(){
+        //Hide and show the concerned part of the UI
+        enterText.setVisibility(View.VISIBLE);
+        validateTour.setVisibility(View.VISIBLE);
+        uploadButton.setVisibility(View.INVISIBLE);
+        takePictureButton.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.INVISIBLE);
+        validateTour.setOnClickListener(button -> finalizeTour());
+    }
+
+    private void finalizeTour(){
+        if(user instanceof GuestUser){
+            Snackbar.make(getView(), "Guest user are not allowed to upload tour", Snackbar.LENGTH_SHORT).show();
+        }
+        else{
+
+        }
+    }
+
     /**
-     *
+     * Modify the text indicating the number of pictures taken for the tour
      * @param size of the tour
      * @return true if we can add more photos, false otherwise
      */
     private boolean setTextForTourSize(int size){
-        if(size >= 10){
+        if(size >= MAX_NUMBER_OF_TOUR){
             numberOfPictures.setText("Your tour has " + size + " pictures. You can't add more.");
             return false;
         }
