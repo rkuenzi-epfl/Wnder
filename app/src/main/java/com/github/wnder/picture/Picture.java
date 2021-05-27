@@ -1,7 +1,5 @@
 package com.github.wnder.picture;
 
-import android.graphics.Bitmap;
-import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 

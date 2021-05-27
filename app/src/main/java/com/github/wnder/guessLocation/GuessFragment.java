@@ -30,8 +30,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 
-import java.util.Objects;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -113,8 +111,8 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     private void openPreviewActivity() {
         if(networkInfo.isNetworkAvailable()){
-            //Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
-            Intent intent = new Intent(getActivity(), TemporaryActivity.class);
+            Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            //Intent intent = new Intent(getActivity(), TemporaryActivity.class); //Uncomment to try the app with the Tour Mode in GuessLocation
             startActivity(intent);
         }
         else{
