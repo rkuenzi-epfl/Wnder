@@ -2,12 +2,16 @@ package com.github.wnder.user;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 
 import androidx.core.app.ActivityCompat;
+
+import com.github.wnder.GuessPreviewActivity;
+import com.github.wnder.NavigationActivity;
 
 /**
  * abstract class defining a user
@@ -39,9 +43,9 @@ public abstract class User {
      * @return last known location of user
      */
     public Location getPositionFromGPS(LocationManager manager, Context context){
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-        //TODO:
-        //throw new IllegalStateException();
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || !manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Intent intent = new Intent(context, NavigationActivity.class);
+            context.startActivity(intent);
         }
         Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(loc == null){ //To avoid unexpected result from the GPS, we set it to 0, 0.

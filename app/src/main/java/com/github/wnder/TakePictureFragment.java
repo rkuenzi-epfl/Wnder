@@ -1,7 +1,9 @@
 package com.github.wnder;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
@@ -22,6 +24,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts.TakePicture;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.transition.TransitionManager;
 
@@ -89,6 +92,11 @@ public class TakePictureFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            AlertBuilder.okAlert(getString(R.string.gps_missing_title), getString(R.string.gps_missing_body), getContext()).show();
+            return;
+        }
+
         coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
