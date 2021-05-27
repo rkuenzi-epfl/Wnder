@@ -1,10 +1,12 @@
 package com.github.wnder.guessLocation;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,8 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 
-import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.Score;
 import com.github.wnder.Utils;
@@ -191,12 +193,16 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         findViewById(R.id.confirmButton).setOnClickListener(id -> confirmButton());
 
         //Timer setup
+        LocationManager locMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         final Handler handler = new Handler();
         updateGuessPositionFromGPS = new TimerTask() {
             @Override
             public void run() {
                 handler.post(() -> {
-                    Location loc = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this);
+                    if(!locMan.isProviderEnabled(LocationManager.GPS_PROVIDER) || ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                        timer.cancel();
+                    }
+                    Location loc = user.getPositionFromGPS(locMan, GuessLocationActivity.this);
                     if (compassMode) {
                         LatLng destinationPoint = new LatLng(loc.getLatitude(), loc.getLongitude());
                         updatePositionByLineAnimation(guessSource, guessAnimator, guessPosition, destinationPoint);
@@ -526,6 +532,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         sensorManager.unregisterListener(listener);
         super.onDestroy();
         mapView.onDestroy();
+        timer.cancel();
     }
 
     /**

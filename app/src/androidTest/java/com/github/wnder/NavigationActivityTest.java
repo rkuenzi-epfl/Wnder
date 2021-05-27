@@ -122,21 +122,8 @@ public class NavigationActivityTest {
         onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
         onView(withId(android.R.id.button1)).perform(click());
 
-        // Build a result to return from the Camera app
-        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
-        Intent resultData = new Intent();
-        resultData.putExtra("data", dummyPic);
-        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
-
-        // Return a sucessful result from the camera
-        intending(hasAction(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
-
-        // Click the take picture button
-        onView(withId(R.id.takePictureButton)).perform(click());
-        // And check that we are informed that upload did not happen
-        onView(withId(R.id.uploadButton)).perform(click());
-        onView(withText(R.string.guest_no_upload)).check(matches(isDisplayed()));
-
+        // Check that we are sent back to the profile page
+        onView(withId(R.id.profile_page)).check(matches(isDisplayed()));
     }
 
     @Test

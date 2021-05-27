@@ -77,7 +77,8 @@
     <string name="content_descr_picture_taken">Your picture</string>
     <string name="content_descr_take_picture_button">Take picture image button</string>
     <string name="content_descr_upload_button">Upload image button</string>
-    <string name="guest_no_upload">Guest user are not allowed to upload pictures.</string>
+    <string name="guest_no_upload">Please log in before taking a picture.</string>
+    <string name="log_in">Log in</string>
     <string name="upload_later">It seems you are not connected to the internet, your uploads will resume once you are connected again.</string>
     <string name="upload_started">Upload started.</string>
     <string name="upload_not_started">Upload failed to start.</string>
@@ -101,5 +102,12 @@
     <string name="bar_report_impossible">The report process failed</string>
     <string name="bar_download_picture_failed">Download failed</string>
     <string name="start_a_tour">Start a tour</string>
+    <string name="gps_access_title">GPS access</string>
+    <string name="gps_access_body">The GPS is needed to access all the functionalities of the app.</string>
+    <string name="gps_disabled_title">GPS is disabled</string>
+    <string name="gps_disabled_body">Please, activate your GPS to access all the functionalities.</string>
+    <string name="gps_missing_title">Functionality unavailable</string>
+    <string name="gps_missing_body">The application needs the GPS to continue.</string>
+
 
 </resources>
