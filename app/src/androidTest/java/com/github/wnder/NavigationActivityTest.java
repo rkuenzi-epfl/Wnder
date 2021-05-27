@@ -12,11 +12,13 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.github.wnder.guessLocation.GuessPreviewActivity;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.picture.UploadInfo;
+import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 
@@ -42,6 +44,7 @@ import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -100,6 +103,14 @@ public class NavigationActivityTest {
         onView(withId(R.id.navigationToGuessButton)).perform(click());
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
+    }
+
+    @Test
+    public void tourButtonGoesToTour() {
+        onView(withId(R.id.guess_page)).perform(click());
+        onView(withText("Radius: 5km")).check(matches(isDisplayed()));
+        onView(withId(R.id.navigationToTourButton)).perform(click());
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
     
 
