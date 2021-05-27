@@ -103,7 +103,6 @@ public class TemporaryActivityTest {
 
     @Test
     public void testGuessLocationButton() {
-        onView(withId(R.id.temporary_button)).perform(click());
         onView(withId(R.id.temporary_button)).check(matches(isDisplayed()));
     }
 
