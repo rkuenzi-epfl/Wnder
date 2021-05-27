@@ -31,7 +31,7 @@ import androidx.transition.TransitionManager;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
-import com.github.wnder.tour.TourDatabase;
+import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
@@ -59,8 +59,7 @@ public class TakePictureFragment extends Fragment {
     @Inject
     public NetworkService networkInfo;
 
-    @Inject
-    public TourDatabase tourDb;
+    private FirebaseTourDatabase tourDb;
 
     private ActivityResultLauncher<Uri> takePictureLauncher;
 
@@ -74,7 +73,6 @@ public class TakePictureFragment extends Fragment {
     private Button validateTour;
 
     private boolean tourMode = true;
-    private String tourName = "";
     private List<Pair<String, UploadInfo>> tourPictures;
     private static final int MAX_NUMBER_OF_TOUR = 10;
 
@@ -96,6 +94,8 @@ public class TakePictureFragment extends Fragment {
             AlertBuilder.okAlert(getString(R.string.gps_missing_title), getString(R.string.gps_missing_body), getContext()).show();
             return;
         }
+
+        tourDb = new FirebaseTourDatabase(this.getContext());
 
         coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
@@ -262,7 +262,7 @@ public class TakePictureFragment extends Fragment {
                     pictures.add(pair.first);
 
                     if(pictures.size() == tourPictures.size()){ //Which mean that we did not lose any pictures along the way
-                        CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(tourName), tourName, pictures);
+                        CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(enterText.getText().toString()), enterText.getText().toString(), pictures);
 
                         uploadTour.thenAccept(ress -> {
                             Snackbar.make(getView(), "Your tour was successfully uploaded.", Snackbar.LENGTH_SHORT).show();
