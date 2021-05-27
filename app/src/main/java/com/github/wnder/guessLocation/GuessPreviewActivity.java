@@ -77,6 +77,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
+        findViewById(R.id.guessButton).setVisibility(View.INVISIBLE);
 
         //Setup swipe
         imageDisplayed.setOnClickListener(id -> {});
@@ -137,6 +138,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     pictureLng = Lct.getLongitude();
                 });
                 pictureID = picId;
+                findViewById(R.id.guessButton).setVisibility((View.VISIBLE));
             } else {
                 //If not, display default picture
                 // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
