@@ -105,16 +105,15 @@ public class TakePictureFragment extends Fragment {
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
         } else {
-            ActivityResultLauncher<String> requestPermissionLauncher =
-                    registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                        if (isGranted) {
-                            initializeCameraPreview(view);
-                        }
-                    });
-
             if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                initializeCameraPreview(view);
+                initializeCameraPreview();
             } else {
+                ActivityResultLauncher<String> requestPermissionLauncher =
+                        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                            if (isGranted) {
+                                initializeCameraPreview();
+                            }
+                        });
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             }
         }
@@ -124,7 +123,10 @@ public class TakePictureFragment extends Fragment {
         }
     }
 
-    private void initializeCameraPreview(@NonNull View view) {
+    /**
+     * Initialize the camera preview view and the shutter button
+     */
+    private void initializeCameraPreview() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this.getContext());
         cameraProviderFuture.addListener(() -> {
             ProcessCameraProvider cameraProvider = null;
@@ -152,6 +154,10 @@ public class TakePictureFragment extends Fragment {
         }, ContextCompat.getMainExecutor(this.getContext()));
     }
 
+    /**
+     * Try to take a picture and transition to the upload view if that worked
+     * @param imageCapture the image capture instance needed to get the picture
+     */
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
 
@@ -189,6 +195,11 @@ public class TakePictureFragment extends Fragment {
         );
     }
 
+    /**
+     * Transition to the upload view which shows a preview of the picture that was just taken
+     * @param takenPictureId the identifier of the picture
+     * @param takenPictureUri the uri of the picture
+     */
     private void transitionToUpload(String takenPictureId, Uri takenPictureUri) {
         // Move takePictureButton up and display upload button
         TransitionManager.beginDelayedTransition(coordinatorLayout);
@@ -208,6 +219,9 @@ public class TakePictureFragment extends Fragment {
         });
     }
 
+    /**
+     * Go back from the upload view to the preview view
+     */
     private void transitionToBase() {
         // Move takePictureButton down and hide upload button
         uploadButton.hide();
@@ -216,6 +230,11 @@ public class TakePictureFragment extends Fragment {
         coordinatorLayout.requestLayout();
     }
 
+    /**
+     * Try to upload a picture to the database
+     * @param takenPictureId the identifier of the picture
+     * @param takenPictureUri the uri of the picture
+     */
     private void uploadTakenPicture(String takenPictureId, Uri takenPictureUri) {
         if(user instanceof GuestUser){
             Snackbar.make(getView(), R.string.guest_no_upload, Snackbar.LENGTH_SHORT).show();

@@ -92,6 +92,10 @@ public class NavigationActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Select an item in the navigation bar, which will display the associated fragment
+     * @param itemId resource id of the item
+     */
     protected void selectItem(int itemId) {
         bottomNavigationView.setSelectedItemId(itemId);
     }
