@@ -210,7 +210,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
 
         // Start upload
         StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
-        UploadTask pictureTask = storage.child("pictures/"+uniqueId+".jpg").putFile(uploadInfo.pictureUri, metadata);
+        UploadTask pictureTask = storage.child("pictures/"+uniqueId+".jpg").putFile(uploadInfo.getPictureUri(), metadata);
 
         File file = new File(activeUploadDirectory, uniqueId);
 
@@ -225,7 +225,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
         }
 
         // Attach upload SuccessListener
-        return attachUploadListener(uniqueId, uploadInfo.userName, uploadInfo.location, pictureTask);
+        return attachUploadListener(uniqueId, uploadInfo.getUserUid(), uploadInfo.getLocation(), pictureTask);
     }
 
     /**
@@ -236,11 +236,11 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
      * @param task the task to attach the metadata task to
      * @return a completable future that completes when everything is uploaded
      */
-    private CompletableFuture<Void> attachUploadListener(String uniqueId, String userName, Location location, UploadTask task){
+    private CompletableFuture<Void> attachUploadListener(String uniqueId, String userUid, Location location, UploadTask task){
         CompletableFuture<Void> attributesCf = new CompletableFuture<>();
         CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
         CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
-        CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, userName, PictureType.upload);
+        CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, userUid, PictureType.upload);
         CompletableFuture<Void> cf = CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf);
 
         task.addOnSuccessListener(pictureUploadResult -> {
@@ -287,10 +287,10 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     /**
      * Add this picture to the list of uploaded or guessed pictures of the user
      */
-    private CompletableFuture<Void> addToUserPictures(String uniqueId, String user, PictureType type){
+    private CompletableFuture<Void> addToUserPictures(String uniqueId, String userUid, PictureType type){
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //get current user data
-        usersCollection.document(user).get()
+        usersCollection.document(userUid).get()
                 .addOnSuccessListener((documentSnapshot) ->{
 
                     //Get current user data

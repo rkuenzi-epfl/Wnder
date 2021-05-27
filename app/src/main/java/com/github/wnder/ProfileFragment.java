@@ -2,10 +2,13 @@ package com.github.wnder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -22,6 +25,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -57,10 +64,12 @@ public class ProfileFragment extends Fragment {
 
     //setup sign in client and userdb
     private GoogleSignInClient client;
-    private final int RC_SIGN_IN = 10; // Arbitrary number
+    private ActivityResultLauncher<Intent> googleSignInLauncher;
+    private FirebaseAuth firebaseAuth;
+
+
     @Inject
     public UserDatabase userDb;
-
     private UserDatabaseUtils userDbUtils;
 
     @Inject
@@ -117,10 +126,20 @@ public class ProfileFragment extends Fragment {
 
         //Setup google sign in
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
+                .requestIdToken(getString(R.string.google_secret)).requestEmail().build();
+        googleSignInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    // Get account from google and sign in to firebase
+                    GoogleSignIn.getSignedInAccountFromIntent(result.getData())
+                            .addOnSuccessListener(account -> {
+                                handleSignInResult(GoogleAuthProvider.getCredential(account.getIdToken(), null));
+                            }).addOnFailureListener(failed -> signInFailed());
 
+                });
         client = GoogleSignIn.getClient(this.getActivity(), gso);
+
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
     /**
@@ -130,12 +149,9 @@ public class ProfileFragment extends Fragment {
     public void onStart(){
         super.onStart();
 
-        //Checks if user has already signed in
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
-
-        //If yes, retrieve this account and set the user
-        if(account != null && account.getDisplayName() != null && account.getPhotoUrl() != null) {
-            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if(currentUser != null){
+            setGlobalUser(currentUser);
         }
 
         //update page status
@@ -146,10 +162,11 @@ public class ProfileFragment extends Fragment {
      * Logs out the user
      */
     private void logout(){
-        //log out
-        client.signOut();
         //global user becomes guest again
         GlobalUser.resetUser();
+        //log out
+        client.signOut();
+        FirebaseAuth.getInstance().signOut();
         //update page status
         updateLoginStatus();
     }
@@ -158,46 +175,43 @@ public class ProfileFragment extends Fragment {
      * Helps a user sign in
      */
     private void signIn() {
-        Intent signInIntent = client.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        //Checks if user has already signed in
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getContext());
+
+        //If yes, retrieve this account and set the user
+        if(account != null && account.getIdToken() != null) {
+            handleSignInResult(GoogleAuthProvider.getCredential(account.getIdToken(), null));
+        } else {
+            googleSignInLauncher.launch(client.getSignInIntent());
+        }
+
     }
 
     /**
-     * To execute when a user just signed in
-     * @param requestCode request code
-     * @param resultCode result code
-     * @param data intent
+     * Set the global user on a successful sign in
+     * and update UI
      */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
+    private void setGlobalUser(FirebaseUser firebaseUser){
+        Log.d("FACC", "GOT FACC");
+        GlobalUser.setUser(new SignedInUser(firebaseUser.getDisplayName(), firebaseUser.getPhotoUrl(), firebaseUser.getUid()));
+        updateLoginStatus();
     }
 
     /**
-     * Tool method for onActivityResult: handles sign in result
-     * @param completedTask completed task
+     * Get credential from google and sign in to firebase
+     * @param credential credential from the auth provider
      */
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+    private void handleSignInResult(AuthCredential credential) {
+        Log.d("GACC", "GOT s");
 
-            // Signed in successfully, show authenticated UI.
-            GlobalUser.setUser(new SignedInUser(account.getDisplayName(), account.getPhotoUrl()));
-
-            updateLoginStatus();
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            //Log.w("LoginTag", "signInResult:failed code=" + e.getStatusCode());
-        }
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("succ fo success", "signInWithCredential:success");
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        setGlobalUser(user);
+                    } else {signInFailed();}
+                });
     }
 
     /**
@@ -268,5 +282,12 @@ public class ProfileFragment extends Fragment {
     private boolean areWeLoggedIn() {
         // just check that the global user is a signed in one
         return (GlobalUser.getUser() instanceof SignedInUser);
+    }
+
+    /**
+     * Display alert when signIn fail
+     */
+    private void signInFailed(){
+        AlertBuilder.okAlert(getString(R.string.signin_fail), getString(R.string.signin_fail_retry), this.getContext());
     }
 }

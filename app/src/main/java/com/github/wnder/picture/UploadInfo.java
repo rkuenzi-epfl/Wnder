@@ -21,14 +21,14 @@ import java.nio.charset.StandardCharsets;
  */
 public class UploadInfo {
 
-    private static String USER_NAME = "user_name";
+    private static String USER_UID = "user_uid";
     private static String LATITUDE = "latitude";
     private static String LONGITUDE = "longitude";
     private static String FILE_URI = "file_uri";
 
-    String userName;
-    Location location;
-    Uri pictureUri;
+    private String userUid;
+    private Location location;
+    private Uri pictureUri;
 
     /**
      * Store a file with the information for an upload
@@ -40,7 +40,7 @@ public class UploadInfo {
     public static void storeUploadInfo(File file, UploadInfo uploadInfo) throws JSONException, IOException {
         //Create json
         JSONObject json = new JSONObject();
-        json.put(USER_NAME, uploadInfo.userName);
+        json.put(USER_UID, uploadInfo.userUid);
         json.put(LATITUDE, uploadInfo.location.getLatitude());
         json.put(LONGITUDE, uploadInfo.location.getLongitude());
         json.put(FILE_URI, uploadInfo.pictureUri.toString());
@@ -103,13 +103,13 @@ public class UploadInfo {
      * @throws JSONException
      */
     private static UploadInfo extractUploadInfoFromJSON(JSONObject json) throws JSONException {
-        String userName = json.getString(USER_NAME);
+        String userUid = json.getString(USER_UID);
         Location location = new Location("");
         location.setLatitude(json.getDouble(LATITUDE));
         location.setLongitude(json.getDouble(LONGITUDE));
         String pictureUri = json.getString(FILE_URI);
 
-        return new UploadInfo(userName, location, Uri.parse(pictureUri));
+        return new UploadInfo(userUid, location, Uri.parse(pictureUri));
     }
 
     /**
@@ -121,31 +121,31 @@ public class UploadInfo {
         return file.delete();
     }
 
-    public UploadInfo(String userName, Location location, Uri uri){
-        this.userName = userName;
+    public UploadInfo(String userUid, Location location, Uri uri){
+        this.userUid = userUid;
         this.location = location;
         this.pictureUri = uri;
     }
 
     /**
-     * Get user name
-     * @return userName
+     * Get user uid
+     * @return userUid
      */
-    public String getUserName() {
-        return userName;
+    public String getUserUid() {
+        return userUid;
     }
 
     /**
-     * Get user name
-     * @return userName
+     * Get location
+     * @return location
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * Get user name
-     * @return userName
+     * Get picture Uri
+     * @return picture uri
      */
     public Uri getPictureUri() {
         return pictureUri;

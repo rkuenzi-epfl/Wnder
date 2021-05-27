@@ -7,21 +7,23 @@ import android.net.Uri;
  */
 public class SignedInUser extends User{
 
-    // These are guesses on future fields for a user
-    //private int GlobalScore;
-    //private History history;
+
+    private String uniqueId;
 
     /**
      * Constructor for SignedInUser
      * @param name name of the user
      * @param profilePicture profile picture of the user
      */
-    public SignedInUser(String name, Uri profilePicture){
-
+    public SignedInUser(String name, Uri profilePicture, String uid){
+        // Get better quality profile pic
+        String[] splUrl = profilePicture.toString().split("96");
         this.name = name;
-        this.profilePicture = profilePicture;
+        this.profilePicture = Uri.parse(splUrl[0] + "400" + splUrl[1]);
         //By default, radius is set at 5 km
         this.radius = 5;
+
+        this.uniqueId = uid;
     }
 
     /**

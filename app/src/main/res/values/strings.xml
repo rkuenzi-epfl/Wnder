@@ -12,6 +12,8 @@
     <string name="average_score_string">of average score.</string>
     <string name="total_score_string">of total score.</string>
     <string name="not_signed_in_stats">You must sign in and get an internet connection to see your stats.</string>
+    <string name="signin_fail">Sign in failed</string>
+    <string name="signin_fail_retry">Sign in failed, please try again.</string>
 
     <!--Main Activity Strings -->
     <string name="content_descr_profile_picture">Profile picture</string>
