@@ -28,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
-import com.github.wnder.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.Score;
 import com.github.wnder.Utils;
