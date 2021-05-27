@@ -1,8 +1,11 @@
 package com.github.wnder;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -11,6 +14,7 @@ import com.github.wnder.guessLocation.TemporaryActivity;
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.tour.FirebaseTourDatabase;
@@ -74,8 +78,10 @@ public class TemporaryActivityTest {
         Location loc =  new Location("");
         loc.setLatitude(15.);
         loc.setLongitude(5.);
+        Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         when(tourDb.getTourPics(anyString())).thenReturn(CompletableFuture.completedFuture(tourPics));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(loc));
+        when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
     }
 
     @AfterClass
@@ -89,8 +95,6 @@ public class TemporaryActivityTest {
         Intents.init();
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
-
-
 
     @After //Clears Intents state. Must be called after each test case.
     public void tearDown() {
