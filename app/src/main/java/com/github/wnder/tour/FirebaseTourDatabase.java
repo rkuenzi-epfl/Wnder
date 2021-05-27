@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.github.wnder.picture.InternalCachePictureDatabase;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,15 +19,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class FirebaseTourDatabase implements TourDatabase{
+import javax.inject.Inject;
 
-    private FirebasePicturesDatabase db;
+public class FirebaseTourDatabase implements TourDatabase{
 
     private final CollectionReference tourCollection;
 
+    private final InternalCachePictureDatabase ICPD;
+
+    @Inject
     public FirebaseTourDatabase(Context context) {
         tourCollection = FirebaseFirestore.getInstance().collection("tours");
-        db = new FirebasePicturesDatabase(context);
+
+        ICPD = new InternalCachePictureDatabase(context);
     }
 
     @Override
@@ -151,7 +156,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     private CompletableFuture<Void> uploadTourFirstLocation(String tourUniqueId, String firstPicId){
         CompletableFuture<Void> uploadLocFuture = new CompletableFuture<>();
 
-        db.getLocation(firstPicId).thenAccept(location -> {
+        ICPD.getLocation(firstPicId).thenAccept(location -> {
             Map<String, Double> tourFirstLoc = new HashMap<>();
             tourFirstLoc.put("tourFirstLat", location.getLatitude());
             tourFirstLoc.put("tourFirstLong", location.getLongitude());
@@ -219,8 +224,8 @@ public class FirebaseTourDatabase implements TourDatabase{
     private CompletableFuture<Double> getDistBetweenTwoPics(String firstPicId, String secondPicId){
         CompletableFuture<Double> distanceFuture = new CompletableFuture<>();
 
-        db.getLocation(firstPicId).thenAccept(location1 -> {
-            db.getLocation(secondPicId).thenAccept(location2 -> {
+        ICPD.getLocation(firstPicId).thenAccept(location1 -> {
+            ICPD.getLocation(secondPicId).thenAccept(location2 -> {
                double distance = location1.distanceTo(location2);
 
                distanceFuture.complete(distance);

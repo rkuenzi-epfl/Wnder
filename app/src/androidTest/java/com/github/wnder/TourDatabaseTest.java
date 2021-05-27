@@ -8,11 +8,8 @@ import androidx.test.core.app.ApplicationProvider;
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
 import com.github.wnder.tour.FirebaseTourDatabase;
-import com.github.wnder.tour.TourDatabase;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -26,7 +23,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static java.lang.Thread.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

@@ -105,9 +105,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 if (userGuess != null) {
                     distanceFromPicture = (int) userGuess.distanceTo(location);
                 }
-                String dText = context.getString(R.string.history_distance_meter, distanceFromPicture);
+                String dText = context.getString(R.string.distance_meter, distanceFromPicture);
                 if (distanceFromPicture > 10000) {
-                    dText = context.getString(R.string.history_distance_kilometer, distanceFromPicture / 1000);
+                    dText = context.getString(R.string.distance_kilometer, distanceFromPicture / 1000);
                 }
                 holder.getHistoryDistanceView().setText(dText);
             });
@@ -181,7 +181,5 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public LinearLayout getToMapView(){ return toMapView; }
 
         public LinearLayout getToScoreboardView(){ return toScoreboardView; }
-
-
     }
 }

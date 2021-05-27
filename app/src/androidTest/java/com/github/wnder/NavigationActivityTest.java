@@ -21,21 +21,18 @@ import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
-import com.github.wnder.picture.UploadInfo;
-import com.github.wnder.scoreboard.ScoreboardActivity;
+import com.github.wnder.tour.TourActivity;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
@@ -117,7 +114,7 @@ public class NavigationActivityTest {
         onView(withId(R.id.guess_page)).perform(click());
         onView(withText("Radius: 5km")).check(matches(isDisplayed()));
         onView(withId(R.id.navigationToTourButton)).perform(click());
-        Intents.intended(hasComponent(TemporaryActivity.class.getName()));
+        Intents.intended(hasComponent(TourActivity.class.getName()));
     }
 
     @Test
