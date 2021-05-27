@@ -157,7 +157,6 @@ public class GuessLocationSimpleModeActivityTest {
         Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
     }
 
-    /*
     @Test
     public void testImageUpdatesStatusInCompassMode(){
         onView(withId(R.id.mapView)).perform(click());
@@ -169,8 +168,6 @@ public class GuessLocationSimpleModeActivityTest {
 
         onView(withId(R.id.imageToGuessCard)).check(matches(not(isDisplayed())));
    }
-
-     */
 
     @Test
     public void nextGuessButtonIsDisplayedAtRightTime(){
