@@ -100,6 +100,8 @@ public class TakePictureFragment extends Fragment {
 
         // Alert Guest user and user no connected to the internet
         if(GlobalUser.getUser() instanceof GuestUser){
+            NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
+            navigationActivity.selectItem(R.id.profile_page);
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext()).show();
         } else if(!networkInfo.isNetworkAvailable()){
             Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
@@ -189,6 +191,5 @@ public class TakePictureFragment extends Fragment {
         newPictureDetails.put(MediaStore.Images.Media.DISPLAY_NAME, takenPictureId);
         newPictureDetails.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
         return getContext().getContentResolver().insert(imageCollection, newPictureDetails);
-
     }
 }
