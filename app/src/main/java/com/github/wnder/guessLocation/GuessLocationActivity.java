@@ -83,9 +83,6 @@ import static com.github.wnder.guessLocation.MapBoxHelper.zoomFromKilometers;
 @AndroidEntryPoint
 public class GuessLocationActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, MapboxMap.OnCameraMoveListener {
 
-    @Inject
-    public FirebasePicturesDatabase db;
-
     //Define all necessary and recurrent strings
     public static final String EXTRA_GUESS_MODE = "guess_mode";
     public static final String EXTRA_PICTURE_TO_GUESS = "picture_to_guess";
@@ -116,7 +113,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private boolean guessConfirmed;
     private boolean guessPossible;
     private Picture picToGuess;
-    private String tourID;
     private List<String> tourIDs;
     private int tourIndex = 0;
     private User user;
@@ -130,7 +126,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private boolean compassMode;
     private boolean mapClickOnCompassMode;
     private GuessLocationCompass compass;
-
 
     @Inject
     public PicturesDatabase picturesDb;
@@ -164,7 +159,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         guessMode = extras.getInt(EXTRA_GUESS_MODE);
         picToGuess = extras.getParcelable(EXTRA_PICTURE_TO_GUESS);
         if (guessMode == R.string.guess_tour_mode) {
-            tourID = extras.getString(EXTRA_TOUR_ID);
+            String tourID = extras.getString(EXTRA_TOUR_ID);
             findViewById(R.id.compassMode).setVisibility(INVISIBLE);
             TourDb = new FirebaseTourDatabase(this);
             TourDb.getTourPics(tourID).thenAccept(ls -> tourIDs = ls);
@@ -219,12 +214,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                         updatePositionByLineAnimation(guessSource, guessAnimator, guessPosition, destinationPoint);
                         guessPosition = updatePositionByLineAnimation(arrowSource, arrowAnimator, guessPosition, destinationPoint);
                     }
-
-                    if (guessPosition.distanceTo(picturePosition) < ARRIVED_DISTANCE) {
-                        guessPossible = true;
-                    } else {
-                        guessPossible = false;
-                    }
+                    guessPossible = guessPosition.distanceTo(picturePosition) < ARRIVED_DISTANCE;
                 });
             }
         };
@@ -258,7 +248,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         bigCard.setVisibility(INVISIBLE);
         ImageView littleImage = findViewById(R.id.imageToGuess);
         ImageView bigImage = findViewById(R.id.imageToGuessZoomedIn);
-        db.getBitmap(picToGuess.getUniqueId()).thenAccept(bmp -> {
+        picturesDb.getBitmap(picToGuess.getUniqueId()).thenAccept(bmp -> {
             littleImage.setImageBitmap(bmp);
             littleImage.setVisibility(VISIBLE);
             bigImage.setImageBitmap(bmp);
@@ -489,10 +479,10 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
             //What to do when OK is pressed
             builder.setPositiveButton("Yes", (DialogInterface dialog, int which) -> {
-                tourIndex += 1;
                 if (tourIndex >= tourIDs.size()) {
                     guessPossibleConfirmTourMode();
                 } else {
+                    tourIndex += 1;
                     nextGuessTourMode();
                 }
             });
