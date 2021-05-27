@@ -160,8 +160,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             TourDb.getTourPics(tourID).thenAccept(ls -> tourIDs = ls);
         }
 
-        double gpsLat = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude();
-        double gpsLng = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude();
+        double gpsLat = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this).getLatitude();
+        double gpsLng = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this).getLongitude();
         cameraPosition = new LatLng(gpsLat, gpsLng);
         guessPosition = new LatLng(cameraPosition);
 

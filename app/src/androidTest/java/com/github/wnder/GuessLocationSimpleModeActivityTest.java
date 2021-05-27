@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -17,6 +18,9 @@ import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -78,6 +82,9 @@ public class GuessLocationSimpleModeActivityTest {
 
     @BeforeClass
     public static void beforeAll(){
+
+        User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        GlobalUser.setUser(user);
 
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         Location dummyLoc = new Location("");
