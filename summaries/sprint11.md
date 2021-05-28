@@ -11,6 +11,12 @@ Next time I should again separate my PRs better and instead of waiting to do a b
 
 ## Jeremy
 
+This week I had to add a transition from the guess fragment in the main activity to the activity that lets the user select a tour. I also had to make the transition from the select tour activity to the guess activity in tour mode and make sure it has all the needed information.
+
+The first one went without problems. In my second task I created a fake activity that only holds code for the transitions to the guess in tour mode and Alois' task has reunited both our tasks in the same PR since he needed my code that hasn't been merged when he started. Also I overestimated a bit this task since its wording let me think that I should have retrived all information for the tour but after discussion with Alois he only needed one id and simplified my task quite a lot.
+
+Next time I will ask during the task assignments what people would exaclty need from me.
+
 ## Léonard
 
 ## Nicolas
