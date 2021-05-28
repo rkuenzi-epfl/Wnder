@@ -1,7 +1,13 @@
-# Summary for week 6
+# Summary for week 13
 
 
 ## Aloïs 
+
+This week I had do modifiy the mapbox activity so that you can call it in its already implemented simple way but also in a new tour way which let the user guess a series of pictures by walking to them.
+
+I did underestimate my tasks this week which led me to have my PR ready late into the week. This is because I tried to tackle my work with a patern design that didn't fit in the end and had to start over. The most annoying part to me is that I did the same mistake as last week which is not seperating enough my PRs. I realize only know, just before the end of the sprint, that I could have separated my PR in two and have one of them ready way earlier which would have lead to the merge on the main branch of at least a bit of my work.
+
+Next time I should again separate my PRs better and instead of waiting to do a bigger PR I should separate in smaller PRs and just ask for reviews and merge instantly when the first part is done.
 
 ## Jeremy
 
