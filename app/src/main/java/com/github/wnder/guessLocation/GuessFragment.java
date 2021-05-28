@@ -79,7 +79,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         guessButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
 
         FloatingActionButton tourButton = rootView.findViewById(R.id.navigationToTourButton);
-        tourButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
+        tourButton.setOnClickListener((view) -> openActivity(new TemporaryActivity()));
 
         return rootView;
     }
@@ -115,8 +115,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     private  <T extends AppCompatActivity> void openActivity(AppCompatActivity activity) {
         if(networkInfo.isNetworkAvailable()){
-            //Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
-            Intent intent = new Intent(getActivity(), TemporaryActivity.class); //Uncomment to try the app with the Tour Mode in GuessLocation
+            Intent intent = new Intent(getActivity(), activity.getClass()); //Uncomment to try the app with the Tour Mode in GuessLocation
             startActivity(intent);
         }
         else{
