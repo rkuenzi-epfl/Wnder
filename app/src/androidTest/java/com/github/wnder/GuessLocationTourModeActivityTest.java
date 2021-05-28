@@ -10,9 +10,11 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
+import com.github.wnder.guessLocation.GuessPreviewActivity;
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
@@ -96,7 +98,7 @@ public class GuessLocationTourModeActivityTest {
         FirebasePicturesDatabase db = new FirebasePicturesDatabase(ApplicationProvider.getApplicationContext());
 
         Location defaultPicLoc = new Location("");
-        defaultPicLoc.setLatitude(0);
+        defaultPicLoc.setLatitude(90);
         defaultPicLoc.setLongitude(0);
 
         String userName = "testUser";
@@ -176,17 +178,12 @@ public class GuessLocationTourModeActivityTest {
         onView(withId(R.id.confirmButton)).perform(click());
 
         onView(withText(R.string.tour_mode_confirm_while_far_text)).check(matches(isDisplayed()));
-    }
 
-    @Test
-    public void goThroughTourByWalking() {
-        onView(withId(R.id.confirmButton)).perform(click());
-
-        onView(withId(R.id.backToGuessPreview)).check(matches(isDisplayed()));
+        onView(withId(android.R.id.button1)).perform(click());
 
         onView(withId(R.id.backToGuessPreview)).perform(click());
 
-        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
 
     @Test

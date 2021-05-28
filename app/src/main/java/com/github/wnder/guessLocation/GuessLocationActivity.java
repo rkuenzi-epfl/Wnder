@@ -479,7 +479,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
             //What to do when OK is pressed
             builder.setPositiveButton("Yes", (DialogInterface dialog, int which) -> {
-                if (tourIndex >= tourIDs.size()) {
+                if (tourIndex >= tourIDs.size()-1) {
                     guessPossibleConfirmTourMode();
                 } else {
                     tourIndex += 1;
@@ -496,14 +496,13 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void guessPossibleConfirmTourMode() {
-        tourIndex += 1;
-
         //If guess has been confirmed, go to next guess or end the tour
         if (guessConfirmed) {
             nextGuessTourMode();
             return;
         }
 
+        tourIndex += 1;
         guessConfirmed = true;
 
         String animatedText = "" + tourIndex + "/" + tourIDs.size() + "\nPictures found";
