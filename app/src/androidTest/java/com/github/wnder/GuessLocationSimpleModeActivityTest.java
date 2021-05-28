@@ -175,6 +175,20 @@ public class GuessLocationSimpleModeActivityTest {
    }
 
     @Test
+    public void testSwitchMode(){
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+
+        onView(withId(R.id.confirmButton)).perform(click());
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        Intents.intended(hasComponent(ScoreboardActivity.class.getName()));
+    }
+
+    @Test
     public void nextGuessButtonIsDisplayedAtRightTime(){
         onView(withId(R.id.backToGuessPreview)).check(matches(not(isDisplayed())));
 

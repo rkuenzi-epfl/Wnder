@@ -36,6 +36,8 @@
     <string name="report">Report</string>
     <string name="help">Help</string>
     <string name="popup_menu">Popup menu</string>
+    <string name="content_descr_guess_preview_purple_band">A purple_500 band</string>
+    <string name="content_descr_guess_preview_written_logo">This is the written logo of Wnder</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
     <string name="bar_save_is_impossible">"Impossible to save this picture."</string>
