@@ -78,14 +78,11 @@
     <string name="content_descr_take_picture_button">Take picture image button</string>
     <string name="content_descr_upload_button">Upload image button</string>
     <string name="guest_no_upload">Please log in before taking a picture.</string>
-    <string name="log_in">Log in</string>
     <string name="upload_later">It seems you are not connected to the internet, your uploads will resume once you are connected again.</string>
     <string name="upload_started">Upload started.</string>
     <string name="upload_not_started">Upload failed to start.</string>
     <string name="upload_failed">Upload failed.</string>
     <string name="upload_successful">Your picture was successfully uploaded!</string>
-    <string name="could_not_launch_camera">Wnder was not able to open your camera.</string>
-    <string name="no_picture_from_camera">Wnder did not receive a picture from the camera.</string>
 
     <!--Image From Gallery Strings-->
     <string name="SensorNotAvailableTitle">Sensor not available</string>
