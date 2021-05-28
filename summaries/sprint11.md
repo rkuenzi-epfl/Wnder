@@ -19,6 +19,12 @@ Next time I will ask during the task assignments what people would exaclty need 
 
 ## Léonard
 
+This week I fixed a bug that would lead the app to crash in case the permission were refused or the GPS disabled. My second task was to modify TakePictureFragment to allow the user to upload tours.
+
+The second task was depending on other tasks and as I had not much time during the week, It was ready too late to be reviewed.
+
+Next time, I should help people working on those other tasks to make the overall process less tedious.
+
 ## Nicolas
 
 This week I had to assigned tasks: I had to do the backend for the "tour" feature, and I had to add a button leading to the "tour" feature in the UI.
