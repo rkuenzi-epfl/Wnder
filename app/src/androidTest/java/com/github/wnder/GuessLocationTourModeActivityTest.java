@@ -10,7 +10,6 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
@@ -20,7 +19,6 @@ import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.picture.UploadInfo;
-import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
