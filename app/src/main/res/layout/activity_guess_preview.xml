@@ -35,6 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/help_bar_height"
         android:background="@color/purple_500"
+        android:contentDescription="@string/content_descr_wnder_topBar"
         app:layout_constraintEnd_toEndOf="@+id/helperButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/wonder_help_bar_margin"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/content_descr_wnder_logo"
         app:layout_constraintBottom_toBottomOf="@+id/imageView1"
         app:layout_constraintStart_toStartOf="@+id/imageView1"
         app:layout_constraintTop_toTopOf="@+id/imagePreview"
