@@ -32,8 +32,10 @@ public class UserDatabaseUtils {
         scores.thenAccept(scores -> {
             double totalScore = 0;
             //for each score, add it to the total
-            for(double score: scores){
-                totalScore = totalScore + score;
+            for(Double score: scores){
+                if(score != null) {
+                    totalScore = totalScore + score;
+                }
             }
             //Then complete with the total
             totalScoreFuture.complete(totalScore);
@@ -72,7 +74,9 @@ public class UserDatabaseUtils {
             }
             //if pics, get the total score, then compute average and complete the future with it
             else{
-                getTotalScore().thenAccept(total -> averageScore.complete((double) total/nbr));
+                getTotalScore().thenAccept(total -> {
+                    averageScore.complete((double) total/nbr);
+                });
             }
         });
 
