@@ -41,6 +41,7 @@ import dagger.hilt.android.testing.UninstallModules;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
+import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -127,6 +128,8 @@ public class GuessPreviewActivityTest {
     @Test
     public void testSkipButton(){
         onView(withId(R.id.imagePreview)).perform(swipeRight());
+        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        onView(withId(R.id.imagePreview)).perform(swipeLeft());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
 

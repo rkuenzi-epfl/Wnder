@@ -87,6 +87,11 @@ public class GuessPreviewActivity extends AppCompatActivity{
                 skipPicture();
                 return true;
             }
+            @Override
+            public boolean onSwipeLeft() {
+                skipPicture();
+                return true;
+            }
         });
     }
 
@@ -132,7 +137,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
         userDb.getNewPictureForUser(user).thenAccept(picId ->{
             if(!picId.equals("")){
                 //If there is a picture, display it
-                picturesDb.getBitmap(picId).thenAccept((bmp) -> setImageViewBitmap(bmp, picId));
+                picturesDb.getBitmap(picId).thenAccept((bmp) -> {
+                    setImageViewBitmap(bmp, picId);
+                    findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                });
                 picturesDb.getLocation(picId).thenAccept((Lct) -> {
                     pictureLat = Lct.getLatitude();
                     pictureLng = Lct.getLongitude();
@@ -144,6 +152,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
                 // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.raw.no_image);
                 setImageViewBitmap(bmp, picId);
+                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
             }
         }).exceptionally(res -> {
             Snackbar.make(findViewById(R.id.guessButton), R.string.bar_download_picture_failed, Snackbar.LENGTH_SHORT).show();
