@@ -126,9 +126,13 @@ public class GuessPreviewActivityTest {
     }
 
     @Test
-    public void testSkipButton(){
+    public void testSwipeRight(){
         onView(withId(R.id.imagePreview)).perform(swipeRight());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+    }
+
+    @Test
+    public void testSwipeLeft(){
         onView(withId(R.id.imagePreview)).perform(swipeLeft());
         Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
     }
