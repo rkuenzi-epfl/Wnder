@@ -36,6 +36,7 @@ import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.geojson.Point;
@@ -416,7 +417,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             guessedLocation.setLatitude(guessPosition.getLatitude());
             guessedLocation.setLongitude(guessPosition.getLongitude());
             MapBoxHelper.onMapSnapshotAvailable(this.getApplicationContext(), guessPosition, picturePosition, (mapSnapshot) -> {
-                picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation, mapSnapshot);
+                picturesDb.sendUserGuess(pictureID, (SignedInUser) user, guessedLocation, mapSnapshot);
             });
         }
         picturesDb.updateKarma(pictureID, 1);

@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -92,7 +93,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot) throws IllegalStateException{
+    public CompletableFuture<Void> sendUserGuess(String uniqueId, SignedInUser user, Location guessedLocation, Bitmap mapSnapshot) throws IllegalStateException{
         if (isOnline()) {
             getBitmap(uniqueId).thenAccept(bmp -> {
                 getLocation(uniqueId).thenAccept(location->{

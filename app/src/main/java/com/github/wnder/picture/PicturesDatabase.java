@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import com.github.wnder.user.SignedInUser;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,7 +48,7 @@ public interface PicturesDatabase {
      * @param mapSnapshot a snapshot of the map with the markers
      * @return a Future
      */
-    CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot);
+    CompletableFuture<Void> sendUserGuess(String uniqueId, SignedInUser user, Location guessedLocation, Bitmap mapSnapshot);
 
     /**
      * Provides (later) the bitmap of a picture

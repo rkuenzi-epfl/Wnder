@@ -4,19 +4,19 @@ import com.github.wnder.Score;
 import com.google.firebase.firestore.GeoPoint;
 
 /**
- * Represent a guess entry for the database
+ * Represent a guess entry for the picture database
  */
-public class GuessEntry {
+public class PictureGuessEntry {
 
     private String userName;
     private GeoPoint location;
-    private long score;
+    private double score;
 
     // For firestore
-    public GuessEntry(){}
+    public PictureGuessEntry(){}
 
     // Actual constructor
-    public GuessEntry(String userName, GeoPoint location, long score){
+    public PictureGuessEntry(String userName, GeoPoint location, double score){
         this.userName = userName;
         this.location = location;
         this.score = score;
@@ -30,7 +30,7 @@ public class GuessEntry {
         return location;
     }
 
-    public long getScore() {
+    public double getScore() {
         return score;
     }
 }

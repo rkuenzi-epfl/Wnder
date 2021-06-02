@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 
 import com.github.wnder.Score;
+import com.github.wnder.user.SignedInUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,8 +35,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     private final CollectionReference picturesCollection;
     private final CollectionReference usersCollection;
     private final CollectionReference reportedPicturesCollection;
-
-    private enum PictureType {guess, upload};
 
     private final static String ACTIVE_UPLOAD_URI_DIR_NAME = "active_uploads";
     private final File activeUploadDirectory;
@@ -149,37 +149,20 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> sendUserGuess(String uniqueId, String user, Location guessedLocation, Bitmap mapSnapshot) {
+    public CompletableFuture<Void> sendUserGuess(String uniqueId, SignedInUser user, Location guessedLocation, Bitmap mapSnapshot) {
         CompletableFuture<Void> guessSent = new CompletableFuture<>();
-        CompletableFuture<Void> scoreSent = new CompletableFuture<>();
+
         getLocation(uniqueId).thenAccept(location -> {
-            getUserGuesses(uniqueId).thenAccept((userGuesses) -> {
-                userGuesses.put(user, guessedLocation);
+            GeoPoint guessGeoPoint = new GeoPoint(guessedLocation.getLatitude(), guessedLocation.getLongitude());
+            double score = Score.computeScore(location, guessedLocation);
+            PictureGuessEntry guessEntry = new PictureGuessEntry(user.getName(), guessGeoPoint, score);
+            picturesCollection.document(uniqueId).collection("userData")
+                    .add(guessEntry)
+                    .addOnSuccessListener(result -> guessSent.complete(null))
+                    .addOnFailureListener(guessSent::completeExceptionally);
 
-                //Convert it to GeoPoint to fit Firestore (because Location doesn't work)
-                Map<String, GeoPoint> convertedGuesses = new TreeMap<>();
-                for (Map.Entry<String, Location> e : userGuesses.entrySet()) {
-                    GeoPoint guess = new GeoPoint(e.getValue().getLatitude(), e.getValue().getLongitude());
-                    convertedGuesses.put(e.getKey(), guess);
-                }
-                picturesCollection.document(uniqueId).collection("userData").document("userGuesses")
-                        .set(convertedGuesses)
-                        .addOnSuccessListener(result -> guessSent.complete(null)).addOnFailureListener(guessSent::completeExceptionally);
-
-            });
-            getScoreboard(uniqueId).thenAccept((scoreboard) -> {
-                //Compute score
-                Double score = Score.computeScore(location, guessedLocation);
-                Map<String, Double> newScoreboard = new HashMap<>(scoreboard);
-                newScoreboard.put(user, score);
-
-                picturesCollection.document(uniqueId).collection("userData").document("userScores")
-                        .set(newScoreboard)
-                        .addOnSuccessListener(result -> scoreSent.complete(null)).addOnFailureListener(scoreSent::completeExceptionally);
-
-            });
         });
-        return CompletableFuture.allOf(guessSent, scoreSent, addToUserPictures(uniqueId, user, PictureType.guess));
+        return CompletableFuture.allOf(guessSent, addToUserPictures(uniqueId, user, PictureType.guess));
     }
 
     @Override
@@ -285,43 +268,35 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     /**
-     * Add this picture to the list of uploaded or guessed pictures of the user
+     * Add a picture to the list of uploaded pictures of a user
+     * @param uniqueId the id of the picture to add
+     * @param user the user who uploaded the picture
+     * @return a Future complete when the list is updated
      */
-    private CompletableFuture<Void> addToUserPictures(String uniqueId, String userUid, PictureType type){
+    private CompletableFuture<Void> addToUploadedPictures(String uniqueId, SignedInUser user){
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //get current user data
-        usersCollection.document(userUid).get()
-                .addOnSuccessListener((documentSnapshot) ->{
-
-                    //Get current user data
-                    List<String> guessedPictures = (List<String>) documentSnapshot.get("guessedPics");
-                    List<String> uploadedPictures = (List<String>) documentSnapshot.get("uploadedPics");
-
-                    //Create lists if they don't exist
-                    if (guessedPictures == null) {
-                        guessedPictures = new ArrayList<>();
-                    }
-                    if (uploadedPictures == null) {
-                        uploadedPictures = new ArrayList<>();
-                    }
-
-                    if(type.equals(PictureType.upload)){
-                        //If uploaded pictures doesn't contain the new picture, add it
-                        if (!uploadedPictures.contains(uniqueId)){
-                            uploadedPictures.add(uniqueId);
-                        }
-                    }
-                    else{
-                        //add picture to the list of guessed pictures if it isn't already in
-                        if (!guessedPictures.contains(uniqueId)) {
-                            guessedPictures.add(uniqueId);
-                        }
-                    }
-
-                    uploadBack(user, guessedPictures, uploadedPictures, cf);
-                })
+        usersCollection.document(user.getUniqueId())
+                .update("uploaded", FieldValue.arrayUnion(uniqueId))
+                .addOnSuccessListener((documentSnapshot) -> cf.complete(null))
                 .addOnFailureListener(cf::completeExceptionally);
+        return cf;
+    }
 
+    /**
+     * Add a picture to the list of guessed pictures of a user
+     * @param uniqueId the id of the picture to add
+     * @param user the user who uploaded the picture
+     * @param guessEntry
+     * @return a Future complete when the picture is added
+     */
+    private CompletableFuture<Void> addToGuessedPictures(String uniqueId, SignedInUser user, UserGuessEntry guessEntry){
+        CompletableFuture<Void> cf = new CompletableFuture<>();
+        //get current user data
+        usersCollection.document(user.getUniqueId()).collection("guessed")
+                .document(uniqueId).set(guessEntry)
+                .addOnSuccessListener((documentSnapshot) -> cf.complete(null))
+                .addOnFailureListener(cf::completeExceptionally);
         return cf;
     }
 
