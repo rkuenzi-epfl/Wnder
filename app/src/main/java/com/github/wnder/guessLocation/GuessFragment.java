@@ -13,10 +13,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.github.wnder.AlertBuilder;
-import com.github.wnder.GuessPreviewActivity;
+import com.github.wnder.guessLocation.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
@@ -75,7 +76,10 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         manageSeekBar(radiusSeekBar, radiusTextView);
 
         FloatingActionButton guessButton = rootView.findViewById(R.id.navigationToGuessButton);
-        guessButton.setOnClickListener((view) -> openPreviewActivity());
+        guessButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
+
+        FloatingActionButton tourButton = rootView.findViewById(R.id.navigationToTourButton);
+        tourButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
 
         return rootView;
     }
@@ -109,9 +113,9 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         drawCircle(getActivity(), mapboxMap, cameraPosition);
     }
 
-    private void openPreviewActivity() {
+    private  <T extends AppCompatActivity> void openActivity(AppCompatActivity activity) {
         if(networkInfo.isNetworkAvailable()){
-            Intent intent = new Intent(getActivity(), GuessPreviewActivity.class);
+            Intent intent = new Intent(getActivity(), activity.getClass());
             startActivity(intent);
         }
         else{
@@ -119,6 +123,8 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
             alert.show();
         }
     }
+
+
 
     /**
      * Manage the SeekBar

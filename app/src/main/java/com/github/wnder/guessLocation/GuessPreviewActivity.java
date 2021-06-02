@@ -1,4 +1,4 @@
-package com.github.wnder;
+package com.github.wnder.guessLocation;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,7 +17,10 @@ import android.widget.PopupMenu;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.wnder.guessLocation.GuessLocationActivity;
+import com.github.wnder.AlertBuilder;
+import com.github.wnder.OnSwipeTouchListener;
+import com.github.wnder.R;
+import com.github.wnder.Utils;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
@@ -74,6 +77,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
 
         //Setup buttons
         findViewById(R.id.guessButton).setOnClickListener(id -> openGuessActivity());
+        findViewById(R.id.guessButton).setVisibility(View.INVISIBLE);
 
         //Setup swipe
         imageDisplayed.setOnClickListener(id -> {});
@@ -133,6 +137,8 @@ public class GuessPreviewActivity extends AppCompatActivity{
                     pictureLat = Lct.getLatitude();
                     pictureLng = Lct.getLongitude();
                 });
+                pictureID = picId;
+                findViewById(R.id.guessButton).setVisibility((View.VISIBLE));
             } else {
                 //If not, display default picture
                 // Maybe create a bitmap that tells that no pictures were available (this one is just the one available)
@@ -174,6 +180,7 @@ public class GuessPreviewActivity extends AppCompatActivity{
     private void skipPicture() {
         if(!pictureID.equals(Utils.UNINITIALIZED_ID)){
             picturesDb.updateKarma(pictureID, -1);
+            user.skipPicture(pictureID);
         }
 
         Intent intent = new Intent(this, GuessPreviewActivity.class);

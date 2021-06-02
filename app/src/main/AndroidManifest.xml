@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <dist:module dist:instant="true" />
 
@@ -26,7 +27,7 @@
         <activity android:name=".scoreboard.ScoreboardActivity" />
         <activity android:name=".guessLocation.GuessLocationActivity" />
         <activity
-            android:name=".GuessPreviewActivity"
+            android:name=".guessLocation.GuessPreviewActivity"
             android:noHistory="true" />
         <activity android:name=".NavigationActivity">
             <intent-filter>

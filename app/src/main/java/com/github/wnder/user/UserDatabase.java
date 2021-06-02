@@ -26,9 +26,8 @@ public interface UserDatabase {
 
     /**
      * Retrieve a picture id of a picture the user did not guess
-     * @param user the use for which we want a picture id
+     * @param user the user for which we want a picture id
      * @return a Future with a picture id
      */
     CompletableFuture<String> getNewPictureForUser(User user);
-
 }
