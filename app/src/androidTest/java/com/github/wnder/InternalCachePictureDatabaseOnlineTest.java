@@ -114,16 +114,6 @@ public class InternalCachePictureDatabaseOnlineTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Location loc = null;
-        for(Map.Entry<String, Location> e: guesses){
-            if(e.getKey().equals(user)){
-                loc = e.getValue();
-            }
-        }
-        assertNotNull(loc);
-        assertThat(loc.getLatitude(), is(location.getLatitude()));
-        assertThat(loc.getLongitude(), is(location.getLongitude()));
-
         Location otherLoc = new Location("");
         otherLoc.setLatitude(20);
         otherLoc.setLongitude(22);
@@ -137,23 +127,13 @@ public class InternalCachePictureDatabaseOnlineTest {
             e.printStackTrace();
         }
 
-        loc = null;
-        for(Map.Entry<String, Location> e: guesses){
-            if(e.getKey().equals(user)){
-                loc = e.getValue();
-            }
-        }
-        assertNotNull(loc);
-        assertThat(loc.getLatitude(), is(location.getLatitude()));
-        assertThat(loc.getLongitude(), is(location.getLongitude()));
-
         Location otherLocRes = null;
         for(Map.Entry<String, Location> e: guesses){
-            if(e.getKey().equals(otherUser)){
-                loc = e.getValue();
+            if(e.getKey().equals(otherUser.getName())){
+                otherLocRes = e.getValue();
             }
         }
-        assertNotNull(loc);
+        assertNotNull(otherLocRes);
         assertThat(otherLocRes.getLatitude(), is(otherLoc.getLatitude()));
         assertThat(otherLocRes.getLongitude(), is(otherLoc.getLongitude()));
 
@@ -175,21 +155,21 @@ public class InternalCachePictureDatabaseOnlineTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertThat(karma, is(0L));
+        assertThat(karma, is(100L));
         try {
             ICPD.updateKarma(uniqueId, -5).get();
             karma = ICPD.getKarma(uniqueId).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertThat(karma, is(-5L));
+        assertThat(karma, is(95L));
         try {
             ICPD.updateKarma(uniqueId, 10).get();
             karma = ICPD.getKarma(uniqueId).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertThat(karma, is(5L));
+        assertThat(karma, is(105L));
 
     }
 

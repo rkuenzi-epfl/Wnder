@@ -41,13 +41,13 @@ public class UserTest {
     @Test
     public void signedInUserReturnCorrectName(){
         // Reusing default Profile Picture for testing
-        User u = new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        User u = new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag),"TestUser");
         assertEquals(u.getName(), "TestUser");
     }
     @Test
     public void signedInUserReturnCorrectProfilePictureUri(){
         // Reusing default Profile Picture for testing
-        User u = new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        User u = new SignedInUser("TestUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag),"TestUser");
         assertEquals(u.getProfilePicture(), Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
     }
 
@@ -60,7 +60,7 @@ public class UserTest {
 
     @Test
     public void globalUserReturnCorrectUserAfterSet(){
-        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag),"TestUser"));
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("SignedInUser"));
         assertThat(u.getProfilePicture(), is(Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
@@ -68,7 +68,7 @@ public class UserTest {
 
     @Test
     public void globalUserReturnCorrectUserAfterReset(){
-        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag),"TestUser"));
         GlobalUser.resetUser();
         User u = GlobalUser.getUser();
         assertThat(u.getName(), is("Guest"));
@@ -77,7 +77,7 @@ public class UserTest {
 
     @Test
     public void userSkippedPictureSetIsUpdated(){
-        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("SignedInUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag),"TestUser"));
         User u =  GlobalUser.getUser();
         u.skipPicture("thePicture");
         assertTrue(u.getSkippedPictures().contains("thePicture"));

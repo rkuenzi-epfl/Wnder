@@ -98,7 +98,7 @@ public class InternalCachePictureDatabaseOfflineTest {
         List<Map.Entry<String, Double>> scoreboardList = ICPD.getScoreboard(uniqueId).get();
         Map<String, Double> scoreboard = new HashMap<>();
         for (Map.Entry<String, Double> e: scoreboardList) {
-            scoreboard.entrySet().add(e);
+            scoreboard.put(e.getKey(), e.getValue());
         }
         assertThat(scoreboard.get("testUser"), is(200.));
 
@@ -108,7 +108,7 @@ public class InternalCachePictureDatabaseOfflineTest {
         List<Map.Entry<String, Double>> newScoreboardList = ICPD.getScoreboard(uniqueId).get();
         Map<String, Double> newScoreboard = new HashMap<>();
         for (Map.Entry<String, Double> e: newScoreboardList) {
-            newScoreboard.entrySet().add(e);
+            newScoreboard.put(e.getKey(), e.getValue());
         }
         assertThat(newScoreboard.get("testUser"), is(150.));
     }

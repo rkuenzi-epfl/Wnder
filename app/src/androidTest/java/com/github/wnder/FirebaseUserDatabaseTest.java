@@ -33,7 +33,7 @@ public class FirebaseUserDatabaseTest {
         List<String> guessedPics = new ArrayList<>();
         String receivedPic = "";
         try {
-            guessedPics = db.getPictureList(user, "guessedPics").get();
+            guessedPics = db.getPictureList(user, "guessed").get();
             receivedPic = db.getNewPictureForUser(user).get();
         } catch (Exception e) {
             e.printStackTrace();

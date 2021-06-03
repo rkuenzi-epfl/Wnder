@@ -114,23 +114,13 @@ public class FirebasePicturesDatabaseTest {
             e.printStackTrace();
         }
 
-        Location loc = null;
-        for(Map.Entry<String, Location> e: guesses){
-            if(e.getKey().equals(user)){
-                loc = e.getValue();
-            }
-        }
-        assertNotNull(loc);
-        assertThat(loc.getLatitude(), is(location.getLatitude()));
-        assertThat(loc.getLongitude(), is(location.getLongitude()));
-
         Location otherLocRes = null;
         for(Map.Entry<String, Location> e: guesses){
-            if(e.getKey().equals(otherUser)){
-                loc = e.getValue();
+            if(e.getKey().equals(otherUser.getName())){
+                otherLocRes = e.getValue();
             }
         }
-        assertNotNull(loc);
+        assertNotNull(otherLocRes);
         assertThat(otherLocRes.getLatitude(), is(otherLoc.getLatitude()));
         assertThat(otherLocRes.getLongitude(), is(otherLoc.getLongitude()));
 
@@ -152,21 +142,21 @@ public class FirebasePicturesDatabaseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertThat(karma, is(0L));
+        assertThat(karma, is(100L));
         try {
             db.updateKarma(uniqueId, -5).get();
             karma = db.getKarma(uniqueId).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertThat(karma, is(-5L));
+        assertThat(karma, is(95L));
         try {
             db.updateKarma(uniqueId, 10).get();
             karma = db.getKarma(uniqueId).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertThat(karma, is(5L));
+        assertThat(karma, is(105L));
 
     }
 

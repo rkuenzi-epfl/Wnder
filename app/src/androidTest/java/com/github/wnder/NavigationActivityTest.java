@@ -21,9 +21,11 @@ import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.picture.UploadInfo;
+import com.github.wnder.picture.UserModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.UserDatabase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +35,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
