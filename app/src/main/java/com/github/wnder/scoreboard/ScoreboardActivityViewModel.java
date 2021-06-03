@@ -34,10 +34,10 @@ public class ScoreboardActivityViewModel extends ViewModel {
      * @param savedStateHandle state notably containing intent extras
      */
     @Inject
-    public ScoreboardActivityViewModel(PicturesDatabase picturesDb /*, UserService userService*/, SavedStateHandle savedStateHandle){
+    public ScoreboardActivityViewModel(PicturesDatabase picturesDb, SavedStateHandle savedStateHandle){
         this.picturesDb = picturesDb;
 
-        this.scoreboard = new MutableLiveData<>(new ArrayList<Map.Entry<String, Double>>());
+        this.scoreboard = new MutableLiveData<>(new ArrayList<>());
         this.uniqueId = savedStateHandle.get(ScoreboardActivity.EXTRA_PICTURE_ID);
 
         this.refreshScoreboard();
@@ -49,11 +49,10 @@ public class ScoreboardActivityViewModel extends ViewModel {
     public void refreshScoreboard(){
         picturesDb.getScoreboard(uniqueId)
                 .thenAccept((scoreboard) -> {
-                    List<Map.Entry<String, Double>> scoreList = new ArrayList<>(scoreboard.entrySet());
-                    scoreList.removeIf(e -> e.getValue() < 0);
-                    scoreList.sort(Map.Entry.comparingByValue());
-                    Collections.reverse(scoreList);
-                    this.scoreboard.postValue(scoreList);
+                    scoreboard.removeIf(e -> e.getValue() < 0);
+                    scoreboard.sort(Map.Entry.comparingByValue());
+                    Collections.reverse(scoreboard);
+                    this.scoreboard.postValue(scoreboard);
                 });
                 //.exceptionally();
     }

@@ -6,6 +6,7 @@ import android.location.Location;
 
 import com.github.wnder.user.SignedInUser;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,14 +31,14 @@ public interface PicturesDatabase {
      * @param uniqueId the picture unique Id
      * @return a Future of all user guesses
      */
-    CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId);
+    CompletableFuture<List<Map.Entry<String, Location>>> getUserGuesses(String uniqueId);
 
     /**
      * Provides (later) all user scores associated to a picture
      * @param uniqueId the picture unique Id
      * @return a Future of all user scores
      */
-    CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId);
+    CompletableFuture<List<Map.Entry<String, Double>>> getScoreboard(String uniqueId);
 
     /**
      * Upload a user guess for a picture

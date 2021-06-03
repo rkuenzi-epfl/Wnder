@@ -1,5 +1,6 @@
 package com.github.wnder.scoreboard;
 
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,10 +9,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.wnder.R;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
+import com.github.wnder.user.UserDatabase;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -32,6 +41,9 @@ public class ScoreboardActivity extends AppCompatActivity {
     private ScoreboardOwnRankAdapter adapterOwnRank;
 
     private FloatingActionButton returnButton;
+
+    @Inject
+    public UserDatabase userDb;
 
     /**
      * Executes on activity creation
@@ -60,6 +72,18 @@ public class ScoreboardActivity extends AppCompatActivity {
         recyclerViewGlobalRankings.setAdapter(adapterGlobalRankings);
         recyclerViewOwnRank.setAdapter(adapterOwnRank);
 
+        User user = GlobalUser.getUser();
+        if(user instanceof SignedInUser){
+
+            String pictureId = getIntent().getExtras().getString(EXTRA_PICTURE_ID);
+            userDb.getGuessEntryForPicture((SignedInUser) user, pictureId).thenAccept(guessEntry -> {
+                List<Map.Entry<String,Double>> scoreAsList = new ArrayList<>();
+                scoreAsList.add(new AbstractMap.SimpleEntry<>(user.getName(),guessEntry.getScore()));
+                adapterOwnRank.updateScoreboard(scoreAsList);
+                adapterOwnRank.notifyDataSetChanged();
+            });
+        }
+
         returnButton = findViewById(R.id.floatingActionButtonReturn);
         returnButton.setOnClickListener((button) -> finish());
     }
@@ -72,7 +96,6 @@ public class ScoreboardActivity extends AppCompatActivity {
         adapterGlobalRankings.updateScoreboard(scoreboard);
         adapterGlobalRankings.notifyDataSetChanged();
 
-        adapterOwnRank.updateScoreboard(scoreboard);
-        adapterOwnRank.notifyDataSetChanged();
+
     }
 }

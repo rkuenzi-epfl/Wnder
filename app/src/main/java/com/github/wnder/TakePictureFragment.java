@@ -37,6 +37,7 @@ import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
+import com.github.wnder.user.SignedInUser;
 import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -250,7 +251,7 @@ public class TakePictureFragment extends Fragment {
             Snackbar.make(getView(), R.string.guest_no_upload, Snackbar.LENGTH_SHORT).show();
         } else {
             Location takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
-            UploadInfo uploadInfo = new UploadInfo(userName, takenPictureLocation, takenPictureUri);
+            UploadInfo uploadInfo = new UploadInfo(((SignedInUser)user).getUniqueId(), takenPictureLocation, takenPictureUri);
             CompletableFuture<Void> uploadResult = picturesDb.uploadPicture(takenPictureId, uploadInfo);
 
             if(!uploadResult.isCompletedExceptionally()) {

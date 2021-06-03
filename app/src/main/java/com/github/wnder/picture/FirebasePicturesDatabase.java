@@ -4,10 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.util.Log;
 
 import com.github.wnder.Score;
+import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -17,12 +20,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
@@ -107,20 +110,21 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) {
-        CompletableFuture<Map<String, Location>> cf = new CompletableFuture<>();
-        picturesCollection.document(uniqueId).collection("userData").document("userGuesses").get()
-                .addOnSuccessListener((documentSnapshot) -> {
+    public CompletableFuture<List<Map.Entry<String, Location>>> getUserGuesses(String uniqueId) {
+        CompletableFuture<List<Map.Entry<String, Location>>> cf = new CompletableFuture<>();
+        picturesCollection.document(uniqueId).collection("userData").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<PictureGuessEntry> scoreboardEntries = queryDocumentSnapshots.toObjects(PictureGuessEntry.class);
                     //Once done, organize and convert them into Locations
-                    Map<String, Location> convertedResult = new TreeMap<>();
-                    for(Map.Entry<String, Object> e : documentSnapshot.getData().entrySet()){
-                        GeoPoint geoPoint = documentSnapshot.getGeoPoint(e.getKey());
+                    List<Map.Entry<String, Location>> convertedResult = new ArrayList<>();
+                    for(PictureGuessEntry e:scoreboardEntries){
+                        GeoPoint geoPoint = e.getLocation();
                         if(geoPoint != null){
 
                             Location locationEntry = new Location("");
                             locationEntry.setLatitude(geoPoint.getLatitude());
                             locationEntry.setLongitude(geoPoint.getLongitude());
-                            convertedResult.put(e.getKey(), locationEntry);
+                            convertedResult.add(new AbstractMap.SimpleEntry<String, Location>(e.getUserName(), locationEntry));
                         }
                     }
 
@@ -132,15 +136,16 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId) {
-        CompletableFuture<Map<String, Double>> cf = new CompletableFuture<>();
-        picturesCollection.document(uniqueId).collection("userData").document("userScores").get()
-                .addOnSuccessListener((documentSnapshot) -> {
+    public CompletableFuture<List<Map.Entry<String, Double>>> getScoreboard(String uniqueId) {
+        CompletableFuture<List<Map.Entry<String, Double>>> cf = new CompletableFuture<>();
+        picturesCollection.document(uniqueId).collection("userData").get()
+                .addOnSuccessListener( queryDocumentSnapshots -> {
+
+                    List<PictureGuessEntry> scoreboardEntries = queryDocumentSnapshots.toObjects(PictureGuessEntry.class);
                     //Once done, organize results and accept them
-                    Map<String, Double> convertedResult = new TreeMap<>();
-                    for(Map.Entry<String, Object> e : documentSnapshot.getData().entrySet()){
-                        Double value = documentSnapshot.getDouble(e.getKey());
-                        convertedResult.put(e.getKey(), documentSnapshot.getDouble(e.getKey()));
+                    List<Map.Entry<String, Double>> convertedResult = new ArrayList<>();
+                    for(PictureGuessEntry e:scoreboardEntries){
+                        convertedResult.add(new AbstractMap.SimpleEntry<String, Double>(e.getUserName(), e.getScore()));
                     }
                     cf.complete(convertedResult);
                 })
@@ -151,6 +156,7 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     @Override
     public CompletableFuture<Void> sendUserGuess(String uniqueId, SignedInUser user, Location guessedLocation, Bitmap mapSnapshot) {
         CompletableFuture<Void> guessSent = new CompletableFuture<>();
+        CompletableFuture<Void> userGuessed = new CompletableFuture<>();
 
         getLocation(uniqueId).thenAccept(location -> {
             GeoPoint guessGeoPoint = new GeoPoint(guessedLocation.getLatitude(), guessedLocation.getLongitude());
@@ -160,9 +166,10 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
                     .add(guessEntry)
                     .addOnSuccessListener(result -> guessSent.complete(null))
                     .addOnFailureListener(guessSent::completeExceptionally);
-
+            addToGuessedPictures(uniqueId, user.getUniqueId(), new UserGuessEntry(guessGeoPoint, score))
+                    .thenAccept(userGuessed::complete);
         });
-        return CompletableFuture.allOf(guessSent, addToUserPictures(uniqueId, user, PictureType.guess));
+        return CompletableFuture.allOf(guessSent, userGuessed);
     }
 
     @Override
@@ -184,7 +191,16 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     @Override
     public CompletableFuture<Location> getUserGuess(String uniqueId) {
         CompletableFuture<Location> cf = new CompletableFuture<>();
-        cf.completeExceptionally(new IllegalStateException("This method is only available on the local database"));
+        usersCollection.document(((SignedInUser)GlobalUser.getUser()).getUniqueId())
+                .collection("guessed").document(uniqueId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    GeoPoint gp = documentSnapshot.toObject(UserGuessEntry.class).getLocation();
+                    Location location = new Location("");
+                    location.setLatitude(gp.getLatitude());
+                    location.setLongitude(gp.getLongitude());
+                    cf.complete(location);
+                })
+                .addOnFailureListener(cf::completeExceptionally);
         return cf;
     }
 
@@ -214,42 +230,27 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     /**
      * Attach new listener on picture upload success to upload the associated metadata
      * @param uniqueId uploaded picture unique id
-     * @param userName uploading user name
+     * @param userUid uploading user name
      * @param location location the picture was taken from
      * @param task the task to attach the metadata task to
      * @return a completable future that completes when everything is uploaded
      */
     private CompletableFuture<Void> attachUploadListener(String uniqueId, String userUid, Location location, UploadTask task){
-        CompletableFuture<Void> attributesCf = new CompletableFuture<>();
-        CompletableFuture<Void> userGuessesCf = new CompletableFuture<>();
-        CompletableFuture<Void> userScoresCf = new CompletableFuture<>();
-        CompletableFuture<Void> userUploadListCf = addToUserPictures(uniqueId, userUid, PictureType.upload);
-        CompletableFuture<Void> cf = CompletableFuture.allOf(userUploadListCf, attributesCf, userGuessesCf, userScoresCf);
+        CompletableFuture<Void> attributesCf = new CompletableFuture<>().thenAccept(a -> Log.d("attr", "fail"));
+        CompletableFuture<Void> userUploadListCf = addToUploadedPictures(uniqueId, userUid).thenAccept(a -> Log.d("addToUp", "fail"));
+        CompletableFuture<Void> cf = CompletableFuture.allOf(userUploadListCf, attributesCf);
 
         task.addOnSuccessListener(pictureUploadResult -> {
             //coordinates
             Map<String, Object> attributes = new HashMap<>();
             attributes.put("latitude", location.getLatitude());
             attributes.put("longitude", location.getLongitude());
-            attributes.put("karma", 0);
+            attributes.put("karma", 100);
             picturesCollection.document(uniqueId).set(attributes)
-                    .addOnSuccessListener(result -> attributesCf.complete(null)).addOnFailureListener(attributesCf::completeExceptionally);
+                    .addOnSuccessListener(result -> attributesCf.complete(null))
+                    .addOnFailureListener(attributesCf::completeExceptionally);
 
-            //default instantiation for the guesses ()
-            //necessary to have the correct documents created in firestore
-            Map<String, GeoPoint> emptyGuesses = new HashMap<>();
-            GeoPoint defaultGuess = new GeoPoint(location.getLatitude(),location.getLongitude());
-            emptyGuesses.put(userName, defaultGuess);
-            picturesCollection.document(uniqueId).collection("userData").document("userGuesses").set(emptyGuesses)
-                    .addOnSuccessListener(result -> userGuessesCf.complete(null)).addOnFailureListener(userGuessesCf::completeExceptionally);
-
-
-            //necessary to have the correct documents created in firestore
-            Map<String, Double> emptyScoreboard= new HashMap<>();
-            emptyScoreboard.put(userName, -1.);
-            picturesCollection.document(uniqueId).collection("userData").document("userScores").set(emptyScoreboard)
-                    .addOnSuccessListener(result -> userScoresCf.complete(null)).addOnFailureListener(userScoresCf::completeExceptionally);
-        }).addOnFailureListener(cf::completeExceptionally);
+            }).addOnFailureListener(cf::completeExceptionally);
 
         // Delete local metadata when everything is uploaded
         cf.thenAccept(nothing -> UploadInfo.deleteUploadInfo(new File(activeUploadDirectory, uniqueId)));
@@ -270,30 +271,47 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     /**
      * Add a picture to the list of uploaded pictures of a user
      * @param uniqueId the id of the picture to add
-     * @param user the user who uploaded the picture
+     * @param userUid the user who uploaded the picture
      * @return a Future complete when the list is updated
      */
-    private CompletableFuture<Void> addToUploadedPictures(String uniqueId, SignedInUser user){
+    private CompletableFuture<Void> addToUploadedPictures(String uniqueId, String userUid){
         CompletableFuture<Void> cf = new CompletableFuture<>();
-        //get current user data
-        usersCollection.document(user.getUniqueId())
-                .update("uploaded", FieldValue.arrayUnion(uniqueId))
-                .addOnSuccessListener((documentSnapshot) -> cf.complete(null))
-                .addOnFailureListener(cf::completeExceptionally);
+        usersCollection.document(userUid).get()
+                .addOnCompleteListener(documentSnapshotTask -> {
+                    if (documentSnapshotTask.isSuccessful()) {
+                        DocumentSnapshot doc = documentSnapshotTask.getResult();
+                        if (doc.exists()) {
+                            usersCollection.document(userUid)
+                                    .update("uploaded", FieldValue.arrayUnion(uniqueId))
+                                    .addOnSuccessListener((documentSnapshot) -> cf.complete(null))
+                                    .addOnFailureListener(cf::completeExceptionally);
+                        } else {
+                            Map<String, List<String>> docMap = new HashMap<>();
+                            List<String> uploaded = new ArrayList<>();
+                            uploaded.add(uniqueId);
+                            docMap.put("uploaded", uploaded);
+                            usersCollection.document(userUid).set(docMap)
+                                    .addOnSuccessListener((documentSnapshot) -> cf.complete(null))
+                                    .addOnFailureListener(cf::completeExceptionally);
+                        }
+                    } else {
+                        cf.completeExceptionally(documentSnapshotTask.getException());
+                    }
+                });
         return cf;
     }
 
     /**
      * Add a picture to the list of guessed pictures of a user
      * @param uniqueId the id of the picture to add
-     * @param user the user who uploaded the picture
+     * @param userUid the user who uploaded the picture
      * @param guessEntry
      * @return a Future complete when the picture is added
      */
-    private CompletableFuture<Void> addToGuessedPictures(String uniqueId, SignedInUser user, UserGuessEntry guessEntry){
+    private CompletableFuture<Void> addToGuessedPictures(String uniqueId, String userUid, UserGuessEntry guessEntry){
         CompletableFuture<Void> cf = new CompletableFuture<>();
         //get current user data
-        usersCollection.document(user.getUniqueId()).collection("guessed")
+        usersCollection.document(userUid).collection("guessed")
                 .document(uniqueId).set(guessEntry)
                 .addOnSuccessListener((documentSnapshot) -> cf.complete(null))
                 .addOnFailureListener(cf::completeExceptionally);

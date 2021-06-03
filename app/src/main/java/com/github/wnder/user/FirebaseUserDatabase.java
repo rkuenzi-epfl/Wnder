@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 
 import com.github.wnder.networkService.NetworkInformation;
 import com.github.wnder.picture.InternalCachePictureDatabase;
+import com.github.wnder.picture.UserGuessEntry;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -51,14 +53,29 @@ public class FirebaseUserDatabase implements UserDatabase{
         if(user instanceof GuestUser){
             cf.complete(new ArrayList<>());
         } else{
+            if(picturesListName.equals("uploaded")){
 
-            usersCollection.document(user.getName()).get().addOnSuccessListener(documentSnapshot -> {
-                List<String> pictureList = (List<String>) documentSnapshot.get(picturesListName);
-                if(pictureList == null){
-                    pictureList = new ArrayList<>();
-                }
-                cf.complete(pictureList);
-            }).addOnFailureListener(cf::completeExceptionally);
+                usersCollection.document(((SignedInUser) user).getUniqueId()).get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            List<String> pictureList = (List<String>) documentSnapshot.get(picturesListName);
+                            if(pictureList == null){
+                                pictureList = new ArrayList<>();
+                            }
+                            cf.complete(pictureList);
+                }).addOnFailureListener(cf::completeExceptionally);
+
+            } else {
+                usersCollection.document(((SignedInUser) user).getUniqueId()).collection("guessed").get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            List<String> pictureList = queryDocumentSnapshots.getDocuments().stream()
+                                    .map(d -> d.getId()).collect(Collectors.toList());
+                            if(pictureList == null){
+                                pictureList = new ArrayList<>();
+                            }
+                            cf.complete(pictureList);
+                        }).addOnFailureListener(cf::completeExceptionally);
+            }
+
         }
         return cf;
     }
@@ -70,11 +87,11 @@ public class FirebaseUserDatabase implements UserDatabase{
         }
         CompletableFuture<List<String>> guessedCf = new CompletableFuture<>();
         CompletableFuture<List<String>> uploadedCf = new CompletableFuture<>();
-        getPictureList(user,"guessedPics").thenAccept(guessed -> {
+        getPictureList(user,"guessed").thenAccept(guessed -> {
             guessedAndUploaded.addAll(guessed);
             guessedCf.complete(guessed);
         });
-        getPictureList(user,"uploadedPics").thenAccept(uploaded -> {
+        getPictureList(user,"uploaded").thenAccept(uploaded -> {
             guessedAndUploaded.addAll(uploaded);
             uploadedCf.complete(uploaded);
         });
@@ -259,7 +276,7 @@ public class FirebaseUserDatabase implements UserDatabase{
 
             //for each guessed pic, get its score and store this future into the array
             for(String uniqueId: pics){
-                futureScores[pics.indexOf(uniqueId)] = (ICPD.getScoreboard(uniqueId).thenApply(s -> s.get(user.getName())));
+                futureScores[pics.indexOf(uniqueId)] = (getGuessEntryForPicture((SignedInUser) user, uniqueId).thenApply(UserGuessEntry::getScore));
             }
 
             //Once a score is completed, complete add it to all the scores already completed
@@ -273,5 +290,16 @@ public class FirebaseUserDatabase implements UserDatabase{
         });
 
         return allScoresFuture;
+    }
+
+    @Override
+    public CompletableFuture<UserGuessEntry> getGuessEntryForPicture(SignedInUser user, String uniqueId) {
+        CompletableFuture<UserGuessEntry> userGuessEntryCf = new CompletableFuture<>();
+
+        usersCollection.document(user.getUniqueId())
+                .collection("guessed").document(uniqueId).get()
+                .addOnSuccessListener(documentSnapshot -> userGuessEntryCf.complete(documentSnapshot.toObject(UserGuessEntry.class)))
+                .addOnFailureListener(userGuessEntryCf::completeExceptionally);
+        return userGuessEntryCf;
     }
 }

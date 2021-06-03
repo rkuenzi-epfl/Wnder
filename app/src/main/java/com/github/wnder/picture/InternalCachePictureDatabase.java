@@ -10,6 +10,9 @@ import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.SignedInUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -69,25 +72,26 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) throws IllegalStateException{
+    public CompletableFuture<List<Map.Entry<String, Location>>> getUserGuesses(String uniqueId) throws IllegalStateException{
         if (isOnline()) {
             return remoteDatabase.getUserGuesses(uniqueId);
         }
         else {
-            CompletableFuture<Map<String, Location>> cf = new CompletableFuture<>();
+            CompletableFuture<List<Map.Entry<String, Location>>> cf = new CompletableFuture<>();
             cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
             return cf;
         }
     }
 
     @Override
-    public CompletableFuture<Map<String, Double>> getScoreboard(String uniqueId) {
+    public CompletableFuture<List<Map.Entry<String, Double>>> getScoreboard(String uniqueId) {
         if (isOnline()) {
             return remoteDatabase.getScoreboard(uniqueId);
         }
         else {
-            CompletableFuture<Map<String, Double>> cf = new CompletableFuture<>();
-            cf.complete(localDatabase.getScoreboard(uniqueId));
+            CompletableFuture<List<Map.Entry<String, Double>>> cf = new CompletableFuture<>();
+            List<Map.Entry<String, Double>> scoreboard = new ArrayList<>(localDatabase.getScoreboard(uniqueId).entrySet());
+            cf.complete(scoreboard);
             return cf;
         }
     }
@@ -98,7 +102,11 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             getBitmap(uniqueId).thenAccept(bmp -> {
                 getLocation(uniqueId).thenAccept(location->{
                     getScoreboard(uniqueId).thenAccept(scoreboard ->{
-                        storePictureLocally(new LocalPicture(uniqueId, bmp, mapSnapshot, location, guessedLocation, scoreboard));
+                        Map<String, Double> mapScoreboard = new HashMap<>();
+                        for (Map.Entry<String, Double> e: scoreboard) {
+                            mapScoreboard.entrySet().add(e);
+                        }
+                        storePictureLocally(new LocalPicture(uniqueId, bmp, mapSnapshot, location, guessedLocation, mapScoreboard));
                     });
                 });
             });
@@ -136,7 +144,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
         if (userGuess != null) {
             cf.complete(userGuess);
         } else if (isOnline()) {
-            return remoteDatabase.getUserGuesses(uniqueId).thenApply((guesses) -> guesses.get(GlobalUser.getUser().getName()));
+            return remoteDatabase.getUserGuess(uniqueId);
         }
         return cf;
     }

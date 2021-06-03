@@ -1,5 +1,7 @@
 package com.github.wnder.user;
 
+import com.github.wnder.picture.UserGuessEntry;
+
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -30,4 +32,12 @@ public interface UserDatabase {
      * @return a Future with a picture id
      */
     CompletableFuture<String> getNewPictureForUser(User user);
+
+    /**
+     * Get user guess entry for a given picture
+     * @param user the user for which we want the guess entry
+     * @param uniqueId the uniqueId of the picture
+     * @return as guess entry
+     */
+    CompletableFuture<UserGuessEntry> getGuessEntryForPicture(SignedInUser user, String uniqueId);
 }

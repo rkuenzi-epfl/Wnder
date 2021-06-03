@@ -21,8 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.scoreboard.ScoreboardActivity;
 import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
+import com.github.wnder.user.UserDatabase;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -31,10 +35,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private final ArrayList<String> pictureList;
     private final PicturesDatabase picturesDb;
+    private final UserDatabase userDb;
 
-    public HistoryAdapter(ArrayList<String> pictureList, PicturesDatabase picturesDatabase){
+    public HistoryAdapter(ArrayList<String> pictureList, PicturesDatabase picturesDatabase, UserDatabase userDatabase){
         this.pictureList = pictureList;
         this.picturesDb = picturesDatabase;
+        this.userDb = userDatabase;
     }
 
     @Override
@@ -52,25 +58,32 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.getHistoryImageView().setImageBitmap(bitmap);
             holder.getHistoryImageView().setOnClickListener(view -> showPopup(holder, bitmap, pictureId));
         });
-        picturesDb.getScoreboard(pictureId).thenAccept(scoreboard -> {
-            String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getName(), 0.));
-            holder.getYourScoreView().setText(score);
-        });
-        picturesDb.getLocation(pictureId).thenAccept(location -> {
+        User user = GlobalUser.getUser();
+        if(user instanceof SignedInUser){
+            userDb.getGuessEntryForPicture(((SignedInUser) user),pictureId).thenAccept(guessEntry -> {
+                // Set score
+                String score = String.format(Locale.getDefault(),"%4.1f", guessEntry.getScore());
+                holder.getYourScoreView().setText(score);
 
-            picturesDb.getUserGuesses(pictureId).thenAccept(guesses -> {
-                Location userGuess = guesses.get(GlobalUser.getUser().getName());
-                int distanceFromPicture = 0;
-                if (userGuess != null) {
-                    distanceFromPicture = (int) userGuess.distanceTo(location);
-                }
-                String dText = context.getString(R.string.history_distance_meter, distanceFromPicture);
-                if (distanceFromPicture > 10000) {
-                    dText = context.getString(R.string.history_distance_kilometer, distanceFromPicture / 1000);
-                }
-                holder.getHistoryDistanceView().setText(dText);
+                picturesDb.getLocation(pictureId).thenAccept(realLocation -> {
+
+                    // Set distance
+                    GeoPoint userGuessGeoPoint = guessEntry.getLocation();
+                    Location userGuess = new Location("");
+                    userGuess.setLatitude(userGuessGeoPoint.getLatitude());
+                    userGuess.setLongitude(userGuessGeoPoint.getLongitude());
+                    int distanceFromPicture = 0;
+                    if (userGuess != null) {
+                        distanceFromPicture = (int) userGuess.distanceTo(realLocation);
+                    }
+                    String dText = context.getString(R.string.history_distance_meter, distanceFromPicture);
+                    if (distanceFromPicture > 10000) {
+                        dText = context.getString(R.string.history_distance_kilometer, distanceFromPicture / 1000);
+                    }
+                    holder.getHistoryDistanceView().setText(dText);
+                });
             });
-        });
+        }
 
         holder.getToMapView().setOnClickListener(distanceField -> {
             Intent intent = new Intent(context, HistoryMapActivity.class);

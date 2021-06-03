@@ -16,15 +16,6 @@
         android:layout_margin="4dp">
 
         <TextView
-            android:id="@+id/scoreboardRank"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="@string/scoreboard_rank_placeholder"
-            android:textSize="45sp"
-            android:textStyle="bold"/>
-
-        <TextView
             android:id="@+id/scoreboardUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
