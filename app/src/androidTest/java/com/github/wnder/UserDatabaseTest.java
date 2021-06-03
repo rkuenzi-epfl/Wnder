@@ -23,7 +23,7 @@ public class UserDatabaseTest {
     @Before
     public void setup(){
         this.userDb = new FirebaseUserDatabase(context);
-        User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser");
         GlobalUser.setUser(user);
     }
 

@@ -4,11 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.InternalCachePictureDatabase;
 import com.github.wnder.picture.LocalPicture;
+import com.github.wnder.user.SignedInUser;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,6 +21,7 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -92,13 +95,21 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void updateAndGetScoreboardWork() throws ExecutionException, InterruptedException {
-        Map<String, Double> scoreboard = ICPD.getScoreboard(uniqueId).get();
+        List<Map.Entry<String, Double>> scoreboardList = ICPD.getScoreboard(uniqueId).get();
+        Map<String, Double> scoreboard = new HashMap<>();
+        for (Map.Entry<String, Double> e: scoreboardList) {
+            scoreboard.entrySet().add(e);
+        }
         assertThat(scoreboard.get("testUser"), is(200.));
 
         scoreboard.put("testUser", 150.);
         ICPD.updateLocalScoreboard(uniqueId, scoreboard);
 
-        Map<String, Double> newScoreboard = ICPD.getScoreboard(uniqueId).get();
+        List<Map.Entry<String, Double>> newScoreboardList = ICPD.getScoreboard(uniqueId).get();
+        Map<String, Double> newScoreboard = new HashMap<>();
+        for (Map.Entry<String, Double> e: newScoreboardList) {
+            newScoreboard.entrySet().add(e);
+        }
         assertThat(newScoreboard.get("testUser"), is(150.));
     }
 
@@ -141,7 +152,8 @@ public class InternalCachePictureDatabaseOfflineTest {
 
     @Test
     public void sendUserGuessesThrows(){
-        assertTrue(ICPD.sendUserGuess(uniqueId, "testUser", realLoc, mapSnapshot).isCompletedExceptionally());
+        SignedInUser user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser");
+        assertTrue(ICPD.sendUserGuess(uniqueId, user, realLoc, mapSnapshot).isCompletedExceptionally());
     }
 
     @Test

@@ -25,7 +25,10 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,7 +54,7 @@ import static org.mockito.Mockito.when;
 public class GuessLocationActivityInstrumentedTest  {
     //Intent with extras that the activity will start with
     private static Intent intent;
-    private static Map<String, Double> dummyMap;
+    private static List<Map.Entry<String, Double>> dummyList;
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
@@ -84,12 +87,12 @@ public class GuessLocationActivityInstrumentedTest  {
         Location dummyLoc = new Location("");
         dummyLoc.setLatitude(0.);
         dummyLoc.setLongitude(0.);
-        dummyMap = new HashMap<>();
-        dummyMap.put("User0", 32.);
-        dummyMap.put("User1", 44.);
+        dummyList = new ArrayList<>();
+        dummyList.add(new AbstractMap.SimpleEntry<>("User0", 32.));
+        dummyList.add(new AbstractMap.SimpleEntry<>("User1", 44.));
         when(picturesDatabase.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));
         when(picturesDatabase.getLocation(anyString())).thenReturn(CompletableFuture.completedFuture(dummyLoc));
-        when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        when(picturesDatabase.getScoreboard(any())).thenReturn(CompletableFuture.completedFuture(dummyList));
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);

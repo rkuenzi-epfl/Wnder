@@ -35,7 +35,7 @@ public class UploadInfoTest {
 
         }
         UploadInfo info = UploadInfo.loadUploadInfo(file);
-        assertThat(info.getUserName(), is("randomName"));
+        assertThat(info.getUserUid(), is("randomName"));
         Location loc = info.getLocation();
         assertThat(loc.getLatitude(), is(location.getLatitude()));
         assertThat(loc.getLongitude(), is(location.getLongitude()));

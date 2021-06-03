@@ -61,7 +61,7 @@ public class GuessPreviewActivityTest {
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessPreviewActivity.class);
     }
 
-    private final static SignedInUser user = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+    private final static SignedInUser user = new SignedInUser("allGuessedUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "allGuessedUser");
 
     private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 

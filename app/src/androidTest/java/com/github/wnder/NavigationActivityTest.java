@@ -135,7 +135,7 @@ public class NavigationActivityTest {
 
     @Test
     public void signedInUserUploadStart(){
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser"));
         when(networkInfo.isNetworkAvailable()).thenReturn(false);
         CompletableFuture<Void> cf = new CompletableFuture<>();
 
@@ -154,7 +154,7 @@ public class NavigationActivityTest {
 
     @Test
     public void signedInUserUploadSuccessful(){
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser"));
         when(networkInfo.isNetworkAvailable()).thenReturn(false);
         CompletableFuture<Void> cf = new CompletableFuture<>();
         cf.complete(null);
@@ -175,7 +175,7 @@ public class NavigationActivityTest {
 
     @Test
     public void signedInUserInAPerfectWorld(){
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser"));
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
         when(picturesDb.uploadPicture(anyString(), any())).thenReturn(CompletableFuture.completedFuture(null));
 

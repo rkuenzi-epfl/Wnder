@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,16 +72,16 @@ public class HistoryFragmentTest {
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         List<String> dummyPicList = new ArrayList<>();
         dummyPicList.add("demo1");
-        Map<String,Double> dummyScoreboard = new HashMap<>();
-        dummyScoreboard.put("user", 45.5);
+        List<Map.Entry<String,Double>> dummyScoreboard = new ArrayList<>();
+        dummyScoreboard.add(new AbstractMap.SimpleEntry<>("user", 45.5));
         Location dummyLocation = new Location("");
         dummyLocation.setLatitude(32);
         dummyLocation.setLongitude(2);
-        Map<String,Location> dummyLocationList = new HashMap<>();
+        List<Map.Entry<String,Location>> dummyLocationList = new ArrayList<>();
         Location dummyLocation2 = new Location("");
         dummyLocation2.setLatitude(32);
         dummyLocation2.setLongitude(4);
-        dummyLocationList.put("user", dummyLocation2);
+        dummyLocationList.add(new AbstractMap.SimpleEntry<>("user", dummyLocation2));
 
         when(userDb.getPictureList(any(),anyString())).thenReturn(CompletableFuture.completedFuture(dummyPicList));
         when(picturesDb.getBitmap(anyString())).thenReturn(CompletableFuture.completedFuture(dummyPic));

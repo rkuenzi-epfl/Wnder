@@ -16,8 +16,14 @@ public class SignedInUser extends User{
      * @return higher resolution uri
      */
     private static Uri higherResolutionUri(Uri profilePicture){
-        String[] splUrl = profilePicture.toString().split("96");
-        return Uri.parse(splUrl[0] + "400" + splUrl[1]);
+        String uriAsString = profilePicture.toString();
+        if(uriAsString.contains("96")){
+
+            String[] splUrl = uriAsString.split("96");
+            return Uri.parse(splUrl[0] + "400" + splUrl[1]);
+        } else {
+            return Uri.parse(uriAsString);
+        }
     }
 
     /**

@@ -76,7 +76,7 @@ public class ProfileFragmentSignedInTest {
             }
         }
 
-        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser"));
 
     }
 

@@ -60,7 +60,7 @@ public class UserDatabaseUtilsTest {
         Mockito.when(userDb.getAllScores(any())).thenReturn(allScoresFuture);
         Mockito.when(userDb.getPictureList(any(), anyString())).thenReturn(guessedPicturesFuture);
         
-        User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "testUser");
         this.userDbUtils = new UserDatabaseUtils(userDb.getPictureList(user, "guessedPics"), userDb.getAllScores(user));
 
         GlobalUser.setUser(user);

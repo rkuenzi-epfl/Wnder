@@ -16,7 +16,9 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.when;
 @UninstallModules({PicturesModule.class})
 public class ScoreboardActivityTest {
 
-    private static Map<String, Double> dummyMap;
+    private static List<Map.Entry<String, Double>> dummyList;
     private static Intent intent;
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
@@ -50,10 +52,10 @@ public class ScoreboardActivityTest {
 
     @BeforeClass
     public static void setUp(){
-        dummyMap = new HashMap<>();
-        dummyMap.put("User0", 32.);
-        dummyMap.put("User1", 44.);
-        when(picturesDatabase.getScoreboard("toaster")).thenReturn(CompletableFuture.completedFuture(dummyMap));
+        dummyList = new ArrayList<>();
+        dummyList.add(new AbstractMap.SimpleEntry<>("User0", 32.));
+        dummyList.add(new AbstractMap.SimpleEntry<>("User1", 44.));
+        when(picturesDatabase.getScoreboard("toaster")).thenReturn(CompletableFuture.completedFuture(dummyList));
         intent = new Intent(ApplicationProvider.getApplicationContext(), ScoreboardActivity.class);
         intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, "toaster");
     }

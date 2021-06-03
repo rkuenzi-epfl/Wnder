@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
+import com.github.wnder.user.SignedInUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -18,13 +19,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
@@ -94,22 +98,13 @@ public class FirebasePicturesDatabaseTest {
 
     @Test
     public void successfullyAddGuessesAndScore() {
-        Map<String, Location> guesses = new HashMap<>();
-        Map<String, Double> scoreboard = new HashMap<>();
-        try {
-            guesses = db.getUserGuesses(uniqueId).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertTrue(guesses.containsKey(user));
-        Location loc = guesses.get(user);
-        assertThat(loc.getLatitude(), is(location.getLatitude()));
-        assertThat(loc.getLongitude(), is(location.getLongitude()));
+        List<Map.Entry<String, Location>> guesses = new ArrayList<>();
+        List<Map.Entry<String, Double>> scoreboard = new ArrayList<>();
 
         Location otherLoc = new Location("");
         otherLoc.setLatitude(20);
         otherLoc.setLongitude(22);
-        String otherUser = "otherUser";
+        SignedInUser otherUser = new SignedInUser("otherUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag), "otherUser");
         Bitmap mapSnapshot = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.picture1);
         try {
             db.sendUserGuess(uniqueId, otherUser, otherLoc, mapSnapshot).get();
@@ -119,18 +114,34 @@ public class FirebasePicturesDatabaseTest {
             e.printStackTrace();
         }
 
-        assertTrue(guesses.containsKey(user));
-        loc = guesses.get(user);
+        Location loc = null;
+        for(Map.Entry<String, Location> e: guesses){
+            if(e.getKey().equals(user)){
+                loc = e.getValue();
+            }
+        }
+        assertNotNull(loc);
         assertThat(loc.getLatitude(), is(location.getLatitude()));
         assertThat(loc.getLongitude(), is(location.getLongitude()));
 
-        assertTrue(guesses.containsKey(otherUser));
-        Location otherLocRes = guesses.get(otherUser);
+        Location otherLocRes = null;
+        for(Map.Entry<String, Location> e: guesses){
+            if(e.getKey().equals(otherUser)){
+                loc = e.getValue();
+            }
+        }
+        assertNotNull(loc);
         assertThat(otherLocRes.getLatitude(), is(otherLoc.getLatitude()));
         assertThat(otherLocRes.getLongitude(), is(otherLoc.getLongitude()));
 
-        assertTrue(scoreboard.containsKey(otherUser));
-        assertThat(scoreboard.get(otherUser), is(Score.computeScore(location, otherLoc)));
+        Double score = null;
+        for(Map.Entry<String, Double> e: scoreboard){
+            if(e.getKey().equals(otherUser.getName())){
+                score = e.getValue();
+            }
+        }
+        assertNotNull(score);
+        assertThat(score, is(Score.computeScore(location, otherLoc)));
     }
 
     @Test
