@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.wnder.HistoryAdapter;
 import com.github.wnder.R;
+import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.UserDatabase;
@@ -28,13 +29,16 @@ public class TourActivity extends AppCompatActivity {
     @Inject
     public TourDatabase tourDb;
 
+    @Inject
+    public NetworkService networkService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tour);
 
         userDb.getTourListForUser(GlobalUser.getUser()).thenAccept(tourList -> {
-            TourAdapter tourAdapter = new TourAdapter(tourList, picturesDb, tourDb);
+            TourAdapter tourAdapter = new TourAdapter(tourList, picturesDb, tourDb, networkService);
             RecyclerView tourRecycler = findViewById(R.id.tourRecyclerView);
             tourRecycler.setHasFixedSize(true);
             tourRecycler.setLayoutManager(new LinearLayoutManager(this));

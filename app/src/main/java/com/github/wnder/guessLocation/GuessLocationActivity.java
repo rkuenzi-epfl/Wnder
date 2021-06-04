@@ -590,9 +590,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         //Set the score text
         double distanceFromPicture = guessPosition.distanceTo(picturePosition);
 
-        String dText = getString(R.string.guess_location_distance_meter,(int)distanceFromPicture);
-        if(distanceFromPicture > 10000){
-            dText = getString(R.string.guess_location_distance_kilometer,(int)distanceFromPicture/1000);
+        String dText = getString(R.string.guess_location_distance_meter, (int) distanceFromPicture);
+        if (distanceFromPicture > 10000) {
+            dText = getString(R.string.guess_location_distance_kilometer,(int) distanceFromPicture / 1000);
         }
 
         double score = Score.calculationScore(distanceFromPicture, user.getRadius() * 1000, user.getRadius());
