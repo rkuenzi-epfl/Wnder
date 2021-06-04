@@ -301,7 +301,7 @@ public class FirebaseUserDatabase implements UserDatabase{
                 distances.add(distance);
             }
 
-            // Keep the 10 closest tours
+            // Keep the 10 closest tours (if available)
             Collections.sort(ids, Comparator.comparingDouble(distances::indexOf));
             ids = ids.subList(0, Math.min(ids.size(), 10));
             cf.complete(ids);
