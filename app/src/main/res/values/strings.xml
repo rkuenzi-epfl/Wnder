@@ -105,6 +105,10 @@
     <string name="gps_disabled_body">Please, activate your GPS to access all the functionalities.</string>
     <string name="gps_missing_title">Functionality unavailable</string>
     <string name="gps_missing_body">The application needs the GPS to continue.</string>
+    <string name="guest_tour_forbidden">Guest user are not allowed to upload tour</string>
+    <string name="failed_tour_picture_upload">One picture failed to be uploaded</string>
+    <string name="tour_uploaded">Your tour was successfully uploaded.</string>
+    <string name="tour_upload_failed">The upload of the tour failed.</string>
 
 
 </resources>

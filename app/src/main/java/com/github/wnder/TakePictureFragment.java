@@ -327,7 +327,7 @@ public class TakePictureFragment extends Fragment {
             return;
         }
         if(user instanceof GuestUser){
-            Snackbar.make(getView(), "Guest user are not allowed to upload tour", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getView(), R.string.guest_tour_forbidden, Snackbar.LENGTH_SHORT).show();
         }
         else{
             List<String> pictures = new ArrayList<>();
@@ -336,26 +336,28 @@ public class TakePictureFragment extends Fragment {
                 CompletableFuture<Void> uploadPic = picturesDb.uploadPicture(pair.first, pair.second);
 
                 uploadPic.exceptionally(res -> {
-                    Snackbar.make(getView(), "One or more pictures failed to be uploaded", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), R.string.failed_tour_picture_upload, Snackbar.LENGTH_SHORT).show();
                     pictures.clear(); //Signify that we lost one picture along the way
                     return null;
                 }).thenAccept(res -> {
                     pictures.add(pair.first);
 
-                    if(pictures.size() == tourPictures.size()){ //Which mean that we did not lose any pictures along the way
+                    if(pictures.size() == tourPictures.size()){ //Which mean that we did not lose any pictures along the way and the tour can be uploaded
                         CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(enterText.getText().toString()), enterText.getText().toString(), pictures);
 
                         uploadTour.thenAccept(ress -> {
-                            Snackbar.make(getView(), "Your tour was successfully uploaded.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(getView(), R.string.tour_uploaded, Snackbar.LENGTH_SHORT).show();
                         }).exceptionally(ress -> {
-                            Snackbar.make(getView(), "The upload of the tour failed.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(getView(), R.string.tour_upload_failed, Snackbar.LENGTH_SHORT).show();
                             return null;
                         });
                     }
                 });
             }
         }
+    }
 
+    private void fromTourToNormal(){
         enterText.setVisibility(View.INVISIBLE);
         validateTour.setVisibility(View.INVISIBLE);
         takePictureButton.setVisibility(View.VISIBLE);
