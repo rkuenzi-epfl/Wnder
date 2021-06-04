@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -13,9 +14,13 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessLocationActivity;
 import com.github.wnder.guessLocation.GuessPreviewActivity;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.PicturesModule;
 import com.github.wnder.scoreboard.ScoreboardActivity;
+import com.github.wnder.user.GlobalUser;
+import com.github.wnder.user.SignedInUser;
+import com.github.wnder.user.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,20 +53,18 @@ import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @UninstallModules({PicturesModule.class})
-public class GuessLocationActivityInstrumentedTest  {
+public class GuessLocationSimpleModeActivityTest {
     //Intent with extras that the activity will start with
     private static Intent intent;
     private static Map<String, Double> dummyMap;
 
     private HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-    @Rule
-    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Rule
     public RuleChain testRule = RuleChain.outerRule(hiltRule)
+            .around(GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION))
             .around(new ActivityScenarioRule<>(intent));
-
 
     @BindValue
     public static PicturesDatabase picturesDatabase = Mockito.mock(PicturesDatabase.class);
@@ -80,6 +83,9 @@ public class GuessLocationActivityInstrumentedTest  {
     @BeforeClass
     public static void beforeAll(){
 
+        User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
+        GlobalUser.setUser(user);
+
         Bitmap dummyPic = BitmapFactory.decodeResource(ApplicationProvider.getApplicationContext().getResources(), R.raw.ladiag);
         Location dummyLoc = new Location("");
         dummyLoc.setLatitude(0.);
@@ -93,11 +99,9 @@ public class GuessLocationActivityInstrumentedTest  {
         when(picturesDatabase.updateKarma(anyString(), anyInt())).thenReturn(CompletableFuture.completedFuture(null));
 
         intent = new Intent(ApplicationProvider.getApplicationContext(), GuessLocationActivity.class);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, 10.0);
-        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, "");
+        intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_simple_mode);
+        Picture pictureToGuess = new Picture("", 10.0, 10.0);
+        intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
     }
 
     @Test
@@ -159,7 +163,22 @@ public class GuessLocationActivityInstrumentedTest  {
     }
 
     @Test
-    public void testSwitchMode(){
+    public void testImageUpdatesStatusInCompassMode(){
+        onView(withId(R.id.mapView)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+
+        onView(withId(R.id.imageToGuessCard)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.confirmButton)).perform(click());
+
+        onView(withId(R.id.imageToGuessCard)).check(matches(not(isDisplayed())));
+   }
+
+    @Test
+    public void testSwitchMode()  {
+        onView(withId(R.id.compassMode)).perform(click());
+        onView(withId(R.id.compassMode)).perform(click());
+
         onView(withId(R.id.compassMode)).perform(click());
         onView(withId(R.id.compassMode)).perform(click());
 

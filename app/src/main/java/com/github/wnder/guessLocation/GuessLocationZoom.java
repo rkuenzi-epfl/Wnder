@@ -86,8 +86,6 @@ public class GuessLocationZoom {
         else{
             zoomOut(littlePic, bigPic, littlePicScale);
         }
-
-
     }
 
     /**
@@ -129,6 +127,7 @@ public class GuessLocationZoom {
             public void onAnimationEnd(Animator animation) {
                 startPoint.setVisibility(VISIBLE);
                 endPoint.setVisibility(GONE);
+                //Show the buttons
                 for(View view: toHideWhenZoomedIn){
                     view.setVisibility(VISIBLE);
                 }
