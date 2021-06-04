@@ -23,7 +23,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tourName"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/content_descr_tour_first_pic" />
 
         <TextView
             android:id="@+id/tourName"
@@ -43,7 +44,8 @@
             app:layout_constraintEnd_toStartOf="@+id/tourPicCount"
             app:layout_constraintTop_toBottomOf="@id/tourName"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/ic_baseline_collections_24" />
+            app:srcCompat="@drawable/ic_baseline_collections_24"
+            android:contentDescription="@string/content_descr_tour_pic_count_icon" />
 
         <TextView
             android:id="@+id/tourPicCount"
@@ -64,7 +66,8 @@
             app:layout_constraintEnd_toStartOf="@+id/tourDistance"
             app:layout_constraintTop_toBottomOf="@id/tourName"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/ic_baseline_location_on_24" />
+            app:srcCompat="@drawable/ic_baseline_location_on_24"
+            android:contentDescription="@string/content_descr_tour_distance_icon" />
 
         <TextView
             android:id="@+id/tourDistance"
@@ -85,7 +88,8 @@
             app:layout_constraintEnd_toStartOf="@+id/tourLength"
             app:layout_constraintTop_toBottomOf="@id/tourName"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/ic_baseline_directions_24" />
+            app:srcCompat="@drawable/ic_baseline_directions_24"
+            android:contentDescription="@string/content_descr_tour_length_icon" />
 
         <TextView
             android:id="@+id/tourLength"
