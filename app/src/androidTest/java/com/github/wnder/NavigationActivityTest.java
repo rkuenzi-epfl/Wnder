@@ -199,5 +199,7 @@ public class NavigationActivityTest {
         SystemClock.sleep(2000);
         onView(withId(R.id.activateTour)).perform(click());
         onView(withId(R.id.activateTour)).check(matches(not(isDisplayed())));
+
+        onView(withId(R.id.takePictureButton)).perform(click());
     }
 }
