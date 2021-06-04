@@ -342,7 +342,7 @@ public class TakePictureFragment extends Fragment {
                 }).thenAccept(res -> {
                     pictures.add(pair.first);
 
-                    if(pictures.size() == tourPictures.size()){ //Which mean that we did not lose any pictures along the way and the tour can be uploaded
+                    if(pictures.size() == tourPictures.size()){ //Which means the tour can be uploaded (all the pictures were correctly uploaded)
                         CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(enterText.getText().toString()), enterText.getText().toString(), pictures);
 
                         uploadTour.thenAccept(ress -> {
