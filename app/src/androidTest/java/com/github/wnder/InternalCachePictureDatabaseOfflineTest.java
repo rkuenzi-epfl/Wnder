@@ -129,12 +129,6 @@ public class InternalCachePictureDatabaseOfflineTest {
     }
 
     @Test
-    public void getApproximateLocationThrows(){
-
-        assertTrue(ICPD.getApproximateLocation(uniqueId).isCompletedExceptionally());
-    }
-
-    @Test
     public void getUserGuessesThrows(){
         assertTrue(ICPD.getUserGuesses(uniqueId).isCompletedExceptionally());
     }
