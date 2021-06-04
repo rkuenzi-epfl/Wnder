@@ -301,7 +301,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
      * @param style on the mapbox map
      */
     private void onStyleLoaded(Style style) {
-        drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
 
         addGuessToStyle(this, style, guessSource);
         addArrowToStyle(this, style, arrowSource, mapboxMap);
@@ -309,6 +308,9 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         if (guessMode == R.string.guess_tour_mode) {
             compassButton();
+        }
+        else{
+            drawCircle(GuessLocationActivity.this, mapboxMap, cameraPosition);
         }
     }
 
