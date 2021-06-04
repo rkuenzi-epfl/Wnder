@@ -88,7 +88,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
     private static final long CAMERA_ANIMATION_DURATION = 200; //0.2 secondes
     private static final long GET_POSITION_FROM_GPS_PERIOD = 1000; //1 secondes
     private static final double MAX_LAT = 90;
-    private static final double ARRIVED_DISTANCE = 20000; //meters
+    private static final double ARRIVED_DISTANCE = 600; //meters
 
     //Button
     private Button nextGuessButton;
