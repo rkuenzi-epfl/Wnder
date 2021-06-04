@@ -354,6 +354,8 @@ public class TakePictureFragment extends Fragment {
                 });
             }
         }
+
+        fromTourToNormal();
     }
 
     private void fromTourToNormal(){
