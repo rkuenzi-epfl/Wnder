@@ -96,7 +96,7 @@ public class TourDatabaseTest {
 
     // Clean db
     @AfterClass
-    public static void deleteTestTour() {
+    public static void deleteTestTour(){
         FirebaseFirestore.getInstance().collection("pictures").document(firstUniqueId)
                 .collection("userData").document("userGuesses").delete();
         FirebaseFirestore.getInstance().collection("pictures").document(firstUniqueId)
