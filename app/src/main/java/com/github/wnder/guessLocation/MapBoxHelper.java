@@ -195,7 +195,7 @@ public class MapBoxHelper {
      * @param guessSource guess source to add
      */
     protected static void addGuessToStyle(Context context, Style style, Source guessSource){
-        style.addImage((String.valueOf(R.string.GUESS_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.mapbox_marker_icon_20px_red));
+        style.addImage((String.valueOf(R.string.GUESS_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.mapbox_marker_icon_60px_red));
         style.addSource(guessSource);
         style.addLayer(new SymbolLayer(String.valueOf(R.string.GUESS_LAYER_ID), String.valueOf(R.string.GUESS_SOURCE_ID))
                 .withProperties(
@@ -213,7 +213,7 @@ public class MapBoxHelper {
      * @param mapboxMap mapbox map
      */
     protected static void addArrowToStyle(Context context, Style style, Source arrowSource, MapboxMap mapboxMap){
-        style.addImage((String.valueOf(R.string.ORANGE_ARROW_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.fleche_orange));
+        style.addImage((String.valueOf(R.string.ORANGE_ARROW_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.orange_arrow));
         style.addSource(arrowSource);
         style.addLayer(new SymbolLayer(String.valueOf(R.string.ORANGE_ARROW_LAYER_ID), String.valueOf(R.string.ORANGE_ARROW_SOURCE_ID))
                 .withProperties(
@@ -232,7 +232,7 @@ public class MapBoxHelper {
      * @param pictureSource picture source to add
      */
     protected static void addPictureToStyle(Context context, Style style, Source pictureSource){
-        style.addImage((String.valueOf(R.string.PICTURE_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.mapbox_marker_icon_20px_purple));
+        style.addImage((String.valueOf(R.string.PICTURE_ICON_ID)), BitmapFactory.decodeResource(context.getResources(), R.drawable.mapbox_marker_icon_60px_purple));
         style.addSource(pictureSource);
         style.addLayer(new SymbolLayer(String.valueOf(R.string.PICTURE_LAYER_ID), String.valueOf(R.string.PICTURE_SOURCE_ID))
                 .withProperties(
