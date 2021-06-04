@@ -50,6 +50,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -82,7 +83,7 @@ public class TakePictureFragment extends Fragment {
     private TextView numberOfPictures;
     private Button validateTour;
 
-    private boolean tourMode = false;
+    private boolean tourMode;
     private List<Pair<String, UploadInfo>> tourPictures;
     private static final int MAX_NUMBER_OF_TOUR = 10;
 
@@ -110,7 +111,7 @@ public class TakePictureFragment extends Fragment {
         coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
-        validateTour = view.findViewById(R.id.activateTour);
+        activateTourMode = view.findViewById(R.id.activateTour);
         enterText = view.findViewById(R.id.enterName);
         numberOfPictures = view.findViewById(R.id.numberOfPictures);
         validateTour = view.findViewById(R.id.validateTour);
@@ -118,6 +119,7 @@ public class TakePictureFragment extends Fragment {
         validateTour.setVisibility(View.INVISIBLE);
         enterText.setVisibility(View.INVISIBLE);
         numberOfPictures.setVisibility(View.INVISIBLE);
+        tourMode = false;
 
         // Convert button size to dp
         Resources r = getResources();
@@ -133,12 +135,9 @@ public class TakePictureFragment extends Fragment {
         user = GlobalUser.getUser();
         userName = user.getName();
 
-        if(tourMode){
-            validateTour.setVisibility(View.INVISIBLE);
-            numberOfPictures.setVisibility(View.VISIBLE);
-            tourPictures = new ArrayList<>();
-            setTextForTourSize(tourPictures.size());
-        }
+        activateTourMode.setOnClickListener(button -> {
+            activateTourMode();
+        });
 
         if (GlobalUser.getUser() instanceof GuestUser) {
             NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
@@ -221,6 +220,8 @@ public class TakePictureFragment extends Fragment {
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
 
+        activateTourMode.setVisibility(View.INVISIBLE);
+
         Uri imageCollection;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             imageCollection = MediaStore.Images.Media
@@ -270,7 +271,19 @@ public class TakePictureFragment extends Fragment {
         takenPictureView.setImageURI(takenPictureUri);
         takenPictureView.setVisibility(View.VISIBLE);
         previewView.setVisibility(View.INVISIBLE);
-        uploadButton.setOnClickListener(button -> uploadTakenPicture(takenPictureId, takenPictureUri));
+
+        if(tourMode){
+            Location takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
+            tourPictures.add(new Pair<>(takenPictureId, new UploadInfo(userName, takenPictureLocation, takenPictureUri)));
+            if(!setTextForTourSize(tourPictures.size())){
+                takePictureButton.setVisibility(View.INVISIBLE);
+            }
+            uploadButton.setOnClickListener(button -> ChooseTourName());
+        }
+        else{
+            uploadButton.setOnClickListener(button -> uploadTakenPicture(takenPictureId, takenPictureUri));
+        }
+
         takePictureButton.setOnClickListener(_button -> {
             transitionToBase();
             takenPictureView.setVisibility(View.INVISIBLE);
@@ -284,6 +297,9 @@ public class TakePictureFragment extends Fragment {
      */
     private void transitionToBase() {
         // Move takePictureButton down and hide upload button
+        if(!tourMode){
+            activateTourMode.setVisibility(View.VISIBLE);
+        }
         uploadButton.hide();
         TransitionManager.beginDelayedTransition(coordinatorLayout);
         takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonParams.leftMargin);
@@ -370,15 +386,19 @@ public class TakePictureFragment extends Fragment {
                             return null;
                         });
                     }
+                    else{
+                        Snackbar.make(getView(), "One or more pictures failed to be uploaded", Snackbar.LENGTH_SHORT).show();
+                    }
                 });
-            }
-            if(pictures.size() != tourPictures.size()){
-                Snackbar.make(getView(), "One or more pictures failed to be uploaded", Snackbar.LENGTH_SHORT).show();
             }
         }
 
         enterText.setVisibility(View.INVISIBLE);
         validateTour.setVisibility(View.INVISIBLE);
+        takePictureButton.setVisibility(View.VISIBLE);
+
+        tourMode = false;
+        transitionToBase();
     }
 
     /**
@@ -388,12 +408,20 @@ public class TakePictureFragment extends Fragment {
      */
     private boolean setTextForTourSize(int size){
         if(size >= MAX_NUMBER_OF_TOUR){
-            numberOfPictures.setText("Your tour has " + size + " pictures. You can't add more.");
+            numberOfPictures.setText(String.format(Locale.ENGLISH, "%d", size));
             return false;
         }
         else{
-            numberOfPictures.setText("Your tour has " + size + " pictures");
+            numberOfPictures.setText(String.format(Locale.ENGLISH, "%d", size));
             return true;
         }
+    }
+
+    private void activateTourMode(){
+        activateTourMode.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.VISIBLE);
+        tourPictures = new ArrayList<>();
+        setTextForTourSize(tourPictures.size());
+        tourMode = true;
     }
 }
