@@ -85,28 +85,6 @@ public class FirebasePicturesDatabase implements PicturesDatabase {
     }
 
     @Override
-    public CompletableFuture<Location> getApproximateLocation(String uniqueId) {
-
-        return getLocation(uniqueId).thenApply((location) -> {
-            //randomize location a bit in a 200 meters radius
-            double radius = 200; // meters
-            Random random = new Random();
-            double distance = Math.sqrt(random.nextDouble()) * radius / 111000;
-            double angle = 2 * Math.PI * random.nextDouble();
-            double longitude_delta = distance * Math.cos(angle);
-            double latitude_delta = distance * Math.sin(angle);
-            longitude_delta /= Math.cos(Math.toRadians(location.getLatitude()));
-
-            //Create and set new location
-            Location al = new Location("");
-            al.setLongitude(location.getLongitude() + longitude_delta);
-            al.setLatitude(location.getLatitude() + latitude_delta);
-
-            return al;
-        });
-    }
-
-    @Override
     public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) {
         CompletableFuture<Map<String, Location>> cf = new CompletableFuture<>();
         picturesCollection.document(uniqueId).collection("userData").document("userGuesses").get()

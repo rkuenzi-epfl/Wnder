@@ -113,21 +113,40 @@ public class NavigationActivity extends AppCompatActivity {
         //if it's not the good request, return
         if(requestCode == REQUEST_POSITION_CODE){
             //permission to get the location
-            for(int i = 0; i < permissions.length; ++i){
-                if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
-                    AlertBuilder.okAlert(getString(R.string.gps_access_title), getString(R.string.gps_access_body), this).show();
-                }
-                else{
-                    LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                    if(!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                        AlertBuilder.okAlert(getString(R.string.gps_disabled_title), getString(R.string.gps_disabled_body), this).show();
-                    }
-                    LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, location -> {
-                        //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
-                    });
-                }
+            if(checkIfGPSPermissionHasBeenGranted(permissions, grantResults)) {
+                checkIfGPSIsActivated();
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    /**
+     * Checks if the GPS is activated, alerts the user if not
+     */
+    private void checkIfGPSIsActivated(){
+        LocationManager LocMan = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        if(!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            AlertBuilder.okAlert(getString(R.string.gps_disabled_title), getString(R.string.gps_disabled_body), this).show();
+        }
+        LocMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, location -> {
+            //Nothing to do in case of location change, the request is being done when necessary with getLastKnownLocation
+        });
+    }
+
+    /**
+     * Checks if the gps permission has been granted, alerts user if not
+     * @param permissions permission
+     * @param grantResults granted results
+     * @return true if granted, false + builds an alert otherwise.
+     */
+    private boolean checkIfGPSPermissionHasBeenGranted(String[] permissions, int[] grantResults){
+        for(int i = 0; i < permissions.length; ++i){
+            if(permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION) && !(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
+                AlertBuilder.okAlert(getString(R.string.gps_access_title), getString(R.string.gps_access_body), this).show();
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -17,13 +17,6 @@ public interface PicturesDatabase {
     CompletableFuture<Location> getLocation(String uniqueId);
 
     /**
-     * Provides (later) location with purposely reduced precision associated to a picture
-     * @param uniqueId the picture unique Id
-     * @return a Future of Location
-     */
-    CompletableFuture<Location> getApproximateLocation(String uniqueId);
-
-    /**
      * Provides (later) all user guesses associated to a picture
      * @param uniqueId the picture unique Id
      * @return a Future of all user guesses
