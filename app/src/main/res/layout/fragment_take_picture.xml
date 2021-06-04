@@ -75,7 +75,7 @@
             android:layout_marginStart="161dp"
             android:layout_marginEnd="157dp"
             android:layout_marginBottom="224dp"
-            android:text="Validate tour"
+            android:text="@string/validate_tour"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.543"
@@ -83,11 +83,13 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/activateTour"
+            android:contentDescription="@string/content_descr_activate_tour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
             android:clickable="true"
+            android:focusable="true"
             android:src="@drawable/ic_baseline_tour_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -95,6 +97,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <EditText
+        android:hint="@string/tour_name"
         android:id="@+id/enterName"
         android:layout_width="198dp"
         android:layout_height="wrap_content"

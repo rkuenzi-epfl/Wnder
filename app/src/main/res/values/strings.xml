@@ -38,8 +38,6 @@
     <string name="report">Report</string>
     <string name="help">Help</string>
     <string name="popup_menu">Popup menu</string>
-    <string name="content_descr_guess_preview_purple_band">A purple_500 band</string>
-    <string name="content_descr_guess_preview_written_logo">This is the written logo of Wnder</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
     <string name="bar_save_is_impossible">"Impossible to save this picture."</string>
@@ -87,12 +85,15 @@
     <string name="content_descr_picture_taken">Your picture</string>
     <string name="content_descr_take_picture_button">Take picture image button</string>
     <string name="content_descr_upload_button">Upload image button</string>
+    <string name="content_descr_activate_tour">Activates tour mode</string>
+    <string name="tour_name">Tour name</string>
     <string name="guest_no_upload">Please log in before taking a picture.</string>
     <string name="upload_later">It seems you are not connected to the internet, your uploads will resume once you are connected again.</string>
     <string name="upload_started">Upload started.</string>
     <string name="upload_not_started">Upload failed to start.</string>
     <string name="upload_failed">Upload failed.</string>
     <string name="upload_successful">Your picture was successfully uploaded!</string>
+    <string name="validate_tour">Validate tour</string>
 
     <!--Image From Gallery Strings-->
     <string name="SensorNotAvailableTitle">Sensor not available</string>
