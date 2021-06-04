@@ -33,7 +33,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     public CompletableFuture<List<String>> getTourPics(String tourUniqueId) {
         CompletableFuture<List<String>> tour = new CompletableFuture<>();
 
-        getSpecificTourDocument(tourUniqueId).
+        tourCollection.document(tourUniqueId).get().
             addOnSuccessListener((documentSnapshot) -> {
                 List<String> picIds = (List<String>) documentSnapshot.get("tourPics");
                 tour.complete(picIds);
@@ -47,7 +47,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     public CompletableFuture<String> getTourName(String tourUniqueId) {
         CompletableFuture<String> tourNameFuture = new CompletableFuture<>();
 
-        getSpecificTourDocument(tourUniqueId).
+        tourCollection.document(tourUniqueId).get().
             addOnSuccessListener((documentSnapshot) -> {
                 String tourName = documentSnapshot.getString("tourName");
                 tourNameFuture.complete(tourName);
@@ -61,7 +61,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     public CompletableFuture<Double> getTourDistance(String tourUniqueId, Location place){
         CompletableFuture<Double> distanceFuture = new CompletableFuture<>();
 
-        getSpecificTourDocument(tourUniqueId).
+        tourCollection.document(tourUniqueId).get().
                 addOnSuccessListener((documentSnapshot) -> {
                     double latitude = documentSnapshot.getDouble("tourFirstLat");
                     double longitude = documentSnapshot.getDouble("tourFirstLong");
@@ -83,7 +83,7 @@ public class FirebaseTourDatabase implements TourDatabase{
     public CompletableFuture<Double> getTourLength(String tourUniqueId){
         CompletableFuture<Double> tourLengthFuture = new CompletableFuture<>();
 
-        getSpecificTourDocument(tourUniqueId).
+        tourCollection.document(tourUniqueId).get().
                 addOnSuccessListener((documentSnapshot) -> {
                     double tourLength = documentSnapshot.getDouble("tourLength");
                     tourLengthFuture.complete(tourLength);
@@ -233,14 +233,5 @@ public class FirebaseTourDatabase implements TourDatabase{
     @Override
     public String generateTourUniqueId(String tourName){
         return tourName + Calendar.getInstance().getTimeInMillis();
-    }
-
-    /**
-     * Gets a specific tour document, used to avoid code duplication
-     * @param uniqueId unique id of the tour
-     * @return tour document
-     */
-    private Task<DocumentSnapshot> getSpecificTourDocument(String uniqueId){
-        return tourCollection.document(uniqueId).get();
     }
 }
