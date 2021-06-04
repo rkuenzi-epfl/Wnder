@@ -76,6 +76,7 @@ public class TakePictureFragment extends Fragment {
     private ViewGroup.MarginLayoutParams takePictureButtonParams;
     private int takePictureButtonOffset;
     private FloatingActionButton uploadButton;
+    private FloatingActionButton activateTourMode;
 
     private EditText enterText;
     private TextView numberOfPictures;
@@ -109,6 +110,7 @@ public class TakePictureFragment extends Fragment {
         coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
         takePictureButton = view.findViewById(R.id.takePictureButton);
         takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
+        validateTour = view.findViewById(R.id.activateTour);
         enterText = view.findViewById(R.id.enterName);
         numberOfPictures = view.findViewById(R.id.numberOfPictures);
         validateTour = view.findViewById(R.id.validateTour);
@@ -132,6 +134,7 @@ public class TakePictureFragment extends Fragment {
         userName = user.getName();
 
         if(tourMode){
+            validateTour.setVisibility(View.INVISIBLE);
             numberOfPictures.setVisibility(View.VISIBLE);
             tourPictures = new ArrayList<>();
             setTextForTourSize(tourPictures.size());
@@ -154,15 +157,6 @@ public class TakePictureFragment extends Fragment {
                         });
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             }
-        }
-
-        // Alert Guest user and user no connected to the internet
-        if(GlobalUser.getUser() instanceof GuestUser){
-            NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
-            navigationActivity.selectItem(R.id.profile_page);
-            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext()).show();
-        } else if(!networkInfo.isNetworkAvailable()){
-            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
         }
     }
 
