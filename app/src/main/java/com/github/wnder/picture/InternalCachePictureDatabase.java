@@ -56,16 +56,6 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
     }
 
     @Override
-    public CompletableFuture<Location> getApproximateLocation(String uniqueId) throws IllegalStateException{
-        if (isOnline()) {
-            return remoteDatabase.getApproximateLocation(uniqueId);
-        }
-        else {
-            return notAvailableOffline();
-        }
-    }
-
-    @Override
     public CompletableFuture<Map<String, Location>> getUserGuesses(String uniqueId) throws IllegalStateException{
         if (isOnline()) {
             return remoteDatabase.getUserGuesses(uniqueId);
