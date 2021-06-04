@@ -194,29 +194,6 @@ public class TakePictureFragment extends Fragment {
      * Try to take a picture and transition to the upload view if that worked
      * @param imageCapture the image capture instance needed to get the picture
      */
-    /*private void onTakePictureResult(boolean stored) {
-        if (stored) {
-
-            // Move takePictureButton up and display upload button
-            TransitionManager.beginDelayedTransition(coordinatorLayout);
-            takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonOffset);
-            coordinatorLayout.requestLayout();
-            uploadButton.show();
-
-            if(tourMode){
-                takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
-                tourPictures.add(new Pair<>(takenPictureId, new UploadInfo(userName, takenPictureLocation, takenPictureUri)));
-                if(!setTextForTourSize(tourPictures.size())){
-                    takePictureButton.setVisibility(View.INVISIBLE);
-                }
-                uploadButton.setOnClickListener(button -> ChooseTourName());
-            }
-            else{
-
-                ImageView takenPictureView = getView().findViewById(R.id.takenPicture);
-                takenPictureView.setImageURI(takenPictureUri);
-                uploadButton.setOnClickListener(button -> uploadTakenPicture());
-            }*/
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
 
