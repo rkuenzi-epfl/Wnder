@@ -303,7 +303,7 @@ public class FirebaseUserDatabase implements UserDatabase{
 
             // Keep the 10 closest tours
             Collections.sort(ids, Comparator.comparingDouble(distances::indexOf));
-            ids = ids.subList(0, 10);
+            ids = ids.subList(0, Math.min(ids.size(), 10));
             cf.complete(ids);
         });
 
