@@ -86,22 +86,6 @@ public class InternalCachePictureDatabaseOnlineTest {
     }
 
     @Test
-    public void getValidApproximateLocation() {
-        double radius = 200; // meters
-        double epsilon = 10; // meters
-        Location loc = new Location("");
-        // This should fail the test if we don't get a result I guess
-        loc.setLatitude(80);
-        loc.setLongitude(80);
-        try {
-            loc = ICPD.getApproximateLocation(uniqueId).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertTrue(loc.distanceTo(location) < radius + epsilon);
-    }
-
-    @Test
     public void successfullyAddGuessesAndScore() {
         Map<String, Location> guesses = new HashMap<>();
         Map<String, Double> scoreboard = new HashMap<>();

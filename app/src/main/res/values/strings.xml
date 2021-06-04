@@ -32,6 +32,8 @@
     <string name="RED_CIRCLE_LAYER_ID">red-circle-layer-id</string>
 
     <!--Guess Preview Strings-->
+    <string name="content_descr_wnder_logo">This is the Wnder logo</string>
+    <string name="content_descr_wnder_topBar">This is the top bar hosting the Wnder logo</string>
     <string name="content_descr_guess_preview_image">This is the image shown on the guess preview activity</string>
     <string name="report">Report</string>
     <string name="help">Help</string>
