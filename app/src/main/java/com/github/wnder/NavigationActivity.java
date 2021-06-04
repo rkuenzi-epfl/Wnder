@@ -113,9 +113,7 @@ public class NavigationActivity extends AppCompatActivity {
         //if it's not the good request, return
         if(requestCode == REQUEST_POSITION_CODE){
             //permission to get the location
-            boolean permGranted = checkIfGPSPermissionHasBeenGranted(permissions, grantResults);
-
-            if(permGranted) {
+            if(checkIfGPSPermissionHasBeenGranted(permissions, grantResults)) {
                 checkIfGPSIsActivated();
             }
         }

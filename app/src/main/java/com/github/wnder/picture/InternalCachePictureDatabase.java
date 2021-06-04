@@ -185,7 +185,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
 
     /**
      * To ret when an online-only feature is accessed offline
-     * @return
+     * @return a future exceptionally completed with an IllegalStateException
      */
     private CompletableFuture notAvailableOffline(){
         CompletableFuture<Void> cf = new CompletableFuture<>();
