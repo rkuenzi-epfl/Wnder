@@ -104,7 +104,7 @@ public class TakePictureFragment extends Fragment {
         user = GlobalUser.getUser();
         userName = user.getName();
 
-        if(checkIfFragmentIsAvailable(view)){
+        if(checkIfUserCanUploadPicture(view)){
             initPermAndCamera();
         }
     }
@@ -114,7 +114,7 @@ public class TakePictureFragment extends Fragment {
      * @param view the fragment's view
      * @return true if available, false otherwise
      */
-    private boolean checkIfFragmentIsAvailable(View view) {
+    private boolean checkIfUserCanUploadPicture(View view) {
         //If guest, feature not available
         if (GlobalUser.getUser() instanceof GuestUser) {
             NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
