@@ -29,6 +29,6 @@ public class ScoreTest {
         guessedLocation.setLongitude(46.46250);
         guessedLocation.setLatitude(6.34003);
 
-        assertEquals(288, Score.computeScore(realLocation, guessedLocation), 2);
+        assertEquals(192, Score.computeScore(realLocation, guessedLocation), 2);
     }
 }
