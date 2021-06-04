@@ -96,7 +96,8 @@ public class TourActivityTest {
     public void hasCorrectContent() {
         onView(withText("Tour 1")).check(matches(isDisplayed()));
         onView(withText("Tour 2")).check(matches(isDisplayed()));
-/*
+
+        /* Disabled because it doesn't work on cirrus
         // Number of pictures
         onView(withText("2")).check(matches(isDisplayed()));
         onView(withText("3")).check(matches(isDisplayed()));
