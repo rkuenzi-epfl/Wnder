@@ -310,23 +310,7 @@ public class TakePictureFragment extends Fragment {
             }
         }
     }
-
-    /**
-     * Add the picture just taken to the shared media
-     */
-    private Uri setupGalleryFile(){
-        Uri imageCollection;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            imageCollection = MediaStore.Images.Media
-                    .getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-        } else {
-            imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        }
-        ContentValues newPictureDetails = new ContentValues();
-        //newPictureDetails.put(MediaStore.Images.Media.DISPLAY_NAME, takenPictureId);
-        newPictureDetails.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-        return getContext().getContentResolver().insert(imageCollection, newPictureDetails);
-    }
+    
     private void ChooseTourName(){
         //Hide and show the concerned part of the UI
         enterText.setVisibility(View.VISIBLE);
