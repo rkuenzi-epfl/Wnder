@@ -173,8 +173,11 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         guessConfirmed = false;
         guessPossible = false;
 
-        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
-        setupZoomAnimation();
+        user = GlobalUser.getUser();
+
+        mapView = findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
 
         //Buttons
         nextGuessButton = findViewById(R.id.backToGuessPreview);
@@ -447,7 +450,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 picturesDb.sendUserGuess(picToGuess.getUniqueId(), user.getName(), guessedLocation, mapSnapshot);
             });
         }
-        picturesDb.updateKarma(picToGuess.getUniqueId(), 1);
+        picturesDb.updateKarma(picToGuess.getUniqueId(), 3);
 
         showActualLocation(computeScoreText(), true);
 
