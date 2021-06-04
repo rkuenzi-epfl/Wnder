@@ -139,25 +139,51 @@ public class TakePictureFragment extends Fragment {
             activateTourMode();
         });
 
+        if(checkIfUserCanUploadPicture(view)){
+            initPermAndCamera();
+        }
+    }
+
+    /**
+     * Checks if the take picture fragment should be available to user
+     * @param view the fragment's view
+     * @return true if available, false otherwise
+     */
+    private boolean checkIfUserCanUploadPicture(View view) {
+        //If guest, feature not available
         if (GlobalUser.getUser() instanceof GuestUser) {
             NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
             navigationActivity.selectItem(R.id.profile_page);
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
+            return false;
+        }
+        //If no internet connection, feature not available
+        else if (!networkInfo.isNetworkAvailable()) {
+            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * requests user permission to use camera, and initializeCameraPreview
+     */
+    private void initPermAndCamera(){
+        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            initializeCameraPreview();
         } else {
-            if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                initializeCameraPreview();
-            } else {
-                ActivityResultLauncher<String> requestPermissionLauncher =
-                        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                            if (isGranted) {
-                                initializeCameraPreview();
-                            }
-                        });
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-            }
+            ActivityResultLauncher<String> requestPermissionLauncher =
+                    registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                        if (isGranted) {
+                            initializeCameraPreview();
+                        }
+                    });
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
+
 
     /**
      * Initialize the camera preview view and the shutter button
@@ -197,15 +223,7 @@ public class TakePictureFragment extends Fragment {
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
 
-        activateTourMode.setVisibility(View.INVISIBLE);
-
-        Uri imageCollection;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            imageCollection = MediaStore.Images.Media
-                    .getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-        } else {
-            imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        }
+        Uri imageCollection = initImageCollection();
 
         ContentValues newPictureDetails = new ContentValues();
         newPictureDetails.put(MediaStore.Images.Media.DISPLAY_NAME, takenPictureId);
@@ -224,13 +242,24 @@ public class TakePictureFragment extends Fragment {
                         Uri takenPictureUri = outputFileResults.getSavedUri();
                         transitionToUpload(takenPictureId, takenPictureUri);
                     }
-
                     @Override
                     public void onError(ImageCaptureException error) {
                         error.printStackTrace();
                     }
                 }
         );
+    }
+
+    /**
+     * Inits image collection depending on SDK
+     * @return uri, the image collection
+     */
+    private Uri initImageCollection(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        } else {
+            return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
     }
 
     /**

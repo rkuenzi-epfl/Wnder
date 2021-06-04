@@ -4,7 +4,9 @@ import android.content.Context;
 import android.location.Location;
 
 import com.github.wnder.picture.FirebasePicturesDatabase;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -31,8 +33,8 @@ public class FirebaseTourDatabase implements TourDatabase{
     public CompletableFuture<List<String>> getTourPics(String tourUniqueId) {
         CompletableFuture<List<String>> tour = new CompletableFuture<>();
 
-        tourCollection.document(tourUniqueId).get()
-            .addOnSuccessListener((documentSnapshot) -> {
+        tourCollection.document(tourUniqueId).get().
+            addOnSuccessListener((documentSnapshot) -> {
                 List<String> picIds = (List<String>) documentSnapshot.get("tourPics");
                 tour.complete(picIds);
             })

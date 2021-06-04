@@ -48,14 +48,55 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         String pictureId = pictureList.get(position);
+
+        bindBitmap(holder, pictureId);
+        bindScore(holder, pictureId);
+        bindLocation(holder, pictureId, context);
+
+        holder.getToMapView().setOnClickListener(distanceField -> {
+            Intent intent = new Intent(context, HistoryMapActivity.class);
+            intent.putExtra(HistoryMapActivity.EXTRA_PICTURE_ID, pictureId);
+            context.startActivity(intent);
+        });
+        holder.getToScoreboardView().setOnClickListener(scoreField -> {
+            Intent intent = new Intent(context, ScoreboardActivity.class);
+            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureId);
+            context.startActivity(intent);
+        });
+
+    }
+
+    /**
+     * binds bitmap to holder
+     * @param holder holder
+     * @param pictureId picture id with the bitmap to bind
+     */
+    private void bindBitmap(ViewHolder holder, String pictureId){
         picturesDb.getBitmap(pictureId).thenAccept(bitmap -> {
             holder.getHistoryImageView().setImageBitmap(bitmap);
             holder.getHistoryImageView().setOnClickListener(view -> showPopup(holder, bitmap, pictureId));
         });
+    }
+
+    /**
+     * binds score to holder
+     * @param holder holder
+     * @param pictureId picture id with the score to bind
+     */
+    private void bindScore(ViewHolder holder, String pictureId){
         picturesDb.getScoreboard(pictureId).thenAccept(scoreboard -> {
             String score = String.format(Locale.getDefault(),"%4.1f", scoreboard.getOrDefault(GlobalUser.getUser().getName(), 0.));
             holder.getYourScoreView().setText(score);
         });
+    }
+
+    /**
+     * binds location to holder
+     * @param holder holder
+     * @param pictureId picture id with the location to bind
+     * @param context current context
+     */
+    private void bindLocation(ViewHolder holder, String pictureId, Context context){
         picturesDb.getLocation(pictureId).thenAccept(location -> {
 
             picturesDb.getUserGuesses(pictureId).thenAccept(guesses -> {
@@ -71,18 +112,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 holder.getHistoryDistanceView().setText(dText);
             });
         });
-
-        holder.getToMapView().setOnClickListener(distanceField -> {
-            Intent intent = new Intent(context, HistoryMapActivity.class);
-            intent.putExtra(HistoryMapActivity.EXTRA_PICTURE_ID, pictureId);
-            context.startActivity(intent);
-        });
-        holder.getToScoreboardView().setOnClickListener(scoreField -> {
-            Intent intent = new Intent(context, ScoreboardActivity.class);
-            intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID, pictureId);
-            context.startActivity(intent);
-        });
-
     }
 
     @Override
