@@ -16,6 +16,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.github.wnder.guessLocation.GuessPreviewActivity;
+import com.github.wnder.guessLocation.TemporaryActivity;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
@@ -116,9 +117,8 @@ public class NavigationActivityTest {
         onView(withId(R.id.guess_page)).perform(click());
         onView(withText("Radius: 5km")).check(matches(isDisplayed()));
         onView(withId(R.id.navigationToTourButton)).perform(click());
-        Intents.intended(hasComponent(GuessPreviewActivity.class.getName()));
+        Intents.intended(hasComponent(TemporaryActivity.class.getName()));
     }
-    
 
     @Test
     public void informPictureCantBeUploadedAsGuest(){

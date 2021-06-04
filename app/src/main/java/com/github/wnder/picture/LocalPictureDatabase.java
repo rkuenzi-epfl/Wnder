@@ -93,7 +93,7 @@ public class LocalPictureDatabase {
 
         storeBitmapFile(picture.getMapSnapshot(), mapSnapshotDirectory, picture.getUniqueId());
 
-        String serializedPicture = LocalPictureSerializer.serializePicture(picture.getRealLocation(), picture.getGuessLocation(), picture.getScoreboard());
+        String serializedPicture = LocalPictureSerializer.serializePicture(picture.getPicLocation(), picture.getGuessLocation(), picture.getScoreboard());
         storeMetadataFile(serializedPicture, picture.getUniqueId());
     }
 

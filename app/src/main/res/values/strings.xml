@@ -38,6 +38,8 @@
     <string name="report">Report</string>
     <string name="help">Help</string>
     <string name="popup_menu">Popup menu</string>
+    <string name="content_descr_guess_preview_purple_band">A purple_500 band</string>
+    <string name="content_descr_guess_preview_written_logo">This is the written logo of Wnder</string>
     <string name="report_confirm_title">You are about to report an image</string>
     <string name="report_confirm_message">Only images that are impossible to guess or inappropriate should be reported.\nPlease do not report images that you simply don\'t like</string>
     <string name="bar_save_is_impossible">"Impossible to save this picture."</string>
@@ -48,6 +50,10 @@
     <string name="bar_report">"This picture has been reported."</string>
 
     <!--Guess Location Strings-->
+    <string name="finished_tour">Tour finished.\nWell done!</string>
+    <string name="tour_score_text">%1$d/%2$d\nPictures found</string>
+    <string name="guess_simple_mode">guess_simple_mode</string>
+    <string name="guess_tour_mode">guess_tour_mode</string>
     <string name="content_descr_compass_button_image">This is the image shown on the compass button</string>
     <string name="content_descr_confirm_button_image">This is the image shown on the confirm button</string>
     <string name="mapClickOnCompassMode_confirm_title">You are in Compass Mode</string>
@@ -56,6 +62,8 @@
     <string name="distance_kilometer">Distance: %1$dkm</string>
     <string name="score">Score: %1$d</string>
     <string name="next_guess">NEXT GUESS</string>
+    <string name="tour_mode_confirm_while_far_title">You are about to skip a picture</string>
+    <string name="tour_mode_confirm_while_far_text">You did not find this picture yet.\nAre you sure you want to skip this picture en go to the next one?</string>
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>

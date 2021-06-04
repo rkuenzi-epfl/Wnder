@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +23,7 @@ import com.github.wnder.OnSwipeTouchListener;
 import com.github.wnder.R;
 import com.github.wnder.Utils;
 import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.picture.Picture;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
@@ -167,12 +169,10 @@ public class GuessPreviewActivity extends AppCompatActivity{
         if (networkInfo.isNetworkAvailable()){
             Intent intent = new Intent(this, GuessLocationActivity.class);
 
-            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LAT, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLatitude());
-            intent.putExtra(GuessLocationActivity.EXTRA_CAMERA_LNG, user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), this).getLongitude());
-            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LAT, pictureLat);
-            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_LNG, pictureLng);
-            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_ID, pictureID);
+            intent.putExtra(GuessLocationActivity.EXTRA_GUESS_MODE, R.string.guess_simple_mode);
 
+            Picture pictureToGuess = new Picture(pictureID, pictureLat, pictureLng);
+            intent.putExtra(GuessLocationActivity.EXTRA_PICTURE_TO_GUESS, pictureToGuess);
 
             startActivity(intent);
             finish();

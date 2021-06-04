@@ -58,7 +58,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState){
-        Mapbox.getInstance(getActivity(), getString(R.string.mapbox_access_token));
+        Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token));
         View rootView = inflater.inflate(R.layout.fragment_seekbar, container, false);
 
         user = GlobalUser.getUser();
@@ -79,7 +79,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         guessButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
 
         FloatingActionButton tourButton = rootView.findViewById(R.id.navigationToTourButton);
-        tourButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
+        tourButton.setOnClickListener((view) -> openActivity(new TemporaryActivity()));
 
         return rootView;
     }
@@ -110,12 +110,12 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
      * @param style on the mapbox map
      */
     private void onStyleLoaded(Style style){
-        drawCircle(getActivity(), mapboxMap, cameraPosition);
+        drawCircle(requireActivity(), mapboxMap, cameraPosition);
     }
 
     private  <T extends AppCompatActivity> void openActivity(AppCompatActivity activity) {
         if(networkInfo.isNetworkAvailable()){
-            Intent intent = new Intent(getActivity(), activity.getClass());
+            Intent intent = new Intent(getActivity(), activity.getClass()); //Uncomment to try the app with the Tour Mode in GuessLocation
             startActivity(intent);
         }
         else{
@@ -123,8 +123,6 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
             alert.show();
         }
     }
-
-
 
     /**
      * Manage the SeekBar
@@ -153,7 +151,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         user.setRadius(distances[progress]);
         radiusTextView.setText(getString(R.string.set_radius, distances[progress]));
         setZoom();
-        updateCircle(getActivity(), mapboxMap, cameraPosition);
+        updateCircle(requireActivity(), mapboxMap, cameraPosition);
     }
 
     //Necessary overwrites for MapView lifecycle methods
@@ -224,7 +222,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     /**
      * To override for seekbar
-     * @param seekBar
+     * @param seekBar the seekBar
      */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -233,7 +231,7 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
 
     /**
      * To override for seekbar
-     * @param seekBar
+     * @param seekBar the seekBar
      */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {

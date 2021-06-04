@@ -65,7 +65,7 @@ public class LocalPictureTest {
 
     @Test
     public void getRealLocationWorks(){
-        Location rL = pic.getRealLocation();
+        Location rL = pic.getPicLocation();
         assertThat(rL.getLongitude(), is(realLoc.getLongitude()));
         assertThat(rL.getLatitude(), is(realLoc.getLatitude()));
     }
