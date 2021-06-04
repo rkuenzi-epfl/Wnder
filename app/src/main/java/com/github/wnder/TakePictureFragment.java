@@ -108,17 +108,8 @@ public class TakePictureFragment extends Fragment {
 
         tourDb = new FirebaseTourDatabase(this.getContext());
 
-        coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
-        takePictureButton = view.findViewById(R.id.takePictureButton);
-        takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
-        activateTourMode = view.findViewById(R.id.activateTour);
-        enterText = view.findViewById(R.id.enterName);
-        numberOfPictures = view.findViewById(R.id.numberOfPictures);
-        validateTour = view.findViewById(R.id.validateTour);
+        initializeLayoutVariables(view);
 
-        validateTour.setVisibility(View.INVISIBLE);
-        enterText.setVisibility(View.INVISIBLE);
-        numberOfPictures.setVisibility(View.INVISIBLE);
         tourMode = false;
 
         // Convert button size to dp
@@ -157,6 +148,20 @@ public class TakePictureFragment extends Fragment {
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             }
         }
+    }
+
+    private void initializeLayoutVariables(View view){
+        coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
+        takePictureButton = view.findViewById(R.id.takePictureButton);
+        takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
+        activateTourMode = view.findViewById(R.id.activateTour);
+        enterText = view.findViewById(R.id.enterName);
+        numberOfPictures = view.findViewById(R.id.numberOfPictures);
+        validateTour = view.findViewById(R.id.validateTour);
+
+        validateTour.setVisibility(View.INVISIBLE);
+        enterText.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.INVISIBLE);
     }
 
     /**
