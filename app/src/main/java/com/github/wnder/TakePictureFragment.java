@@ -104,27 +104,51 @@ public class TakePictureFragment extends Fragment {
         user = GlobalUser.getUser();
         userName = user.getName();
 
+        if(checkIfFragmentIsAvailable(view)){
+            initPermAndCamera();
+        }
+    }
+
+    /**
+     * Checks if the take picture fragment should be available to user
+     * @param view the fragment's view
+     * @return true if available, false otherwise
+     */
+    private boolean checkIfFragmentIsAvailable(View view) {
+        //If guest, feature not available
         if (GlobalUser.getUser() instanceof GuestUser) {
             NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
             navigationActivity.selectItem(R.id.profile_page);
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
-        } else if(!networkInfo.isNetworkAvailable()){
+            return false;
+        }
+        //If no internet connection, feature not available
+        else if (!networkInfo.isNetworkAvailable()) {
             Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * requests user permission to use camera, and initializeCameraPreview
+     */
+    private void initPermAndCamera(){
+        if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            initializeCameraPreview();
         } else {
-            if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                initializeCameraPreview();
-            } else {
-                ActivityResultLauncher<String> requestPermissionLauncher =
-                        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                            if (isGranted) {
-                                initializeCameraPreview();
-                            }
-                        });
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-            }
+            ActivityResultLauncher<String> requestPermissionLauncher =
+                    registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                        if (isGranted) {
+                            initializeCameraPreview();
+                        }
+                    });
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
+
 
     /**
      * Initialize the camera preview view and the shutter button
