@@ -419,7 +419,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 picturesDb.sendUserGuess(pictureID, user.getName(), guessedLocation, mapSnapshot);
             });
         }
-        picturesDb.updateKarma(pictureID, 1);
+        picturesDb.updateKarma(pictureID, 3);
 
         showActualLocation();
     }
