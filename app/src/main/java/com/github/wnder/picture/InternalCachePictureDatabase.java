@@ -61,9 +61,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.getApproximateLocation(uniqueId);
         }
         else {
-            CompletableFuture<Location> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
+            return notAvailableOffline();
         }
     }
 
@@ -73,9 +71,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.getUserGuesses(uniqueId);
         }
         else {
-            CompletableFuture<Map<String, Location>> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
+            return notAvailableOffline();
         }
     }
 
@@ -105,9 +101,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.sendUserGuess(uniqueId, user, guessedLocation, mapSnapshot);
         }
         else {
-            CompletableFuture<Void> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
+            return notAvailableOffline();
         }
     }
 
@@ -151,9 +145,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.addToReportedPictures(uniqueId);
         }
         else{
-            CompletableFuture<Void> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
+            return notAvailableOffline();
         }
     }
 
@@ -173,9 +165,7 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
             return remoteDatabase.updateKarma(uniqueId, delta);
         }
         else {
-            CompletableFuture<Void> cf = new CompletableFuture<>();
-            cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
-            return cf;
+            return notAvailableOffline();
         }
     }
 
@@ -201,5 +191,15 @@ public class InternalCachePictureDatabase implements PicturesDatabase{
      */
     public void deleteLocalPicture(String uniqueId){
         localDatabase.deletePicture(uniqueId);
+    }
+
+    /**
+     * To ret when an online-only feature is accessed offline
+     * @return
+     */
+    private CompletableFuture notAvailableOffline(){
+        CompletableFuture<Void> cf = new CompletableFuture<>();
+        cf.completeExceptionally(new IllegalStateException("This method is not available on offline mode"));
+        return cf;
     }
 }

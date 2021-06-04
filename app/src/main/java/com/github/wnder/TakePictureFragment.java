@@ -109,6 +109,8 @@ public class TakePictureFragment extends Fragment {
             navigationActivity.selectItem(R.id.profile_page);
             AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext())
                     .show();
+        } else if(!networkInfo.isNetworkAvailable()){
+            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
         } else {
             if (ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 initializeCameraPreview();
@@ -121,15 +123,6 @@ public class TakePictureFragment extends Fragment {
                         });
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             }
-        }
-
-        // Alert Guest user and user no connected to the internet
-        if(GlobalUser.getUser() instanceof GuestUser){
-            NavigationActivity navigationActivity = (NavigationActivity) this.getActivity();
-            navigationActivity.selectItem(R.id.profile_page);
-            AlertBuilder.okAlert(getString(R.string.guest_not_allowed), getString(R.string.guest_no_upload), view.getContext()).show();
-        } else if(!networkInfo.isNetworkAvailable()){
-            Snackbar.make(getView(), R.string.upload_later, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -170,11 +163,9 @@ public class TakePictureFragment extends Fragment {
      */
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
-
         Uri imageCollection;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            imageCollection = MediaStore.Images.Media
-                    .getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         } else {
             imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         }
@@ -196,7 +187,6 @@ public class TakePictureFragment extends Fragment {
                         Uri takenPictureUri = outputFileResults.getSavedUri();
                         transitionToUpload(takenPictureId, takenPictureUri);
                     }
-
                     @Override
                     public void onError(ImageCaptureException error) {
                         error.printStackTrace();
