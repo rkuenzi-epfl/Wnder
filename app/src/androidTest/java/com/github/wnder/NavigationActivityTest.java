@@ -13,6 +13,7 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.wnder.guessLocation.GuessPreviewActivity;
+import com.github.wnder.guessLocation.TemporaryActivity;
 import com.github.wnder.networkService.NetworkModule;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
@@ -104,7 +105,14 @@ public class NavigationActivityTest {
         onView(withText(R.string.no_connection)).check(matches(isDisplayed()));
         when(networkInfo.isNetworkAvailable()).thenReturn(true);
     }
-    
+
+    @Test
+    public void tourButtonGoesToTour() {
+        onView(withId(R.id.guess_page)).perform(click());
+        onView(withText("Radius: 5km")).check(matches(isDisplayed()));
+        onView(withId(R.id.navigationToTourButton)).perform(click());
+        Intents.intended(hasComponent(TemporaryActivity.class.getName()));
+    }
 
     @Test
     public void informPictureCantBeUploadedAsGuest(){

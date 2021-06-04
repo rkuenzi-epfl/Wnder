@@ -114,11 +114,7 @@ public class GuessLocationTourModeActivityTest {
 
         CompletableFuture<Void> uploadTour = tdb.uploadTour(tourUniqueId, tourName, pictures);
 
-        try{
-            uploadTour.get();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+        uploadTour.get();
 
         User user = new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag));
         GlobalUser.setUser(user);

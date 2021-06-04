@@ -48,6 +48,7 @@
     <string name="bar_report">"This picture has been reported."</string>
 
     <!--Guess Location Strings-->
+    <string name="finished_tour">Tour finished.\nWell done!</string>
     <string name="guess_simple_mode">guess_simple_mode</string>
     <string name="guess_tour_mode">guess_tour_mode</string>
     <string name="content_descr_compass_button_image">This is the image shown on the compass button</string>

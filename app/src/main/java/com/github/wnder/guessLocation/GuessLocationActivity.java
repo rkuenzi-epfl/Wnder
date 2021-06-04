@@ -385,8 +385,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
-        //If guess hasn't been confirmed, then just switch mode
-        //if(!guessConfirmed) { compassMode = !compassMode; }
+        //change mode
         compassMode = !compassMode;
 
         //if we're now in compass mode, enable it and switch icon
@@ -516,7 +515,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             Animation button_animation = AnimationUtils.loadAnimation(this, R.anim.next_guess_button_anim);
             nextGuessButton.startAnimation(button_animation);
 
-            animatedText = "Tour finished.\nWell done!";
+            animatedText = String.valueOf(R.string.finished_tour);
         }
 
         findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);
