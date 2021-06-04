@@ -20,6 +20,7 @@ import com.github.wnder.AlertBuilder;
 import com.github.wnder.guessLocation.GuessPreviewActivity;
 import com.github.wnder.R;
 import com.github.wnder.networkService.NetworkService;
+import com.github.wnder.tour.TourActivity;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -76,10 +77,10 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         manageSeekBar(radiusSeekBar, radiusTextView);
 
         FloatingActionButton guessButton = rootView.findViewById(R.id.navigationToGuessButton);
-        guessButton.setOnClickListener((view) -> openActivity(new GuessPreviewActivity()));
+        guessButton.setOnClickListener((view) -> openActivity(GuessPreviewActivity.class));
 
         FloatingActionButton tourButton = rootView.findViewById(R.id.navigationToTourButton);
-        tourButton.setOnClickListener((view) -> openActivity(new TemporaryActivity()));
+        tourButton.setOnClickListener((view) -> openActivity(TourActivity.class));
 
         return rootView;
     }
@@ -113,9 +114,9 @@ public class GuessFragment extends Fragment implements OnSeekBarChangeListener, 
         drawCircle(requireActivity(), mapboxMap, cameraPosition);
     }
 
-    private  <T extends AppCompatActivity> void openActivity(AppCompatActivity activity) {
+    private <T extends AppCompatActivity> void openActivity(Class<T> activity) {
         if(networkInfo.isNetworkAvailable()){
-            Intent intent = new Intent(getActivity(), activity.getClass()); //Uncomment to try the app with the Tour Mode in GuessLocation
+            Intent intent = new Intent(getActivity(), activity);
             startActivity(intent);
         }
         else{

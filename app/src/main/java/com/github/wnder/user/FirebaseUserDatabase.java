@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,7 @@ public class FirebaseUserDatabase implements UserDatabase{
 
     private final CollectionReference picturesCollection;
     private final CollectionReference usersCollection;
+    private final CollectionReference toursCollection;
     private final Context context;
 
     private NetworkInformation networkInfo;
@@ -38,6 +40,7 @@ public class FirebaseUserDatabase implements UserDatabase{
     public FirebaseUserDatabase(Context context){
         picturesCollection = FirebaseFirestore.getInstance().collection("pictures");
         usersCollection = FirebaseFirestore.getInstance().collection("users");
+        toursCollection = FirebaseFirestore.getInstance().collection("tours");
         this.context = context;
 
         //setup network info
@@ -273,5 +276,37 @@ public class FirebaseUserDatabase implements UserDatabase{
         });
 
         return allScoresFuture;
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getTourListForUser(User user) {
+        CompletableFuture<List<String>> cf = new CompletableFuture<>();
+
+        toursCollection.get().addOnSuccessListener(documentSnapshots -> {
+            List<String> ids = new ArrayList<>();
+            List<Double> distances = new ArrayList<>();
+            Location userLocation = user.getPositionFromGPS((LocationManager)context.getSystemService(Context.LOCATION_SERVICE),context);
+
+            for (DocumentSnapshot documentSnapshot : documentSnapshots.getDocuments()) {
+                ids.add(documentSnapshot.getId());
+
+                double latitude = documentSnapshot.getDouble("tourFirstLat");
+                double longitude = documentSnapshot.getDouble("tourFirstLong");
+
+                Location tourLocation = new Location("");
+                tourLocation.setLatitude(latitude);
+                tourLocation.setLongitude(longitude);
+
+                double distance = tourLocation.distanceTo(userLocation);
+                distances.add(distance);
+            }
+
+            // Keep the 10 closest tours (if available)
+            Collections.sort(ids, Comparator.comparingDouble(distances::indexOf));
+            ids = ids.subList(0, Math.min(ids.size(), 10));
+            cf.complete(ids);
+        });
+
+        return cf;
     }
 }

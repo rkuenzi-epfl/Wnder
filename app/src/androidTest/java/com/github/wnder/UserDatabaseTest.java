@@ -47,4 +47,11 @@ public class UserDatabaseTest {
             assertTrue(scores.contains(200.));
         });
     }
+
+    @Test
+    public void getTourListForUserWorks() {
+        userDb.getTourListForUser(GlobalUser.getUser()).thenAccept(tourList -> {
+            assertTrue(tourList != null && tourList.size() <= 10);
+        });
+    }
 }

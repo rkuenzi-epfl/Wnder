@@ -26,7 +26,6 @@
         <activity android:name=".HistoryMapActivity" />
         <activity android:name=".scoreboard.ScoreboardActivity" />
         <activity android:name=".guessLocation.GuessLocationActivity" />
-        <activity android:name=".guessLocation.TemporaryActivity" />
         <activity
             android:name=".guessLocation.GuessPreviewActivity"
             android:noHistory="true" />
@@ -37,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".tour.TourActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
