@@ -187,12 +187,7 @@ public class TakePictureFragment extends Fragment {
      */
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
-        Uri imageCollection;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-        } else {
-            imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        }
+        Uri imageCollection = initImageCollection();
 
         ContentValues newPictureDetails = new ContentValues();
         newPictureDetails.put(MediaStore.Images.Media.DISPLAY_NAME, takenPictureId);
@@ -217,6 +212,18 @@ public class TakePictureFragment extends Fragment {
                     }
                 }
         );
+    }
+
+    /**
+     * Inits image collection depending on SDK
+     * @return uri, the image collection
+     */
+    private Uri initImageCollection(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        } else {
+            return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
     }
 
     /**
