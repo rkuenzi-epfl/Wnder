@@ -332,6 +332,7 @@ public class TakePictureFragment extends Fragment {
                 CompletableFuture<Void> uploadPic = picturesDb.uploadPicture(pair.first, pair.second);
 
                 uploadPic.exceptionally(res -> {
+                    Snackbar.make(getView(), "One or more pictures failed to be uploaded", Snackbar.LENGTH_SHORT).show();
                     pictures.clear(); //Signify that we lost one picture along the way
                     return null;
                 }).thenAccept(res -> {
@@ -346,9 +347,6 @@ public class TakePictureFragment extends Fragment {
                             Snackbar.make(getView(), "The upload of the tour failed.", Snackbar.LENGTH_SHORT).show();
                             return null;
                         });
-                    }
-                    else{
-                        Snackbar.make(getView(), "One or more pictures failed to be uploaded", Snackbar.LENGTH_SHORT).show();
                     }
                 });
             }
