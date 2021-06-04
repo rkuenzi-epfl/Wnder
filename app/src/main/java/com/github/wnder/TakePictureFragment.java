@@ -299,16 +299,20 @@ public class TakePictureFragment extends Fragment {
             if(!uploadResult.isCompletedExceptionally()) {
                 transitionToBase();
                 Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT).show();
-                uploadResult.thenAccept(res -> {
-                    Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT).show();
-                }).exceptionally(res -> {
-                    Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT).show();
-                    return null;
-                });
+                uploadWithText(uploadResult, R.string.upload_successful, R.string.upload_failed);
             } else {
                 Snackbar.make(getView(), R.string.upload_not_started, Snackbar.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void uploadWithText(CompletableFuture<Void> task, int successID, int failedID){
+        task.thenAccept(res -> {
+            Snackbar.make(getView(), successID, Snackbar.LENGTH_SHORT).show();
+        }).exceptionally(res -> {
+            Snackbar.make(getView(), failedID, Snackbar.LENGTH_SHORT).show();
+            return null;
+        });
     }
     
     private void ChooseTourName(){
@@ -345,12 +349,7 @@ public class TakePictureFragment extends Fragment {
                     if(pictures.size() == tourPictures.size()){ //Which means the tour can be uploaded (all the pictures were correctly uploaded)
                         CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(enterText.getText().toString()), enterText.getText().toString(), pictures);
 
-                        uploadTour.thenAccept(ress -> {
-                            Snackbar.make(getView(), R.string.tour_uploaded, Snackbar.LENGTH_SHORT).show();
-                        }).exceptionally(ress -> {
-                            Snackbar.make(getView(), R.string.tour_upload_failed, Snackbar.LENGTH_SHORT).show();
-                            return null;
-                        });
+                        uploadWithText(uploadTour, R.string.tour_uploaded, R.string.tour_upload_failed);
                     }
                 });
             }
