@@ -68,25 +68,21 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.ViewHolder> {
 
         User user = GlobalUser.getUser();
         Location userLocation = user.getPositionFromGPS((LocationManager) context.getSystemService(Context.LOCATION_SERVICE), context);
-        tourDb.getTourDistance(tourId, userLocation).thenAccept(tourDistance -> {
-            String dText = context.getString(R.string.distance_meter, tourDistance.intValue());
-            if (tourDistance > 10000) {
-                dText = context.getString(R.string.distance_kilometer, tourDistance.intValue() / 1000);
-            }
-            holder.getDistanceTextView().setText(dText);
-        });
+        tourDb.getTourDistance(tourId, userLocation).thenAccept(tourDistance -> setDistanceTextToView(context, tourDistance, holder.getDistanceTextView()));
 
-        tourDb.getTourLength(tourId).thenAccept(tourLength -> {
-            String lText = context.getString(R.string.distance_meter, tourLength.intValue());
-            if (tourLength > 10000) {
-                lText = context.getString(R.string.distance_kilometer, tourLength.intValue() / 1000);
-            }
-            holder.getLengthTextView().setText(lText);
-        });
+        tourDb.getTourLength(tourId).thenAccept(tourLength -> setDistanceTextToView(context, tourLength, holder.getLengthTextView()));
 
         holder.itemView.setOnClickListener(view -> {
             openGuessActivity(context, tourId);
         });
+    }
+
+    private void setDistanceTextToView(Context context, Double distance, TextView view) {
+        String dText = context.getString(R.string.distance_meter, distance.intValue());
+        if (distance > 10000) {
+            dText = context.getString(R.string.distance_kilometer, distance.intValue() / 1000);
+        }
+        view.setText(dText);
     }
 
     private void openGuessActivity(Context context, String tourId){
