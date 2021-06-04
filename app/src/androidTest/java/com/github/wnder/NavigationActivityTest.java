@@ -189,4 +189,17 @@ public class NavigationActivityTest {
         onView(withId(R.id.uploadButton)).perform(click());
         onView(withId(R.id.uploadButton)).check(matches(not(isDisplayed())));*/
     }
+
+    @Test
+    public void activateTourMode(){
+        GlobalUser.setUser(new SignedInUser("testUser", Uri.parse("android.resource://com.github.wnder/" + R.raw.ladiag)));
+        when(networkInfo.isNetworkAvailable()).thenReturn(true);
+
+        onView(withId(R.id.take_picture_page)).perform(click());
+        SystemClock.sleep(2000);
+        onView(withId(R.id.activateTour)).perform(click());
+        onView(withId(R.id.activateTour)).check(matches(not(isDisplayed())));
+
+        onView(withId(R.id.takePictureButton)).perform(click());
+    }
 }

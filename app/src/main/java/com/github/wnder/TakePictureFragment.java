@@ -11,10 +11,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -35,6 +39,7 @@ import androidx.transition.TransitionManager;
 import com.github.wnder.networkService.NetworkService;
 import com.github.wnder.picture.PicturesDatabase;
 import com.github.wnder.picture.UploadInfo;
+import com.github.wnder.tour.FirebaseTourDatabase;
 import com.github.wnder.user.GlobalUser;
 import com.github.wnder.user.GuestUser;
 import com.github.wnder.user.User;
@@ -42,7 +47,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -62,11 +70,23 @@ public class TakePictureFragment extends Fragment {
     @Inject
     public NetworkService networkInfo;
 
+    private FirebaseTourDatabase tourDb;
+
     private CoordinatorLayout coordinatorLayout;
     private FloatingActionButton takePictureButton;
     private ViewGroup.MarginLayoutParams takePictureButtonParams;
     private int takePictureButtonOffset;
     private FloatingActionButton uploadButton;
+    private FloatingActionButton activateTourMode;
+
+    private EditText enterText;
+    private TextView numberOfPictures;
+    private Button validateTour;
+
+    private boolean tourMode;
+    private List<Pair<String, UploadInfo>> tourPictures;
+    private static final int MAX_NUMBER_OF_TOUR = 10;
+
     private ImageView takenPictureView;
     private PreviewView previewView;
 
@@ -86,9 +106,11 @@ public class TakePictureFragment extends Fragment {
             return;
         }
 
-        coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
-        takePictureButton = view.findViewById(R.id.takePictureButton);
-        takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
+        tourDb = new FirebaseTourDatabase(this.getContext());
+
+        initializeLayoutVariables(view);
+
+        tourMode = false;
 
         // Convert button size to dp
         Resources r = getResources();
@@ -103,6 +125,10 @@ public class TakePictureFragment extends Fragment {
 
         user = GlobalUser.getUser();
         userName = user.getName();
+
+        activateTourMode.setOnClickListener(button -> {
+            activateTourMode();
+        });
 
         if(checkIfUserCanUploadPicture(view)){
             initPermAndCamera();
@@ -149,6 +175,19 @@ public class TakePictureFragment extends Fragment {
         }
     }
 
+    private void initializeLayoutVariables(View view){
+        coordinatorLayout = view.findViewById(R.id.takePictureCoordinator);
+        takePictureButton = view.findViewById(R.id.takePictureButton);
+        takePictureButtonParams = (ViewGroup.MarginLayoutParams) takePictureButton.getLayoutParams();
+        activateTourMode = view.findViewById(R.id.activateTour);
+        enterText = view.findViewById(R.id.enterName);
+        numberOfPictures = view.findViewById(R.id.numberOfPictures);
+        validateTour = view.findViewById(R.id.validateTour);
+
+        validateTour.setVisibility(View.INVISIBLE);
+        enterText.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.INVISIBLE);
+    }
 
     /**
      * Initialize the camera preview view and the shutter button
@@ -187,6 +226,7 @@ public class TakePictureFragment extends Fragment {
      */
     private void takePicture(ImageCapture imageCapture) {
         String takenPictureId = userName + Calendar.getInstance().getTimeInMillis();
+
         Uri imageCollection = initImageCollection();
 
         ContentValues newPictureDetails = new ContentValues();
@@ -241,7 +281,19 @@ public class TakePictureFragment extends Fragment {
         takenPictureView.setImageURI(takenPictureUri);
         takenPictureView.setVisibility(View.VISIBLE);
         previewView.setVisibility(View.INVISIBLE);
-        uploadButton.setOnClickListener(button -> uploadTakenPicture(takenPictureId, takenPictureUri));
+
+        if(tourMode){
+            Location takenPictureLocation = user.getPositionFromGPS((LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE), getContext());
+            tourPictures.add(new Pair<>(takenPictureId, new UploadInfo(userName, takenPictureLocation, takenPictureUri)));
+            if(!setTextForTourSize(tourPictures.size())){
+                takePictureButton.setVisibility(View.INVISIBLE);
+            }
+            uploadButton.setOnClickListener(button -> ChooseTourName());
+        }
+        else{
+            uploadButton.setOnClickListener(button -> uploadTakenPicture(takenPictureId, takenPictureUri));
+        }
+
         takePictureButton.setOnClickListener(_button -> {
             transitionToBase();
             takenPictureView.setVisibility(View.INVISIBLE);
@@ -255,6 +307,9 @@ public class TakePictureFragment extends Fragment {
      */
     private void transitionToBase() {
         // Move takePictureButton down and hide upload button
+        if(!tourMode){
+            activateTourMode.setVisibility(View.VISIBLE);
+        }
         uploadButton.hide();
         TransitionManager.beginDelayedTransition(coordinatorLayout);
         takePictureButtonParams.setMargins(takePictureButtonParams.leftMargin, takePictureButtonParams.topMargin, takePictureButtonParams.rightMargin, takePictureButtonParams.leftMargin);
@@ -277,15 +332,95 @@ public class TakePictureFragment extends Fragment {
             if(!uploadResult.isCompletedExceptionally()) {
                 transitionToBase();
                 Snackbar.make(getView(), R.string.upload_started, Snackbar.LENGTH_SHORT).show();
-                uploadResult.thenAccept(res -> {
-                    Snackbar.make(getView(), R.string.upload_successful, Snackbar.LENGTH_SHORT).show();
-                }).exceptionally(res -> {
-                    Snackbar.make(getView(), R.string.upload_failed, Snackbar.LENGTH_SHORT).show();
-                    return null;
-                });
+                uploadWithText(uploadResult, R.string.upload_successful, R.string.upload_failed);
             } else {
                 Snackbar.make(getView(), R.string.upload_not_started, Snackbar.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void uploadWithText(CompletableFuture<Void> task, int successID, int failedID){
+        task.thenAccept(res -> {
+            Snackbar.make(getView(), successID, Snackbar.LENGTH_SHORT).show();
+        }).exceptionally(res -> {
+            Snackbar.make(getView(), failedID, Snackbar.LENGTH_SHORT).show();
+            return null;
+        });
+    }
+    
+    private void ChooseTourName(){
+        //Hide and show the concerned part of the UI
+        enterText.setVisibility(View.VISIBLE);
+        validateTour.setVisibility(View.VISIBLE);
+        uploadButton.setVisibility(View.INVISIBLE);
+        takePictureButton.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.INVISIBLE);
+        validateTour.setOnClickListener(button -> finalizeTour());
+    }
+
+    private void finalizeTour(){
+        //To avoid empty string as name
+        if(enterText.getText().toString().equals("")){
+            return;
+        }
+        if(user instanceof GuestUser){
+            Snackbar.make(getView(), R.string.guest_tour_forbidden, Snackbar.LENGTH_SHORT).show();
+        }
+        else{
+            List<String> pictures = new ArrayList<>();
+            for(Pair<String, UploadInfo> pair : tourPictures){
+
+                CompletableFuture<Void> uploadPic = picturesDb.uploadPicture(pair.first, pair.second);
+
+                uploadPic.exceptionally(res -> {
+                    Snackbar.make(getView(), R.string.failed_tour_picture_upload, Snackbar.LENGTH_SHORT).show();
+                    pictures.clear(); //Signify that we lost one picture along the way
+                    return null;
+                }).thenAccept(res -> {
+                    pictures.add(pair.first);
+
+                    if(pictures.size() == tourPictures.size()){ //Which means the tour can be uploaded (all the pictures were correctly uploaded)
+                        CompletableFuture<Void> uploadTour = tourDb.uploadTour(tourDb.generateTourUniqueId(enterText.getText().toString()), enterText.getText().toString(), pictures);
+
+                        uploadWithText(uploadTour, R.string.tour_uploaded, R.string.tour_upload_failed);
+                    }
+                });
+            }
+        }
+
+        fromTourToNormal();
+    }
+
+    private void fromTourToNormal(){
+        enterText.setVisibility(View.INVISIBLE);
+        validateTour.setVisibility(View.INVISIBLE);
+        takePictureButton.setVisibility(View.VISIBLE);
+
+        tourMode = false;
+        transitionToBase();
+    }
+
+    /**
+     * Modify the text indicating the number of pictures taken for the tour
+     * @param size of the tour
+     * @return true if we can add more photos, false otherwise
+     */
+    private boolean setTextForTourSize(int size){
+        if(size >= MAX_NUMBER_OF_TOUR){
+            numberOfPictures.setText(String.format(Locale.ENGLISH, "%d", size));
+            return false;
+        }
+        else{
+            numberOfPictures.setText(String.format(Locale.ENGLISH, "%d", size));
+            return true;
+        }
+    }
+
+    private void activateTourMode(){
+        activateTourMode.setVisibility(View.INVISIBLE);
+        numberOfPictures.setVisibility(View.VISIBLE);
+        tourPictures = new ArrayList<>();
+        setTextForTourSize(tourPictures.size());
+        tourMode = true;
     }
 }
