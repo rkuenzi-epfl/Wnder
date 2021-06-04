@@ -175,7 +175,7 @@ public class GuessLocationSimpleModeActivityTest {
    }
 
     @Test
-    public void testSwitchMode(){
+    public void testSwitchMode()  {
         onView(withId(R.id.compassMode)).perform(click());
         onView(withId(R.id.compassMode)).perform(click());
 

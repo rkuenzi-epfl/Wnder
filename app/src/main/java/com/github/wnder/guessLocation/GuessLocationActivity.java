@@ -162,6 +162,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
 
         double gpsLat = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this).getLatitude();
         double gpsLng = user.getPositionFromGPS((LocationManager) getSystemService(Context.LOCATION_SERVICE), GuessLocationActivity.this).getLongitude();
+
         cameraPosition = new LatLng(gpsLat, gpsLng);
         guessPosition = new LatLng(cameraPosition);
 
@@ -173,11 +174,8 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         guessConfirmed = false;
         guessPossible = false;
 
-        user = GlobalUser.getUser();
-
-        mapView = findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        compass = new GuessLocationCompass(findViewById(R.id.hotbarView), picturePosition);
+        setupZoomAnimation();
 
         //Buttons
         nextGuessButton = findViewById(R.id.backToGuessPreview);
@@ -255,7 +253,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             littleImage.setVisibility(VISIBLE);
             bigImage.setImageBitmap(bmp);
         });
-
         //Setup zoom animation
         int zoomAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
         List<View> toHide = new ArrayList<>();
@@ -349,7 +346,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         return true;
     }
 
-
     /**
      * To execute when a map is Moved
      */
@@ -366,6 +362,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (list.isEmpty()) {
             //We can't use the sensor, so we inform the user
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
             builder.setCancelable(true).setTitle(R.string.SensorNotAvailableTitle).setMessage(R.string.SensorNotAvailable)
                     .setPositiveButton("Ok", (DialogInterface dialog, int which) -> compassMode = false);
             AlertDialog dialog = builder.create();
@@ -431,6 +428,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         if (compassMode) {
             compassButton();
         }
+
         guessConfirmed = true;
 
         //don't show little image anymore and disable the compass button
@@ -450,7 +448,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
                 picturesDb.sendUserGuess(picToGuess.getUniqueId(), user.getName(), guessedLocation, mapSnapshot);
             });
         }
-        picturesDb.updateKarma(picToGuess.getUniqueId(), 3);
+        picturesDb.updateKarma(picToGuess.getUniqueId(), 1);
 
         showActualLocation(computeScoreText(), true);
 
@@ -609,7 +607,6 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         Intent intent = new Intent(this, ScoreboardActivity.class);
         intent.putExtra(ScoreboardActivity.EXTRA_PICTURE_ID,picToGuess.getUniqueId());
         startActivity(intent);
-
     }
 
     //Necessary overwrites for MapView lifecycle methods

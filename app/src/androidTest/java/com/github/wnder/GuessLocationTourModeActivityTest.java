@@ -142,7 +142,6 @@ public class GuessLocationTourModeActivityTest {
     // Clean db
     @AfterClass
     public static void afterAll() {
-
         deleteTestTour();
     }
 
