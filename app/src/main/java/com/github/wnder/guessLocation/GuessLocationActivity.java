@@ -504,7 +504,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
         tourIndex += 1;
         guessConfirmed = true;
 
-        String animatedText = "" + tourIndex + "/" + tourIDs.size() + "\nPictures found";
+        String animatedText = getString(R.string.tour_score_text, tourIndex, tourIDs.size());
 
         //If it was the last picture replace the confirm button by the next guess button
         if (tourIndex >= tourIDs.size()) {
@@ -515,7 +515,7 @@ public class GuessLocationActivity extends AppCompatActivity implements OnMapRea
             Animation button_animation = AnimationUtils.loadAnimation(this, R.anim.next_guess_button_anim);
             nextGuessButton.startAnimation(button_animation);
 
-            animatedText = String.valueOf(R.string.finished_tour);
+            animatedText = getString(R.string.finished_tour);
         }
 
         findViewById(R.id.imageToGuessCard).setVisibility(INVISIBLE);

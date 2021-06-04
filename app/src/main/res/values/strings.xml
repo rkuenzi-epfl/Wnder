@@ -49,6 +49,7 @@
 
     <!--Guess Location Strings-->
     <string name="finished_tour">Tour finished.\nWell done!</string>
+    <string name="tour_score_text">%1$d/%2$d\nPictures found</string>
     <string name="guess_simple_mode">guess_simple_mode</string>
     <string name="guess_tour_mode">guess_tour_mode</string>
     <string name="content_descr_compass_button_image">This is the image shown on the compass button</string>
