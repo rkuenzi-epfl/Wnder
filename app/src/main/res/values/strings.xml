@@ -63,7 +63,7 @@
     <string name="score">Score: %1$d</string>
     <string name="next_guess">NEXT GUESS</string>
     <string name="tour_mode_confirm_while_far_title">You are about to skip a picture</string>
-    <string name="tour_mode_confirm_while_far_text">You did not find this picture yet.\nAre you sure you want to skip this picture en go to the next one?</string>
+    <string name="tour_mode_confirm_while_far_text">You did not find this picture yet.\nAre you sure you want to skip this picture and go to the next one?</string>
 
     <!--History Strings-->
     <string name="content_descr_history_image">Previously guessed picture</string>

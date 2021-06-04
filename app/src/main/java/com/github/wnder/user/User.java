@@ -65,6 +65,10 @@ public abstract class User {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || !manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Intent intent = new Intent(context, NavigationActivity.class);
             context.startActivity(intent);
+            Location loc = new Location(LocationManager.GPS_PROVIDER);
+            loc.setLongitude(0);
+            loc.setLatitude(0);
+            return loc;
         }
         Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if(loc == null){ //To avoid unexpected result from the GPS, we set it to 0, 0.

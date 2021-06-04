@@ -27,9 +27,8 @@ public final class Score {
 
         double normalized = distance / distanceReference; //a value between 1 and 0
         double sqrtDistribution = 1 - Math.sqrt(normalized);
-        double difficultyBonus = Math.pow(radiusCircle, 0.25);
 
-        return Math.floor(MAX_SCORE * sqrtDistribution * difficultyBonus);
+        return Math.floor(MAX_SCORE * sqrtDistribution);
     }
 
     /**
