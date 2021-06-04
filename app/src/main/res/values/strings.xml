@@ -121,4 +121,10 @@
     <string name="failed_tour_picture_upload">One picture failed to be uploaded</string>
     <string name="tour_uploaded">Your tour was successfully uploaded.</string>
     <string name="tour_upload_failed">The upload of the tour failed.</string>
+
+    <!--Tour Activity Strings-->
+    <string name="content_descr_tour_first_pic">First picture of the tour</string>
+    <string name="content_descr_tour_pic_count_icon">Tour picture count icon</string>
+    <string name="content_descr_tour_distance_icon">Tour distance icon</string>
+    <string name="content_descr_tour_length_icon">Tour length icon</string>
 </resources>
