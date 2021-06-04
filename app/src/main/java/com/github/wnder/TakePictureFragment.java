@@ -322,6 +322,10 @@ public class TakePictureFragment extends Fragment {
     }
 
     private void finalizeTour(){
+        //To avoid empty string as name
+        if(enterText.getText().toString().equals("")){
+            return;
+        }
         if(user instanceof GuestUser){
             Snackbar.make(getView(), "Guest user are not allowed to upload tour", Snackbar.LENGTH_SHORT).show();
         }
